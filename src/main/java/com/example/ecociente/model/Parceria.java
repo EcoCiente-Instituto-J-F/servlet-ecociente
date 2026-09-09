@@ -2,10 +2,10 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
-public class CondominioCooperativa {
+public class Parceria {
     //================ ATRIBUTOS ================
 
-    private int idCondominioCooperativa;
+    private int idParceria;
     private LocalDate dataInicio;
     private LocalDate dataFim;
     private int idCondominio;
@@ -14,8 +14,8 @@ public class CondominioCooperativa {
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
-    public CondominioCooperativa(int idCondominioCooperativa, LocalDate dataInicio, LocalDate dataFim, int idCondominio, int idCooperativa) {
-        this.idCondominioCooperativa = idCondominioCooperativa;
+    public Parceria(int idParceria, LocalDate dataInicio, LocalDate dataFim, int idCondominio, int idCooperativa) {
+        this.idParceria = idParceria;
         this.dataInicio = dataInicio;
         this.dataFim = dataFim;
         this.idCondominio = idCondominio;
@@ -23,8 +23,8 @@ public class CondominioCooperativa {
     }
 
     //Construtor sem data de fim
-    public CondominioCooperativa(int idCondominioCooperativa, LocalDate dataInicio, int idCondominio, int idCooperativa) {
-        this.idCondominioCooperativa = idCondominioCooperativa;
+    public Parceria(int idParceria, LocalDate dataInicio, int idCondominio, int idCooperativa) {
+        this.idParceria = idParceria;
         this.dataInicio = dataInicio;
         this.idCondominio = idCondominio;
         this.idCooperativa = idCooperativa;
@@ -32,8 +32,8 @@ public class CondominioCooperativa {
 
     // ================ METODOS GETTERS ================
 
-    public int getIdCondominioCooperativa() {
-        return idCondominioCooperativa;
+    public int getIdParceria() {
+        return idParceria;
     }
 
     public LocalDate getDataInicio() {
@@ -75,8 +75,8 @@ public class CondominioCooperativa {
 
     public String toString(){
         return """
-                Condominio Cooperativa {id: %d | inicio do acordo: %s | fim do acordo %s | id condominio: %d | id cooperativa: %d}
-                """.formatted(this.idCondominioCooperativa, this.dataInicio, this.dataFim, this.idCondominio, this.idCooperativa);
+                Parceria {id: %d | inicio do acordo: %s | fim do acordo %s | id condominio: %d | id cooperativa: %d}
+                """.formatted(this.idParceria, this.dataInicio, this.dataFim, this.idCondominio, this.idCooperativa);
     }
 
 }

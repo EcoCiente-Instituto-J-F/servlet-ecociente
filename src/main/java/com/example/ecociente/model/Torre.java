@@ -3,17 +3,23 @@ package com.example.ecociente.model;
 public class Torre {
 
     //================ ATRIBUTOS ================
+
     private int idTorre;
     private String nome;
     private int numeroUnidades;
     private int idCondominio;
 
+    //================ METODOS CONSTRUTORES ================
+
+    // Construtor completo
     public Torre(int idTorre, String nome, int numeroUnidades, int idCondominio) {
         this.idTorre = idTorre;
         this.nome = nome;
         this.numeroUnidades = numeroUnidades;
         this.idCondominio = idCondominio;
     }
+
+    //================ METODOS GETTERS ================
 
     public int getIdTorre() {
         return idTorre;
@@ -31,6 +37,9 @@ public class Torre {
         return idCondominio;
     }
 
+
+    //================ METODOS SETTERS ================
+
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -42,6 +51,8 @@ public class Torre {
     public void setIdCondominio(int idCondominio) {
         this.idCondominio = idCondominio;
     }
+
+    //================ TO STRING ================
 
     @Override
 
