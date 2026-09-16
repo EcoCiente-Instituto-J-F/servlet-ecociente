@@ -43,14 +43,45 @@ public class UsuarioDAO {
             int linhasAfetadas = comando.executeUpdate();
 
             return linhasAfetadas > 0;
-        } catch (SQLException e) {
+        } catch (SQLException sqle) {
             System.out.println(
-                    "Erro ao inserir tarefa" +
-                            e.getMessage()
+                    "Erro ao inserir usuario" +
+                            sqle.getMessage()
             );
 
             return false;
         }
+    }
+
+    //=======================MÉTODOS DELETE=======================\\
+    public boolean deletar(Usuario usuario){
+
+        String sql = """
+                DELETE FROM usuario
+                WHERE id_usuario = ?
+                """;
+
+        try (
+            Connection conexao = ConexaoBD.conectar();
+            PreparedStatement comando =
+                    conexao.prepareStatement(sql);
+
+        ){
+            comando.setInt(1, usuario.getIdUsuario());
+
+            int linhasAfetadas = comando.executeUpdate();
+
+            return linhasAfetadas > 0;
+        } catch (SQLException sqle) {
+            System.out.println(
+                    "Erro ao deletar usuario" +
+                            sqle.getMessage()
+            );
+
+            return false;
+        }
+
+
     }
 
 }
