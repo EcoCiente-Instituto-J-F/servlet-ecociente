@@ -71,7 +71,7 @@ public class CooperativaDAO {
         }
     }
 
-    // SELECT
+    // SELECT da Cooperativa
     public Cooperativa buscarPorId(int idCooperativa) {
         String sql = """
         SELECT id_cooperativa, cnpj, id_usuario 
@@ -80,25 +80,39 @@ public class CooperativaDAO {
         """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
-
+             PreparedStatement comando = conexao.prepareStatement(sql)
+        ) {
             comando.setInt(1, idCooperativa);
 
             try (ResultSet rs = comando.executeQuery()) {
                 if (rs.next()) {
-                    return montar(rs);
+                    return new Cooperativa(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getString(4),
+                            rs.getDate(5).toLocalDate(),
+                            rs.getBoolean(6),
+                            rs.getInt(7),
+                            rs.getInt(8),
+                            rs.getInt(9),
+                            rs.getString(10)
+                    );
                 }
-                return null;
             }
+
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
+        return null;
     }
+    //SELECT CNPJ
     public boolean buscarCNPJ(String cnpj){
         String sql = """
-                SELECT id_cooperativa, cnpj 
-                FROM cooperativa
-                WHERE cnpj = ?;
+                SELECT c.id_cooperativa, c.cnpj, c.id_usuario
+                FROM cooperativa c
+                JOIN usuario u ON u.id_usuario = c.id_usuario
+                ORDER BY c.id_cooperativa;
                 """;
 
         try(Connection conexao = ConexaoBD.conectar();
@@ -112,8 +126,8 @@ public class CooperativaDAO {
 
         }catch (SQLException sqle){
             System.out.println(sqle.getMessage());
-            return false;
         }
+        return false;
     }
     // SELECT ALL
     public ArrayList<Cooperativa> listarTodas() {
