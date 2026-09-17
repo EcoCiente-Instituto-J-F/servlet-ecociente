@@ -13,18 +13,24 @@ public class CondominioDAO{
     //=======================MÉTODOS CREATE=======================\\
     public boolean inserir(Condominio condominio){
         boolean retorno = false;
+        String sql = """
+                INSERT INTO condominio
+                    (id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio)
+                VALUES 
+                    (?,?,?,?,?,?,?)
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("INSERT INTO condominio(id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio) VALUES (?,?,?,?,?,?,?)");
-            comando.setInt(1, condominio.getIdCondominio());
-            comando.setString(2, condominio.getNome());
-            comando.setString(3, condominio.getCnpj());
-            comando.setBoolean(4, condominio.isStatus());
-            comando.setString(5, condominio.getToken());
-            comando.setInt(6, condominio.idEndereco());
-            comando.setInt(7, condominio.getIdTipoCondominio());
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setInt(1, condominio.getIdCondominio());
+            ps.setString(2, condominio.getNome());
+            ps.setString(3, condominio.getCnpj());
+            ps.setBoolean(4, condominio.isStatus());
+            ps.setString(5, condominio.getToken());
+            ps.setInt(6, condominio.idEndereco());
+            ps.setInt(7, condominio.getIdTipoCondominio());
 
-            retorno = comando.executeUpdate() == 1;
+            retorno = ps.executeUpdate() == 1;
         }
         catch(SQLException sqle){
             System.out.println("!!SQLException ao chamar CondominioDAO.inserir(condominio)!!");
@@ -35,13 +41,19 @@ public class CondominioDAO{
 
 
     //=======================MÉTODOS READ=======================\\
-    public boolean existeCnpj(String cnpj){
+    public boolean selecionarCnpj(String cnpj){
         boolean retorno = false;
+        String sql = """
+                SELECT cnpj 
+                FROM condominio
+                WHERE cnpj 
+                LIKE ?
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("SELECT cnpj FROM condominio WHERE cnpj LIKE ?");
-            comando.setString(1, cnpj);
-            ResultSet condominio = comando.executeQuery();
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setString(1, cnpj);
+            ResultSet condominio = ps.executeQuery();
             while(condominio.next()){
                 retorno = true;
             }
@@ -55,121 +67,141 @@ public class CondominioDAO{
 
     public ArrayList<Condominio> selecionarTodos(){
         ArrayList<Condominio> condominios = new ArrayList<>();
+        String sql =  """
+               
+                SELECT * FROM condominio
+                         ORDER BY nome
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            Statement comando = conexao.createStatement();
-            ResultSet condominio = comando.executeQuery("SELECT * FROM condominio ORDER BY nome");
+            Statement ps = conexao.createStatement();
+            ResultSet condominio = ps.executeQuery(sql);
 
             while(condominio.next()){
                 condominios.add(new Condominio(
-                        condominio.getInt("id_condominio"),
-                        condominio.getString("nome"),
-                        condominio.getString("cnpj"),
-                        condominio.getBoolean("status"),
-                        condominio.getString("token"),
-                        condominio.getInt("id_endereco"),
-                        condominio.getInt("id_tipo_condominio")
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
                 ));
             }
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.selecionarTodos()!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
         }
         return condominios;
     } // Método que seleciona todos os condomínios
 
-    public ArrayList<Condominio> selecionarPorNome(String procura){
+    public ArrayList<Condominio> selecionarPorNomeCondominio(String procura){
         ArrayList<Condominio> condominios = new ArrayList<>();
+        String sql = """
+
+SELECT id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio
+    FROM condominio
+        ORDER BY id_condominio
+    
+
+""";
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("SELECT * FROM condominio WHERE lower(nome) LIKE lower(?) ORDER BY nome");
-            comando.setString(1, "%" + procura + "%");
-            ResultSet condominio = comando.executeQuery();
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ResultSet condominio = ps.executeQuery();
+
 
             while(condominio.next()){
                 condominios.add(new Condominio(
-                        condominio.getInt("id_condominio"),
-                        condominio.getString("nome"),
-                        condominio.getString("cnpj"),
-                        condominio.getBoolean("status"),
-                        condominio.getString("token"),
-                        condominio.getInt("id_endereco"),
-                        condominio.getInt("id_tipo_condominio")
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
                 ));
             }
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.selecionarPorNome(procura)!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
         }
         return condominios;
     } // Método que seleciona os condomínios por nome
 
-    public Condominio selecionarPorId(int id){
-
+    public Condominio selecionarPorId(int id_condominio){
         Condominio condominioEncontrado = null;
+        String sql = """
+                SELECT * FROM condominio
+                         WHERE id_condominio = ?
+                
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("SELECT * FROM condominio WHERE id_condominio = ?");
-            comando.setInt(1, id);
-            ResultSet condominio = comando.executeQuery();
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ResultSet condominio = ps.executeQuery();
 
             while(condominio.next()){
                 condominioEncontrado = new Condominio(
-                        condominio.getInt("id_condominio"),
-                        condominio.getString("nome"),
-                        condominio.getString("cnpj"),
-                        condominio.getBoolean("status"),
-                        condominio.getString("token"),
-                        condominio.getInt("id_endereco"),
-                        condominio.getInt("id_tipo_condominio")
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
                 );
             }
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.selecionarPorId(id)!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
         }
         return condominioEncontrado;
     } // Método que seleciona um condomínio por id
 
     //=======================MÉTODOS UPDATE=======================\\
-    public boolean atualizar(Condominio condominio){
+    public boolean atualizarCondominio(Condominio condominio){
         boolean retorno = false;
+        String sql = """
+                UPDATE condominio
+                SET nome = ?, cnpj = ?, status = ?, token = ?, id_endereco = ?, id_tipo_condominio = ? 
+                WHERE id_condominio = ?
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("UPDATE condominio SET nome = ?, cnpj = ?, status = ?, token = ?, id_endereco = ?, id_tipo_condominio = ? WHERE id_condominio = ?");
-            comando.setString(1, condominio.getNome());
-            comando.setString(2, condominio.getCnpj());
-            comando.setBoolean(3, condominio.isStatus());
-            comando.setString(4, condominio.getToken());
-            comando.setInt(5, condominio.idEndereco());
-            comando.setInt(6, condominio.getIdTipoCondominio());
-            comando.setInt(7, condominio.getIdCondominio());
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setString(1, condominio.getNome());
+            ps.setString(2, condominio.getCnpj());
+            ps.setBoolean(3, condominio.isStatus());
+            ps.setString(4, condominio.getToken());
+            ps.setInt(5, condominio.idEndereco());
+            ps.setInt(6, condominio.getIdTipoCondominio());
+            ps.setInt(7, condominio.getIdCondominio());
 
-            retorno = comando.executeUpdate() >= 1;
+            retorno = true;
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.atualizar(condominio)!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
+
         }
         return retorno;
     } // Método que atualiza os dados do condomínio por id
 
     public boolean atualizarStatus(int id, boolean status){
         boolean retorno = false;
+        String sql = """
+                UPDATE condominio SET status = ? 
+                                  WHERE id_condominio = ?
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("UPDATE condominio SET status = ? WHERE id_condominio = ?");
-            comando.setBoolean(1, status);
-            comando.setInt(2, id);
+            PreparedStatement ps = conexao.prepareStatement(sql);
 
-            retorno = comando.executeUpdate() >= 1;
+
+            retorno = ps.executeUpdate() >= 1;
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.atualizarStatus(id, status)!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
         }
         return retorno;
     } // Método que ativa ou desativa o condomínio por id
@@ -177,16 +209,19 @@ public class CondominioDAO{
     //=======================MÉTODOS DELETE=======================\\
     public boolean deletar(int id){
         boolean retorno = false;
+        String sql = """
+                DELETE FROM condominio 
+                       WHERE id_condominio = ?
+                """;
         try{
             conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement("DELETE FROM condominio WHERE id_condominio = ?");
-            comando.setInt(1, id);
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setInt(1, id);
 
-            retorno = comando.executeUpdate() == 1;
+            retorno = ps.executeUpdate() == 1;
         }
         catch(SQLException sqle){
-            System.out.println("!!SQLException ao chamar CondominioDAO.deletar(id)!!");
-            sqle.printStackTrace();
+            throw new RuntimeException(sqle.getMessage());
         }
         return retorno;
     } // Método que deleta um condomínio por id
