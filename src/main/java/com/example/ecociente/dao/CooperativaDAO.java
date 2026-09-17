@@ -31,8 +31,8 @@ public class CooperativaDAO {
         }
     }
 
-    // UPTADE
-    public void atualizar(Cooperativa c) {
+    // UPDATE
+    public boolean atualizar(Cooperativa c) {
         String sql = """
                        UPDATE cooperativa 
                        SET cnpj = ?, id_usuario = ? 
@@ -46,6 +46,7 @@ public class CooperativaDAO {
             comando.setInt(2, c.getIdUsuario());
             comando.setInt(3, c.getIdCooperativa());
             comando.executeUpdate();
+            return true;
 
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
@@ -87,40 +88,69 @@ public class CooperativaDAO {
                 if (rs.next()) {
                     return montar(rs);
                 }
-                return null; // não achou
+                return null;
             }
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
     }
-
-    // SELECT ALL
-    public List<Cooperativa> listarTodas() {
+    public boolean buscarCNPJ(String cnpj){
         String sql = """
-        SELECT id_cooperativa, cnpj, id_usuario 
-        FROM cooperativa 
-        ORDER BY id_cooperativa
+                SELECT id_cooperativa, cnpj 
+                FROM cooperativa
+                WHERE cnpj = ?;
+                """;
+
+        try(Connection conexao = ConexaoBD.conectar();
+            PreparedStatement comando = conexao.prepareStatement(sql);
+            ResultSet rs = comando.executeQuery();
+        ){
+            comando.setString(1, cnpj);
+           while (rs.next()){
+               return true;
+            }
+
+        }catch (SQLException sqle){
+            System.out.println(sqle.getMessage());
+            return false;
+        }
+    }
+    // SELECT ALL
+    public ArrayList<Cooperativa> listarTodas() {
+        ArrayList<Cooperativa> cooperativas = new ArrayList<>();
+
+        String sql = """
+         SELECT u.id_usuario, u.nome, u.email, u.senha_hash, u.data_cadastro,
+               u.status, u.id_endereco, u.id_tipo_usuario,
+               c.id_cooperativa, c.cnpj
+        FROM cooperativa c
+        JOIN usuario u ON u.id_usuario = c.id_usuario
+        ORDER BY c.id_cooperativa
         """;
-        List<Cooperativa> lista = new ArrayList<>();
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql);
              ResultSet rs = comando.executeQuery()) {
 
             while (rs.next()) {
-                lista.add(montar(rs));
+                cooperativas.add(new Cooperativa(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDate(5).toLocalDate(),
+                        rs.getBoolean(6),
+                        rs.getInt(7),
+                        rs.getInt(8),
+                        rs.getInt(9),
+                        rs.getString(10)
+                        ));
             }
-            return lista;
 
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
-    }
-    private Cooperativa montar(ResultSet rs) throws SQLException {
-        Cooperativa c = new Cooperativa();
-        c.setIdCooperativa(rs.getInt("id_cooperativa"));
-        c.setCnpj(rs.getString("cnpj"));
-        c.setIdUsuario(rs.getInt("id_usuario"));
-        return c;
+
+        return cooperativas;
     }
 }
