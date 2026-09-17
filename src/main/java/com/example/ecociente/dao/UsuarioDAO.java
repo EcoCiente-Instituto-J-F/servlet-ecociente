@@ -24,7 +24,7 @@ public class UsuarioDAO {
         try (
             Connection conexao = ConexaoBD.conectar();
             PreparedStatement comando =
-                    conexao.prepareStatement(sql);
+                    conexao.prepareStatement(sql)
         ){
 
             comando.setInt(1, usuario.getIdUsuario());
@@ -50,6 +50,35 @@ public class UsuarioDAO {
             );
 
             return false;
+        }
+    }
+    //=======================MÉTODOS UPDATE=======================\
+    public boolean update(Usuario usuario){
+        boolean retorno = false;
+        String sql = """
+                UPDATE usuario 
+                    SET nome=?, email=?, senha_hash=?, data_cadastro=?, id_endereco=?
+                """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement comando =
+                        conexao.prepareStatement(sql)
+        ){
+
+            comando.setString(1, usuario.getNome());
+            comando.setString(2, usuario.getEmail());
+            comando.setString(3, usuario.getSenhaHash());
+            comando.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+            comando.setInt(5, usuario.getIdEndereco());
+
+            int linhasAfetadas = comando.executeUpdate();
+            return linhasAfetadas == 1;
+
+
+
+        }catch (SQLException sqle){
+            System.out.println(sqle.getMessage());
+            return retorno;
         }
     }
 
