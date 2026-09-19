@@ -33,6 +33,50 @@ public class CooperativaDAO {
     }
     //=======================MÉTODOS READ=======================\
 
+<<<<<<< feat/adiciona-dao
+    // UPDATE
+    public boolean atualizar(Cooperativa c) {
+        String sql = """
+                       UPDATE cooperativa 
+                       SET cnpj = ?, id_usuario = ? 
+                       WHERE id_cooperativa = ?
+                       """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, c.getCnpj());
+            comando.setInt(2, c.getIdUsuario());
+            comando.setInt(3, c.getIdCooperativa());
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // DELETE
+    public boolean deletar(int idCooperativa) {
+        String sql = """
+                DELETE FROM cooperativa 
+                WHERE id_cooperativa = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idCooperativa);
+            comando.executeUpdate();
+            return true;
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // SELECT IDCOOPERATIVA
+=======
+>>>>>>> main
     public Cooperativa buscarPorId(int idCooperativa) {
         String sql = """
         SELECT id_cooperativa, cnpj, id_usuario 
@@ -90,6 +134,28 @@ public class CooperativaDAO {
         }
         return false;
     }
+    //SELECT IDUSUARIO
+    public boolean buscarIdUsuario(int idUsuario){
+        String sql = """
+                SELECT idUsuario 
+                FROM cooperativa
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet rs = comando.executeQuery();
+                ){
+             comando.setInt(1, idUsuario);
+             while (rs.next()){
+               return true;
+             }
+    }catch (SQLException sqle){
+            System.out.println(sqle.getMessage());
+    }
+    return false;
+}
+
+    // SELECT ALL
 
     public ArrayList<Cooperativa> listarTodas() {
         ArrayList<Cooperativa> cooperativas = new ArrayList<>();
