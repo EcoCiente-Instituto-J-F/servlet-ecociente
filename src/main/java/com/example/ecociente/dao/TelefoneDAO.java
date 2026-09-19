@@ -146,4 +146,26 @@ public class TelefoneDAO {
             throw new RuntimeException(sqle.getMessage());
         }
     }
+
+    // ======================= MÉTODOS DELETE =======================
+
+    public boolean deletar(int idTelefone) {
+
+        String sql = """
+                DELETE FROM telefone
+                WHERE idTelefone = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idTelefone);
+
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
 }
