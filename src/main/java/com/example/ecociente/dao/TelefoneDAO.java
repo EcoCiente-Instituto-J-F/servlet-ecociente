@@ -69,4 +69,26 @@ public class TelefoneDAO {
         return null;
     }
 
+    // Buscar telefone pelo número
+    public boolean buscarNumero(String numero) {
+
+        String sql = """
+                SELECT idTelefone, numero, idUsuario
+                FROM telefone
+                WHERE numero = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, numero);
+
+            try (ResultSet rs = comando.executeQuery()) {
+                return rs.next();
+            }
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
 }
