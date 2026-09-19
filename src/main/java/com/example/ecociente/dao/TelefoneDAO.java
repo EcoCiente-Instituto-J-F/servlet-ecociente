@@ -70,7 +70,7 @@ public class TelefoneDAO {
     }
 
     // Buscar telefone pelo número
-    public boolean buscarNumero(String numero) {
+    public boolean buscarPorNumero(String numero) {
 
         String sql = """
                 SELECT idTelefone, numero, idUsuario
@@ -90,5 +90,34 @@ public class TelefoneDAO {
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
+    }
+
+    // Listar todos os telefones
+    public ArrayList<Telefone> listarTodas() {
+
+        ArrayList<Telefone> telefones = new ArrayList<>();
+
+        String sql = """
+                SELECT idTelefone, numero, idUsuario
+                FROM telefone
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql);
+             ResultSet rs = comando.executeQuery()) {
+
+            while (rs.next()) {
+                telefones.add(new Telefone(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getInt(3)
+                ));
+            }
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+
+        return telefones;
     }
 }
