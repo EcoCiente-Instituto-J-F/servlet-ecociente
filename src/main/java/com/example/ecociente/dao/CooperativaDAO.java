@@ -11,7 +11,8 @@ import com.example.ecociente.model.Cooperativa;
 
 public class CooperativaDAO {
 
-    // INSERIR
+    //=======================MÉTODOS CREATE=======================\
+
     public boolean inserir(Cooperativa c) {
         String sql = """
                 INSERT INTO cooperativa 
@@ -30,7 +31,9 @@ public class CooperativaDAO {
             throw new RuntimeException(sqle.getMessage());
         }
     }
+    //=======================MÉTODOS READ=======================\
 
+<<<<<<< feat/adiciona-dao
     // UPDATE
     public boolean atualizar(Cooperativa c) {
         String sql = """
@@ -72,6 +75,8 @@ public class CooperativaDAO {
     }
 
     // SELECT IDCOOPERATIVA
+=======
+>>>>>>> main
     public Cooperativa buscarPorId(int idCooperativa) {
         String sql = """
         SELECT id_cooperativa, cnpj, id_usuario 
@@ -106,7 +111,7 @@ public class CooperativaDAO {
         }
         return null;
     }
-    //SELECT CNPJ
+
     public boolean buscarCNPJ(String cnpj){
         String sql = """
                 SELECT c.id_cooperativa, c.cnpj, c.id_usuario
@@ -120,8 +125,8 @@ public class CooperativaDAO {
             ResultSet rs = comando.executeQuery();
         ){
             comando.setString(1, cnpj);
-           while (rs.next()){
-               return true;
+            while (rs.next()){
+                return true;
             }
 
         }catch (SQLException sqle){
@@ -151,6 +156,7 @@ public class CooperativaDAO {
 }
 
     // SELECT ALL
+
     public ArrayList<Cooperativa> listarTodas() {
         ArrayList<Cooperativa> cooperativas = new ArrayList<>();
 
@@ -179,7 +185,7 @@ public class CooperativaDAO {
                         rs.getInt(8),
                         rs.getInt(9),
                         rs.getString(10)
-                        ));
+                ));
             }
 
         } catch (SQLException sqle) {
@@ -189,3 +195,47 @@ public class CooperativaDAO {
         return cooperativas;
     }
 }
+
+
+    //=======================MÉTODOS UPDATE=======================\
+
+    public boolean atualizar(Cooperativa c) {
+        String sql = """
+                       UPDATE cooperativa 
+                       SET cnpj = ?, id_usuario = ? 
+                       WHERE id_cooperativa = ?
+                       """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, c.getCnpj());
+            comando.setInt(2, c.getIdUsuario());
+            comando.setInt(3, c.getIdCooperativa());
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    //=======================MÉTODOS DELETE=======================\
+
+    public boolean deletar(int idCooperativa) {
+        String sql = """
+                DELETE FROM cooperativa 
+                WHERE id_cooperativa = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idCooperativa);
+            comando.executeUpdate();
+            return true;
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
