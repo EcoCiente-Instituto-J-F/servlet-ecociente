@@ -93,7 +93,7 @@ public class TelefoneDAO {
     }
 
     // Listar todos os telefones
-    public ArrayList<Telefone> listarTodas() {
+    public ArrayList<Telefone> listarTodos() {
 
         ArrayList<Telefone> telefones = new ArrayList<>();
 
@@ -119,5 +119,31 @@ public class TelefoneDAO {
         }
 
         return telefones;
+    }
+
+    // ======================= MÉTODOS UPDATE =======================
+
+    public boolean atualizar(Telefone t) {
+
+        String sql = """
+                UPDATE telefone
+                SET numero = ?,
+                    idUsuario = ?
+                WHERE idTelefone = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, t.getNumero());
+            comando.setInt(2, t.getIdUsuario());
+            comando.setInt(3, t.getIdTelefone());
+
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
     }
 }
