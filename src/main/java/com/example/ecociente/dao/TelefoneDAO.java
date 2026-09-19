@@ -34,4 +34,39 @@ public class TelefoneDAO {
             throw new RuntimeException(sqle.getMessage());
         }
     }
+
+    // ======================= MÉTODOS READ =======================
+
+    // Buscar telefone pelo ID
+    public Telefone buscarPorId(int idTelefone) {
+
+        String sql = """
+                SELECT idTelefone, numero, idUsuario
+                FROM telefone
+                WHERE idTelefone = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idTelefone);
+
+            try (ResultSet rs = comando.executeQuery()) {
+
+                if (rs.next()) {
+                    return new Telefone(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getInt(3)
+                    );
+                }
+            }
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+
+        return null;
+    }
+
 }
