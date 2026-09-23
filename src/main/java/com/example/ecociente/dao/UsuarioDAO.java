@@ -5,6 +5,7 @@ import com.example.ecociente.model.Usuario;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 public class UsuarioDAO {
 
@@ -56,7 +57,9 @@ public class UsuarioDAO {
     // Metodo para selecionar um usuário por ID
     public Usuario selecionarUsuarioPorId(int id){
         String sql = """
-                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario FROM usuario WHERE id_usuario == ?
+                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
+                FROM usuario  
+                WHERE id_usuario == ?
                 """;
         Usuario retorno = null;
         try (
@@ -78,15 +81,56 @@ public class UsuarioDAO {
                         rs.getInt(8)
                 );
             }
-            return retorno;
+
 
         }catch (SQLException sqle){
             System.out.println("Erro ao selecionar usuario" + sqle.getMessage());
-            return null;
+
+        }finally {
+            return retorno;
         }
 
 
     }
+
+    //seleciona todos
+
+    ArrayList<Usuario> todosUsuarios = new ArrayList<>();
+
+    public ArrayList<Usuario> selecionarTodos(){
+        String sql = """
+                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
+                FROM usuario
+                """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps =
+                        conexao.prepareStatement(sql)
+        ){
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                todosUsuarios.add(new Usuario(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDate(5).toLocalDate(),
+                        rs.getBoolean(6),
+                        rs.getInt(7),
+                        rs.getInt(8)
+                ));
+            }
+
+
+
+        }catch (SQLException sqle){
+            System.out.println(sqle.getMessage());
+
+        }finally {
+            return todosUsuarios;
+        }
+    }
+
 
     //=======================MÉTODOS UPDATE=======================\
     public boolean atualizar(Usuario usuario){
