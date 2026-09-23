@@ -3,16 +3,14 @@ package com.example.ecociente.dao;
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Usuario;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class UsuarioDAO {
 
     //=======================MÉTODOS CREATE=======================\\
 
+    // Metodo para inserir um usuário no banco
     public boolean inserir(Usuario usuario){
         String sql = """
             INSERT INTO usuario
@@ -23,24 +21,24 @@ public class UsuarioDAO {
 
         try (
             Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando =
+            PreparedStatement ps =
                     conexao.prepareStatement(sql)
         ){
 
-            comando.setInt(1, usuario.getIdUsuario());
-            comando.setString(2, usuario.getNome());
-            comando.setString(3, usuario.getEmail());
-            comando.setString(4, usuario.getSenhaHash());
-            comando.setDate(
+            ps.setInt(1, usuario.getIdUsuario());
+            ps.setString(2, usuario.getNome());
+            ps.setString(3, usuario.getEmail());
+            ps.setString(4, usuario.getSenhaHash());
+            ps.setDate(
                     5,
                     Date.valueOf(LocalDate.now())
                     );
-            comando.setInt(6, usuario.getIdEndereco());
-            comando.setInt(7, usuario.getIdTipoUsuario());
+            ps.setInt(6, usuario.getIdEndereco());
+            ps.setInt(7, usuario.getIdTipoUsuario());
 
 
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
 
             return linhasAfetadas > 0;
         } catch (SQLException sqle) {
@@ -52,8 +50,46 @@ public class UsuarioDAO {
             return false;
         }
     }
+
+    //=======================MÉTODOS READ=======================\
+
+    // Metodo para selecionar um usuário por ID
+    public Usuario selecionarUsuarioPorId(int id){
+        String sql = """
+                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario FROM usuario WHERE id_usuario == ?
+                """;
+        Usuario retorno = null;
+        try (
+            Connection conexao = ConexaoBD.conectar();
+            PreparedStatement ps =
+                    conexao.prepareStatement(sql)
+        ){
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                retorno = new Usuario(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDate(5).toLocalDate(),
+                        rs.getBoolean(6),
+                        rs.getInt(7),
+                        rs.getInt(8)
+                );
+            }
+            return retorno;
+
+        }catch (SQLException sqle){
+            System.out.println("Erro ao selecionar usuario" + sqle.getMessage());
+            return null;
+        }
+
+
+    }
+
     //=======================MÉTODOS UPDATE=======================\
-    public boolean update(Usuario usuario){
+    public boolean atualizar(Usuario usuario){
         boolean retorno = false;
         String sql = """
                 UPDATE usuario 
@@ -61,17 +97,17 @@ public class UsuarioDAO {
                 """;
         try (
                 Connection conexao = ConexaoBD.conectar();
-                PreparedStatement comando =
+                PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
 
-            comando.setString(1, usuario.getNome());
-            comando.setString(2, usuario.getEmail());
-            comando.setString(3, usuario.getSenhaHash());
-            comando.setDate(4, Date.valueOf(usuario.getDataCadastro()));
-            comando.setInt(5, usuario.getIdEndereco());
+            ps.setString(1, usuario.getNome());
+            ps.setString(2, usuario.getEmail());
+            ps.setString(3, usuario.getSenhaHash());
+            ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+            ps.setInt(5, usuario.getIdEndereco());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas == 1;
 
 
@@ -92,13 +128,13 @@ public class UsuarioDAO {
 
         try (
             Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando =
+            PreparedStatement ps =
                     conexao.prepareStatement(sql);
 
         ){
-            comando.setInt(1, usuario.getIdUsuario());
+            ps.setInt(1, usuario.getIdUsuario());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
 
             return linhasAfetadas > 0;
         } catch (SQLException sqle) {
