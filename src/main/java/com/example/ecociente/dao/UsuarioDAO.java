@@ -21,24 +21,24 @@ public class UsuarioDAO {
 
         try (
             Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando =
+            PreparedStatement ps =
                     conexao.prepareStatement(sql)
         ){
 
-            comando.setInt(1, usuario.getIdUsuario());
-            comando.setString(2, usuario.getNome());
-            comando.setString(3, usuario.getEmail());
-            comando.setString(4, usuario.getSenhaHash());
-            comando.setDate(
+            ps.setInt(1, usuario.getIdUsuario());
+            ps.setString(2, usuario.getNome());
+            ps.setString(3, usuario.getEmail());
+            ps.setString(4, usuario.getSenhaHash());
+            ps.setDate(
                     5,
                     Date.valueOf(LocalDate.now())
                     );
-            comando.setInt(6, usuario.getIdEndereco());
-            comando.setInt(7, usuario.getIdTipoUsuario());
+            ps.setInt(6, usuario.getIdEndereco());
+            ps.setInt(7, usuario.getIdTipoUsuario());
 
 
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
 
             return linhasAfetadas > 0;
         } catch (SQLException sqle) {
@@ -61,11 +61,11 @@ public class UsuarioDAO {
         Usuario retorno = null;
         try (
             Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando =
+            PreparedStatement ps =
                     conexao.prepareStatement(sql)
         ){
-            comando.setInt(1, id);
-            ResultSet rs = comando.executeQuery();
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
             if (rs.next()){
                 retorno = new Usuario(
                         rs.getInt(1),
@@ -97,17 +97,17 @@ public class UsuarioDAO {
                 """;
         try (
                 Connection conexao = ConexaoBD.conectar();
-                PreparedStatement comando =
+                PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
 
-            comando.setString(1, usuario.getNome());
-            comando.setString(2, usuario.getEmail());
-            comando.setString(3, usuario.getSenhaHash());
-            comando.setDate(4, Date.valueOf(usuario.getDataCadastro()));
-            comando.setInt(5, usuario.getIdEndereco());
+            ps.setString(1, usuario.getNome());
+            ps.setString(2, usuario.getEmail());
+            ps.setString(3, usuario.getSenhaHash());
+            ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+            ps.setInt(5, usuario.getIdEndereco());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas == 1;
 
 
@@ -128,13 +128,13 @@ public class UsuarioDAO {
 
         try (
             Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando =
+            PreparedStatement ps =
                     conexao.prepareStatement(sql);
 
         ){
-            comando.setInt(1, usuario.getIdUsuario());
+            ps.setInt(1, usuario.getIdUsuario());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
 
             return linhasAfetadas > 0;
         } catch (SQLException sqle) {

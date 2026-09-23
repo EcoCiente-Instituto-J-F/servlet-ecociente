@@ -22,12 +22,12 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, c.getCnpj());
-            comando.setInt(2, c.getIdUsuario());
+            ps.setString(1, c.getCnpj());
+            ps.setInt(2, c.getIdUsuario());
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {
@@ -57,11 +57,11 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setInt(1, idCooperativa);
+            ps.setInt(1, idCooperativa);
 
-            try (ResultSet rs = comando.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
                     return new Cooperativa(
@@ -96,11 +96,11 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, cnpj);
+            ps.setString(1, cnpj);
 
-            try (ResultSet rs = comando.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
 
@@ -119,11 +119,11 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setInt(1, idUsuario);
+            ps.setInt(1, idUsuario);
 
-            try (ResultSet rs = comando.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
 
@@ -154,8 +154,8 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql);
-             ResultSet rs = comando.executeQuery()) {
+             PreparedStatement ps = conexao.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
 
@@ -192,13 +192,13 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, c.getCnpj());
-            comando.setInt(2, c.getIdUsuario());
-            comando.setInt(3, c.getIdCooperativa());
+            ps.setString(1, c.getCnpj());
+            ps.setInt(2, c.getIdUsuario());
+            ps.setInt(3, c.getIdCooperativa());
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {
@@ -216,11 +216,11 @@ public class CooperativaDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setInt(1, idCooperativa);
+            ps.setInt(1, idCooperativa);
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {

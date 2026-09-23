@@ -22,19 +22,19 @@ public class EnderecoDAO {
 
         try (
                 Connection conexao = ConexaoBD.conectar();
-                PreparedStatement comando =
+                PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
-            comando.setInt(1, endereco.getIdEndereco());
-            comando.setString(2, endereco.getCep());
-            comando.setString(3, endereco.getCidade());
-            comando.setString(4, endereco.getEstado());
-            comando.setString(5, endereco.getBairro());
-            comando.setString(6, endereco.getBairro());
-            comando.setInt(7, endereco.getNumero());
-            comando.setString(8, endereco.getComplemento());
+            ps.setInt(1, endereco.getIdEndereco());
+            ps.setString(2, endereco.getCep());
+            ps.setString(3, endereco.getCidade());
+            ps.setString(4, endereco.getEstado());
+            ps.setString(5, endereco.getBairro());
+            ps.setString(6, endereco.getBairro());
+            ps.setInt(7, endereco.getNumero());
+            ps.setString(8, endereco.getComplemento());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
 
             return linhasAfetadas > 0;
 
@@ -58,17 +58,17 @@ public class EnderecoDAO {
 
         try (
                 Connection conexao = ConexaoBD.conectar();
-                PreparedStatement comando =
+                PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
-            comando.setString(1, endereco.getCep());
-            comando.setString(2, endereco.getCidade());
-            comando.setString(3, endereco.getBairro());
-            comando.setString(4, endereco.getRua());
-            comando.setInt(5, endereco.getNumero());
-            comando.setString(6, endereco.getComplemento());
+            ps.setString(1, endereco.getCep());
+            ps.setString(2, endereco.getCidade());
+            ps.setString(3, endereco.getBairro());
+            ps.setString(4, endereco.getRua());
+            ps.setInt(5, endereco.getNumero());
+            ps.setString(6, endereco.getComplemento());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas == 1;
 
         }catch (SQLException sqle){
@@ -88,12 +88,12 @@ public class EnderecoDAO {
 
         try (
                 Connection conexao = ConexaoBD.conectar();
-                PreparedStatement comando =
+                PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
-            comando.setInt(1, endereco.getIdEndereco());
+            ps.setInt(1, endereco.getIdEndereco());
 
-            int linhasAfetadas = comando.executeUpdate();
+            int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas > 0;
 
         }catch (SQLException sqle){
