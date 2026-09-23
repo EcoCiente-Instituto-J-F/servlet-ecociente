@@ -88,4 +88,35 @@ public class CondominioDAO{
         }
         return condominios;
     } // Metodo que seleciona todos os condomínios
+
+    public ArrayList<Condominio> selecionarPorNomeCondominio(String procura){
+        ArrayList<Condominio> condominios = new ArrayList<>();
+        String sql = """
+                SELECT id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio
+                    FROM condominio
+                        WHERE nome LIKE ?
+                        ORDER BY id_condominio
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setString(1, "%" + procura + "%");
+            ResultSet condominio = ps.executeQuery();
+
+            while(condominio.next()){
+                condominios.add(new Condominio(
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
+                ));
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return condominios;
+    } // Metodo que seleciona os condomínios por nome
 }
