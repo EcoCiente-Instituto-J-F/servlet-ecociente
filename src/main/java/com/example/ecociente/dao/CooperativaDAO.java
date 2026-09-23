@@ -1,50 +1,32 @@
 package com.example.ecociente.dao;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Cooperativa;
 
 public class CooperativaDAO {
 
-    // INSERIR
+    // ======================= MÉTODOS CREATE =======================
+
     public boolean inserir(Cooperativa c) {
         String sql = """
-                INSERT INTO cooperativa 
-                    (cnpj, id_usuario) 
-                VALUES 
+                INSERT INTO cooperativa
+                    (cnpj, id_usuario)
+                VALUES
                     (?, ?)
                 """;
-        try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) { // prepara e transforma a string na linguagem do sql
-
-            comando.setString(1, c.getCnpj());
-            comando.setInt(2, c.getIdUsuario());
-            comando.executeUpdate(); // Dispara o comanfo
-            return true;
-        } catch (SQLException sqle) {
-            throw new RuntimeException(sqle.getMessage());
-        }
-    }
-
-    // UPDATE
-    public boolean atualizar(Cooperativa c) {
-        String sql = """
-                       UPDATE cooperativa 
-                       SET cnpj = ?, id_usuario = ? 
-                       WHERE id_cooperativa = ?
-                       """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
 
             comando.setString(1, c.getCnpj());
             comando.setInt(2, c.getIdUsuario());
-            comando.setInt(3, c.getIdCooperativa());
+
             comando.executeUpdate();
             return true;
 
@@ -53,31 +35,26 @@ public class CooperativaDAO {
         }
     }
 
-    // DELETE
-    public boolean deletar(int idCooperativa) {
-        String sql = """
-                DELETE FROM cooperativa 
-                WHERE id_cooperativa = ?
-                """;
+    // ======================= MÉTODOS READ =======================
 
-        try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
-
-            comando.setInt(1, idCooperativa);
-            comando.executeUpdate();
-            return true;
-        } catch (SQLException sqle) {
-            throw new RuntimeException(sqle.getMessage());
-        }
-    }
-
-    // SELECT
+    // Buscar cooperativa pelo ID
     public Cooperativa buscarPorId(int idCooperativa) {
+
         String sql = """
-        SELECT id_cooperativa, cnpj, id_usuario 
-        FROM cooperativa 
-        WHERE id_cooperativa = ?
-        """;
+                SELECT u.id_usuario,
+                       u.nome,
+                       u.email,
+                       u.senha_hash,
+                       u.data_cadastro,
+                       u.status,
+                       u.id_endereco,
+                       u.id_tipo_usuario,
+                       c.id_cooperativa,
+                       c.cnpj
+                FROM cooperativa c
+                JOIN usuario u ON u.id_usuario = c.id_usuario
+                WHERE c.id_cooperativa = ?
+                """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql)) {
@@ -85,54 +62,103 @@ public class CooperativaDAO {
             comando.setInt(1, idCooperativa);
 
             try (ResultSet rs = comando.executeQuery()) {
+
                 if (rs.next()) {
-                    return montar(rs);
+                    return new Cooperativa(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getString(4),
+                            rs.getDate(5).toLocalDate(),
+                            rs.getBoolean(6),
+                            rs.getInt(7),
+                            rs.getInt(8),
+                            rs.getInt(9),
+                            rs.getString(10)
+                    );
                 }
-                return null;
             }
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+
+        return null;
+    }
+
+    // Buscar pelo CNPJ
+    public boolean buscarCNPJ(String cnpj) {
+
+        String sql = """
+                SELECT id_cooperativa
+                FROM cooperativa
+                WHERE cnpj = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, cnpj);
+
+            try (ResultSet rs = comando.executeQuery()) {
+                return rs.next();
+            }
+
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
     }
-    public boolean buscarCNPJ(String cnpj){
+
+    // Buscar pelo ID do usuário
+    public boolean buscarIdUsuario(int idUsuario) {
+
         String sql = """
-                SELECT id_cooperativa, cnpj 
+                SELECT id_usuario
                 FROM cooperativa
-                WHERE cnpj = ?;
+                WHERE id_usuario = ?
                 """;
 
-        try(Connection conexao = ConexaoBD.conectar();
-            PreparedStatement comando = conexao.prepareStatement(sql);
-            ResultSet rs = comando.executeQuery();
-        ){
-            comando.setString(1, cnpj);
-           while (rs.next()){
-               return true;
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idUsuario);
+
+            try (ResultSet rs = comando.executeQuery()) {
+                return rs.next();
             }
 
-        }catch (SQLException sqle){
-            System.out.println(sqle.getMessage());
-            return false;
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
         }
     }
-    // SELECT ALL
+
+    // Listar todas as cooperativas
     public ArrayList<Cooperativa> listarTodas() {
+
         ArrayList<Cooperativa> cooperativas = new ArrayList<>();
 
         String sql = """
-         SELECT u.id_usuario, u.nome, u.email, u.senha_hash, u.data_cadastro,
-               u.status, u.id_endereco, u.id_tipo_usuario,
-               c.id_cooperativa, c.cnpj
-        FROM cooperativa c
-        JOIN usuario u ON u.id_usuario = c.id_usuario
-        ORDER BY c.id_cooperativa
-        """;
+                SELECT u.id_usuario,
+                       u.nome,
+                       u.email,
+                       u.senha_hash,
+                       u.data_cadastro,
+                       u.status,
+                       u.id_endereco,
+                       u.id_tipo_usuario,
+                       c.id_cooperativa,
+                       c.cnpj
+                FROM cooperativa c
+                JOIN usuario u ON u.id_usuario = c.id_usuario
+                ORDER BY c.id_cooperativa
+                """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement comando = conexao.prepareStatement(sql);
              ResultSet rs = comando.executeQuery()) {
 
             while (rs.next()) {
+
                 cooperativas.add(new Cooperativa(
                         rs.getInt(1),
                         rs.getString(2),
@@ -144,7 +170,7 @@ public class CooperativaDAO {
                         rs.getInt(8),
                         rs.getInt(9),
                         rs.getString(10)
-                        ));
+                ));
             }
 
         } catch (SQLException sqle) {
@@ -152,5 +178,53 @@ public class CooperativaDAO {
         }
 
         return cooperativas;
+    }
+
+    // ======================= MÉTODOS UPDATE =======================
+
+    public boolean atualizar(Cooperativa c) {
+
+        String sql = """
+                UPDATE cooperativa
+                SET cnpj = ?,
+                    id_usuario = ?
+                WHERE id_cooperativa = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setString(1, c.getCnpj());
+            comando.setInt(2, c.getIdUsuario());
+            comando.setInt(3, c.getIdCooperativa());
+
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // ======================= MÉTODOS DELETE =======================
+
+    public boolean deletar(int idCooperativa) {
+
+        String sql = """
+                DELETE FROM cooperativa
+                WHERE id_cooperativa = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement comando = conexao.prepareStatement(sql)) {
+
+            comando.setInt(1, idCooperativa);
+
+            comando.executeUpdate();
+            return true;
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
     }
 }
