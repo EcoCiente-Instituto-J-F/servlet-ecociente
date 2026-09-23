@@ -30,12 +30,11 @@ public class EnderecoDAO {
             ps.setString(3, endereco.getCidade());
             ps.setString(4, endereco.getEstado());
             ps.setString(5, endereco.getBairro());
-            ps.setString(6, endereco.getBairro());
+            ps.setString(6, endereco.getRua());
             ps.setInt(7, endereco.getNumero());
             ps.setString(8, endereco.getComplemento());
 
             int linhasAfetadas = ps.executeUpdate();
-
             return linhasAfetadas > 0;
 
 
@@ -54,6 +53,7 @@ public class EnderecoDAO {
         String sql = """
                 UPDATE endereco
                     SET cep=?, cidade=?, estado=?, bairro=?, rua=?, numero=?, complemento=? 
+                WHERE id_endereco=?
                 """;
 
         try (
@@ -63,16 +63,18 @@ public class EnderecoDAO {
         ){
             ps.setString(1, endereco.getCep());
             ps.setString(2, endereco.getCidade());
-            ps.setString(3, endereco.getBairro());
-            ps.setString(4, endereco.getRua());
-            ps.setInt(5, endereco.getNumero());
-            ps.setString(6, endereco.getComplemento());
+            ps.setString(3, endereco.getEstado());
+            ps.setString(4, endereco.getBairro());
+            ps.setString(5, endereco.getRua());
+            ps.setInt(6, endereco.getNumero());
+            ps.setString(7, endereco.getComplemento());
+            ps.setInt(8, endereco.getIdEndereco());
 
             int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas == 1;
 
         }catch (SQLException sqle){
-            System.out.println("Erro ao inserir endereço" + sqle.getMessage());
+            System.out.println("Erro ao atualizar endereço" + sqle.getMessage());
 
             return false;
         }
@@ -98,7 +100,7 @@ public class EnderecoDAO {
 
         }catch (SQLException sqle){
             System.out.println(
-                    "Erro ao deletar usuario" +
+                    "Erro ao deletar endereco" +
                             sqle.getMessage()
             );
 
