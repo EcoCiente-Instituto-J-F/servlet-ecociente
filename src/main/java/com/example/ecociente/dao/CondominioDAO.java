@@ -60,4 +60,32 @@ public class CondominioDAO{
         }
         return retorno;
     } // Metodo que retorna se o cnpj já está sendo usado
+
+    public ArrayList<Condominio> selecionarTodos(){
+        ArrayList<Condominio> condominios = new ArrayList<>();
+        String sql = """
+                SELECT * FROM condominio
+                         ORDER BY nome
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            Statement ps = conexao.createStatement();
+            ResultSet condominio = ps.executeQuery(sql);
+
+            while(condominio.next()){
+                condominios.add(new Condominio(
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
+                ));
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return condominios;
+    } // Metodo que seleciona todos os condomínios
 }
