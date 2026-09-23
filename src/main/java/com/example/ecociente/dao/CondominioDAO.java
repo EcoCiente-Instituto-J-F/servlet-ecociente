@@ -193,4 +193,23 @@ public class CondominioDAO{
         }
         return retorno;
     } // Metodo que ativa ou desativa o condomínio por id
+
+    //=======================MÉTODOS DELETE=======================\\
+    public boolean deletar(int id){
+        boolean retorno = false;
+        String sql = """
+                DELETE FROM condominio
+                       WHERE id_condominio = ?
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            retorno = ps.executeUpdate() == 1;
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return retorno;
+    } // Metodo que deleta um condomínio por id
 }
