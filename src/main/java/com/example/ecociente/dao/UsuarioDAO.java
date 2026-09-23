@@ -3,16 +3,14 @@ package com.example.ecociente.dao;
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Usuario;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 
 public class UsuarioDAO {
 
     //=======================MÉTODOS CREATE=======================\\
 
+    // Metodo para inserir um usuário no banco
     public boolean inserir(Usuario usuario){
         String sql = """
             INSERT INTO usuario
@@ -52,8 +50,46 @@ public class UsuarioDAO {
             return false;
         }
     }
+
+    //=======================MÉTODOS READ=======================\
+
+    // Metodo para selecionar um usuário por ID
+    public Usuario selecionarUsuarioPorId(int id){
+        String sql = """
+                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario FROM usuario WHERE id_usuario == ?
+                """;
+        Usuario retorno = null;
+        try (
+            Connection conexao = ConexaoBD.conectar();
+            PreparedStatement comando =
+                    conexao.prepareStatement(sql)
+        ){
+            comando.setInt(1, id);
+            ResultSet rs = comando.executeQuery();
+            if (rs.next()){
+                retorno = new Usuario(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getDate(5).toLocalDate(),
+                        rs.getBoolean(6),
+                        rs.getInt(7),
+                        rs.getInt(8)
+                );
+            }
+            return retorno;
+
+        }catch (SQLException sqle){
+            System.out.println("Erro ao selecionar usuario" + sqle.getMessage());
+            return null;
+        }
+
+
+    }
+
     //=======================MÉTODOS UPDATE=======================\
-    public boolean update(Usuario usuario){
+    public boolean atualizar(Usuario usuario){
         boolean retorno = false;
         String sql = """
                 UPDATE usuario 
