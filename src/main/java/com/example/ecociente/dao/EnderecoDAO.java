@@ -79,5 +79,33 @@ public class EnderecoDAO {
 
     }
 
+    //=======================MÉTODOS DELETE=======================\
+    public boolean deletar(Endereco endereco){
+        String sql = """
+                DELETE FROM endereco
+                    WHERE id_endereco =?
+                """;
+
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement comando =
+                        conexao.prepareStatement(sql)
+        ){
+            comando.setInt(1, endereco.getIdEndereco());
+
+            int linhasAfetadas = comando.executeUpdate();
+            return linhasAfetadas > 0;
+
+        }catch (SQLException sqle){
+            System.out.println(
+                    "Erro ao deletar usuario" +
+                            sqle.getMessage()
+            );
+
+            return false;
+        }
+
+    }
+
 
 }
