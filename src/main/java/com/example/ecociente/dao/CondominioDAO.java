@@ -148,4 +148,30 @@ public class CondominioDAO{
         }
         return condominioEncontrado;
     } // Metodo que seleciona um condomínio por id
+
+    //=======================MÉTODOS UPDATE=======================\\
+    public boolean atualizarCondominio(Condominio condominio){
+        boolean retorno = false;
+        String sql = """
+                UPDATE condominio
+                SET nome = ?, cnpj = ?, status = ?, token = ?, id_endereco = ?, id_tipo_condominio = ?
+                WHERE id_condominio = ?
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setString(1, condominio.getNome());
+            ps.setString(2, condominio.getCnpj());
+            ps.setBoolean(3, condominio.isStatus());
+            ps.setString(4, condominio.getToken());
+            ps.setInt(5, condominio.idEndereco());
+            ps.setInt(6, condominio.getIdTipoCondominio());
+            ps.setInt(7, condominio.getIdCondominio());
+
+            retorno = ps.executeUpdate() == 1;
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return retorno;
+    } // Metodo que atualiza os dados do condomínio por id
 }
