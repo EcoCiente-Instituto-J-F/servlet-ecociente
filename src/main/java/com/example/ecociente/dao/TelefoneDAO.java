@@ -22,12 +22,12 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, t.getNumero());
-            comando.setInt(2, t.getIdUsuario());
+            ps.setString(1, t.getNumero());
+            ps.setInt(2, t.getIdUsuario());
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {
@@ -47,11 +47,11 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setInt(1, idTelefone);
+            ps.setInt(1, idTelefone);
 
-            try (ResultSet rs = comando.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
                     return new Telefone(
@@ -79,11 +79,11 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, numero);
+            ps.setString(1, numero);
 
-            try (ResultSet rs = comando.executeQuery()) {
+            try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
             }
 
@@ -103,8 +103,8 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql);
-             ResultSet rs = comando.executeQuery()) {
+             PreparedStatement ps = conexao.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 telefones.add(new Telefone(
@@ -133,13 +133,13 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setString(1, t.getNumero());
-            comando.setInt(2, t.getIdUsuario());
-            comando.setInt(3, t.getIdTelefone());
+            ps.setString(1, t.getNumero());
+            ps.setInt(2, t.getIdUsuario());
+            ps.setInt(3, t.getIdTelefone());
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {
@@ -157,11 +157,11 @@ public class TelefoneDAO {
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement comando = conexao.prepareStatement(sql)) {
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            comando.setInt(1, idTelefone);
+            ps.setInt(1, idTelefone);
 
-            comando.executeUpdate();
+            ps.executeUpdate();
             return true;
 
         } catch (SQLException sqle) {
