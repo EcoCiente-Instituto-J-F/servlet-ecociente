@@ -174,4 +174,23 @@ public class CondominioDAO{
         }
         return retorno;
     } // Metodo que atualiza os dados do condomínio por id
+
+    public boolean atualizarStatus(int id, boolean status){
+        boolean retorno = false;
+        String sql = """
+                UPDATE condominio SET status = ?
+                    WHERE id_condominio = ?
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setBoolean(1, status);
+            ps.setInt(2, id);
+
+            retorno = ps.executeUpdate() >= 1;
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return retorno;
+    } // Metodo que ativa ou desativa o condomínio por id
 }
