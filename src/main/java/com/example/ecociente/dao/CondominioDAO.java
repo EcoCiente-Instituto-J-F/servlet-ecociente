@@ -119,4 +119,33 @@ public class CondominioDAO{
         }
         return condominios;
     } // Metodo que seleciona os condomínios por nome
+
+    public Condominio selecionarPorId(int id_condominio){
+        Condominio condominioEncontrado = null;
+        String sql = """
+                SELECT * FROM condominio
+                         WHERE id_condominio = ?
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setInt(1, id_condominio);
+            ResultSet condominio = ps.executeQuery();
+
+            if(condominio.next()){
+                condominioEncontrado = new Condominio(
+                        condominio.getInt(1),
+                        condominio.getString(2),
+                        condominio.getString(3),
+                        condominio.getBoolean(4),
+                        condominio.getString(5),
+                        condominio.getInt(6),
+                        condominio.getInt(7)
+                );
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return condominioEncontrado;
+    } // Metodo que seleciona um condomínio por id
 }
