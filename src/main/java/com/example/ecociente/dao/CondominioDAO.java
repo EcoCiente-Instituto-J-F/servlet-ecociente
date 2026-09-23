@@ -35,4 +35,29 @@ public class CondominioDAO{
         }
         return retorno;
     } // Metodo que insere um condomínio
+
+
+    //=======================MÉTODOS READ=======================\\
+    public boolean selecionarCnpj(String cnpj){
+        boolean retorno = false;
+        String sql = """
+                SELECT cnpj
+                FROM condominio
+                WHERE cnpj
+                LIKE ?
+                """;
+        try(Connection conexao = ConexaoBD.conectar()){
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ps.setString(1, cnpj);
+            ResultSet rs = ps.executeQuery();
+            if(rs.next()){
+                retorno = true;
+            }
+        }
+        catch(SQLException sqle){
+            System.out.println("!!SQLException ao chamar CondominioDAO.existeCnpj(cnpj)!!");
+            sqle.printStackTrace();
+        }
+        return retorno;
+    } // Metodo que retorna se o cnpj já está sendo usado
 }
