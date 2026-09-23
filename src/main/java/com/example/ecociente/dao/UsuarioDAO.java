@@ -131,13 +131,41 @@ public class UsuarioDAO {
         }
     }
 
+    public ArrayList<Usuario> selecionarPorNomeOuEmail(String procura){
+        ArrayList<Usuario> encontrados = new ArrayList<>();
+        String sql = """
+            SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
+            FROM usuario
+            WHERE LOWER(nome) LIKE LOWER(?) OR LOWER(email) LIKE LOWER(?)
+            ORDER BY nome
+            """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, "%" + procura + "%");
+            ps.setString(2, "%" + procura + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()){
+                    encontrados.add(new Usuario(
+                            rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+                            rs.getDate(5).toLocalDate(), rs.getBoolean(6), rs.getInt(7), rs.getInt(8)
+                    ));
+                }
+            }
+        } catch (SQLException sqle){
+            System.out.println("Erro ao selecionar usuarios por nome ou email" + sqle.getMessage());
+        }
+        return encontrados;
+    }
 
     //=======================MÉTODOS UPDATE=======================\
     public boolean atualizar(Usuario usuario){
         boolean retorno = false;
         String sql = """
                 UPDATE usuario 
-                    SET nome=?, email=?, senha_hash=?, data_cadastro=?, id_endereco=?
+                    SET nome=?, email=?, senha_hash=?, id_endereco=?
+                WHERE id_usuario = ?
                 """;
         try (
                 Connection conexao = ConexaoBD.conectar();
@@ -148,8 +176,8 @@ public class UsuarioDAO {
             ps.setString(1, usuario.getNome());
             ps.setString(2, usuario.getEmail());
             ps.setString(3, usuario.getSenhaHash());
-            ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
-            ps.setInt(5, usuario.getIdEndereco());
+            ps.setInt(4, usuario.getIdEndereco());
+            ps.setInt(5, usuario.getIdUsuario());
 
             int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas == 1;
