@@ -5,13 +5,13 @@ import com.example.ecociente.model.Endereco;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
 public class EnderecoDAO {
     //=======================MÉTODOS CREATE=======================\\
 
-    // Insere novo endereco com complemento
     public boolean inserir(Endereco endereco){
         String sql = """
                 INSERT INTO endereco 
@@ -45,6 +45,45 @@ public class EnderecoDAO {
 
             return false;
         }
+    }
+
+    //=======================MÉTODOS READ=======================\
+    public Endereco selecionarPorId(int id){
+        String sql = """
+            SELECT id_endereco, cep, cidade, estado, bairro, rua, numero, complemento
+            FROM endereco  
+            WHERE id_endereco = ?
+            """;
+        Endereco retorno = null;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps =
+                        conexao.prepareStatement(sql)
+        ){
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                retorno = new Endereco(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        rs.getInt(7),
+                        rs.getString(8)
+                );
+            }
+
+
+        }catch (SQLException sqle){
+            System.out.println("Erro ao selecionar endereço" + sqle.getMessage());
+
+        }finally {
+            return retorno;
+        }
+
+
     }
 
     //=======================MÉTODOS UPDATE=======================\
