@@ -192,33 +192,67 @@ public class UsuarioDAO {
 
     //=======================MÉTODOS DELETE=======================\\
     public boolean deletar(Usuario usuario){
-
-        String sql = """
-                DELETE FROM usuario
-                WHERE id_usuario = ?
-                """;
+        int idUsuario = usuario.getIdUsuario();
 
         try (
-            Connection conexao = ConexaoBD.conectar();
-            PreparedStatement ps =
-                    conexao.prepareStatement(sql);
-
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement("DELETE FROM telefone WHERE idUsuario = ?")
         ){
-            ps.setInt(1, usuario.getIdUsuario());
-
-            int linhasAfetadas = ps.executeUpdate();
-
-            return linhasAfetadas > 0;
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
         } catch (SQLException sqle) {
-            System.out.println(
-                    "Erro ao deletar usuario" +
-                            sqle.getMessage()
-            );
-
+            System.out.println("Erro ao deletar telefones do usuario" + sqle.getMessage());
             return false;
         }
 
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement("DELETE FROM cooperativa WHERE id_usuario = ?")
+        ){
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException sqle) {
+            System.out.println("Erro ao deletar cooperativa do usuario" + sqle.getMessage());
+            return false;
+        }
 
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement("DELETE FROM sindico WHERE id_usuario = ?")
+        ){
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException sqle) {
+            System.out.println("Erro ao deletar sindico do usuario" + sqle.getMessage());
+            return false;
+        }
+
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement("DELETE FROM morador WHERE id_usuario = ?")
+        ){
+            ps.setInt(1, idUsuario);
+            ps.executeUpdate();
+        } catch (SQLException sqle) {
+            System.out.println("Erro ao deletar morador do usuario" + sqle.getMessage());
+            return false;
+        }
+
+        String sql = """
+            DELETE FROM usuario
+            WHERE id_usuario = ?
+            """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setInt(1, idUsuario);
+            int linhasAfetadas = ps.executeUpdate();
+            return linhasAfetadas > 0;
+        } catch (SQLException sqle) {
+            System.out.println("Erro ao deletar usuario" + sqle.getMessage());
+            return false;
+        }
     }
 
 }
