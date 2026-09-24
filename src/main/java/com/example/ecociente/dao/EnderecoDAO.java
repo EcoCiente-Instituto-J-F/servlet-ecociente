@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 
 public class EnderecoDAO {
@@ -84,6 +85,42 @@ public class EnderecoDAO {
         }
 
 
+    }
+
+    // seleciona todos
+    public ArrayList<Endereco> selecionarTodos(){
+        ArrayList<Endereco> todosEnderecos = new ArrayList<>();
+        String sql = """
+            SELECT id_endereco, cep, cidade, estado, bairro, rua, numero, complemento
+            FROM endereco
+            """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps =
+                        conexao.prepareStatement(sql)
+        ){
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()){
+                todosEnderecos.add(new Endereco(
+                        rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rs.getString(6),
+                        rs.getInt(7),
+                        rs.getString(8)
+                ));
+            }
+
+
+
+        }catch (SQLException sqle){
+            System.out.println(sqle.getMessage());
+
+        }finally {
+            return todosEnderecos;
+        }
     }
 
     //=======================MÉTODOS UPDATE=======================\
