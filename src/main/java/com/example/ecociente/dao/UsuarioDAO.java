@@ -59,7 +59,7 @@ public class UsuarioDAO {
         String sql = """
                 SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
                 FROM usuario  
-                WHERE id_usuario == ?
+                WHERE id_usuario = ?
                 """;
         Usuario retorno = null;
         try (
@@ -95,9 +95,10 @@ public class UsuarioDAO {
 
     //seleciona todos
 
-    ArrayList<Usuario> todosUsuarios = new ArrayList<>();
+
 
     public ArrayList<Usuario> selecionarTodos(){
+        ArrayList<Usuario> todosUsuarios = new ArrayList<>();
         String sql = """
                 SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
                 FROM usuario
