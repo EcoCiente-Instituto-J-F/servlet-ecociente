@@ -22,9 +22,8 @@ COLOCA O QUE FOI FEITO RESUMIDO
 
 ## 3. Área afetada
 
-* [ ] Mobile
 * [ ] Frontend Web
-* [ ] Backend 
+* [ ] Backend
 * [ ] Banco de dados
 * [ ] Documentação
 * [ ] UX / Design
