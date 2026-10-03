@@ -1,0 +1,2473 @@
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --espaco-pequeno: 16px;
+    --espaco-medio: 32px;
+    --espaco-grande: 64px;
+    --espaco-secao: 120px;
+    --margem-lateral: 200px;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: white;
+}
+
+img {
+    max-width: 100%;
+}
+
+/* ----- Faz com que o navbar não cubra os títulos durante a transição ----- */
+[id] {
+    scroll-margin-top: 110px;
+}
+
+h2, h3, h4 {
+    margin-bottom: 30px;
+}
+
+/* Evita que a tela scrolle de forma horizontal */
+.site-ajuste {
+    width: 100%;
+    overflow-x: clip;
+}
+
+/* ---------- Tipografia ---------- */
+
+.titulo-branco,
+.titulo-rosa,
+.titulo-verde {
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    font-weight: 600;
+    font-size: clamp(24px, 3.4vw, 35px);
+}
+
+.titulo-branco { color: #ffffff; }
+.titulo-rosa   { color: #D64573; }
+.titulo-verde  { color: #064E3B; }
+
+.texto-padrao {
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+}
+
+/* ---------- Navbar ---------- */
+
+.header {
+    position: fixed;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.navbar {
+    background-color: white;
+    width: 90%;
+    padding: 12px 30px;
+    border-radius: 144px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.logotipo-navbar {
+    margin-left: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.logotipo-navbar img {
+    height: 30px;
+}
+
+.links-navbar {
+    display: flex;
+    gap: 50px;
+    margin-right: 40px;
+    list-style: none;
+}
+
+.links-navbar a {
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    text-decoration: none;
+    color: #D64573;
+    font-size: 15px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+}
+
+.links-navbar a:hover {
+    opacity: 0.7;
+}
+
+/* Botão hamburguer (só aparece no mobile) */
+.entrada-menu {
+    display: none;
+}
+
+.botao-menu {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 34px;
+    height: 34px;
+    padding: 6px;
+    cursor: pointer;
+}
+
+.botao-menu span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background-color: #D64573;
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
+    z-index: 1;
+    background: url('assets/fundoHero.jpg') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 20px 80px;
+    box-sizing: border-box;
+}
+
+.container-hero {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.conteudo-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.logotipo-hero img {
+    height: 35px;
+    width: auto;
+}
+
+.titulo-hero {
+    color: #FE2469;
+}
+
+.titulo-hero-verde {
+    color: #0EB488;
+}
+
+.descricao-hero {
+    font-family: 'Instrument Sans', 'Montserrat', sans-serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    line-height: 1.6;
+    color: white;
+    max-width: 450px;
+}
+
+.mockups-hero img {
+    width: 100%;
+    max-width: 500px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* ---------- Container principal ---------- */
+
+.container {
+    padding: var(--espaco-secao) var(--margem-lateral);
+    position: relative;
+    z-index: 2;
+    background-color: white;
+    border-radius: 40px 40px 0 0;
+}
+
+/* ---------- O EcoCiente oferece ---------- */
+
+.titulo-secao {
+    font-size: clamp(19px, 2.2vw, 25px);
+    color: #D64573;
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    font-weight: 600;
+}
+
+.oferece {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+}
+
+.card-oferece {
+    padding: 0 20px;
+}
+
+.card-oferece:first-child {
+    padding-left: 0;
+}
+
+.card-oferece:last-child {
+    padding-right: 0;
+}
+
+.card-oferece:not(:last-child) {
+    border-right: 2px solid #DFEADE;
+}
+
+.titulo-card-oferece {
+    font-size: clamp(19px, 2.2vw, 25px);
+    color: #064E3B;
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    font-weight: 600;
+}
+
+.texto-oferece {
+    font-family: 'Instrument Sans', sans-serif;
+    padding-top: 15px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #717171;
+    max-width: 280px;
+}
+
+.icone-oferece {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-bottom: 30px;
+}
+
+/* ---------- Card condomínio / cooperativa ---------- */
+
+.card-cond-coop {
+    margin-top: 120px;
+    position: relative;
+    border-radius: 24px;
+    background-image: url(assets/prediosAvenida.png);
+    background-size: cover;
+    background-position: center;
+    padding: 80px;
+}
+
+.titulo-cond-coop {
+    max-width: 380px;
+}
+
+.conteudo-card {
+    position: relative;
+    z-index: 3;
+}
+
+.lista-check {
+    list-style: none;
+    padding: 0;
+}
+
+.lista-check li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: white;
+    line-height: 1.4;
+    margin-bottom: 12px;
+}
+
+.item-vantagem {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(15px, 2vw, 20px);
+    font-weight: 500;
+}
+
+.lista-check li::before {
+    flex-shrink: 0;
+    content: '';
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    background-image: url('assets/check.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+input[name="modo-card"] {
+    display: none;
+}
+
+.chave-alterar {
+    display: inline-flex;
+    background-color: #ffffff;
+    padding: 3px;
+    border-radius: 50px;
+    margin-bottom: 30px;
+    max-width: 100%;
+}
+
+.botao-alterar {
+    border: none;
+    background: transparent;
+    padding: 6px 18px;
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 50px;
+    color: #D64573;
+    cursor: pointer;
+    transition: all 0.5s ease;
+    user-select: none;
+    white-space: nowrap;
+}
+
+#entrada-abas-condominio:checked ~ .chave-alterar label[for="entrada-abas-condominio"] {
+    background-color: #D64573;
+    color: #ffffff;
+}
+
+#entrada-abas-cooperativa:checked ~ .chave-alterar label[for="entrada-abas-cooperativa"] {
+    background-color: #D64573;
+    color: #ffffff;
+}
+
+.lista-vantagens-condominio,
+.lista-vantagens-cooperativa {
+    display: none;
+}
+
+#entrada-abas-condominio:checked ~ .lista-vantagens-condominio {
+    display: flex;
+    flex-direction: column;
+}
+
+#entrada-abas-cooperativa:checked ~ .lista-vantagens-cooperativa {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-cond-coop:has(#entrada-abas-cooperativa:checked) {
+    background-image: url('assets/imagemCatadores.png');
+    background-size: cover;
+    background-position: center;
+}
+
+/* ---------- Funcionalidades (faixa verde) ---------- */
+
+.container-verde {
+    position: relative;
+    margin-top: 120px;
+    background-color: #064E3B;
+    padding: 80px var(--margem-lateral);
+    margin-left: calc(var(--margem-lateral) * -1);
+    margin-right: calc(var(--margem-lateral) * -1);
+}
+
+.titulo-funcionalidades {
+    text-align: center;
+    max-width: 650px;
+    margin: 0 auto 30px;
+}
+
+.subtitulo-funcionalidades {
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    color: #ffffff;
+    font-size: clamp(16px, 2vw, 25px);
+    font-weight: 400;
+    text-align: center;
+    margin: 30px auto 0;
+    max-width: 640px;
+}
+
+.lista-funcionalidades {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    list-style: none;
+    margin-top: 50px;
+    padding: 0;
+}
+
+.card-funcionalidades {
+    background-color: #ffffff;
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    min-height: 368px;
+}
+
+.imagem-funcionalidades img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    display: block;
+}
+
+.conteudo-card-func {
+    padding: 24px 10px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.conteudo-card-func h3 {
+    color: #064E3B;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.linha-rosa {
+    width: 40px;
+    height: 3px;
+    background-color: #D64573;
+    border-radius: 2px;
+    margin-bottom: 16px;
+}
+
+.texto-card-func {
+    font-family: 'Instrument Sans', sans-serif;
+    color: #717171;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    width: 190px;
+}
+
+/* ---------- Benefícios ---------- */
+
+.beneficios {
+    max-width: 1200px;
+    margin: 80px auto;
+    background: url('assets/imagemCasas\ \(1\).png') center/cover no-repeat;
+    border-radius: 30px;
+    padding: 60px;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.descricao-beneficios {
+    max-width: 520px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #ffffff;
+    font-family: 'Instrument Sans', sans-serif;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.badge-beneficios {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid #0EB488;
+    background: rgba(6, 78, 59, 0.6);
+    padding: 8px;
+    border-radius: 50px;
+    font-size: 16px;
+    width: 130px;
+}
+
+.icone-check {
+    background-color: #DFEADE;
+    color: #D64573;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.titulo-beneficios {
+    line-height: normal;
+    max-width: 390px;
+}
+
+.titulo-beneficios .titulo-rosa {
+    font-size: inherit;
+}
+
+.texto-beneficios {
+    max-width: 390px;
+}
+
+.grid-icones-beneficios {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    width: 100%;
+    max-width: 650px;
+}
+
+.item-icone-beneficio {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    padding-right: 12px;
+}
+
+.item-icone-beneficio:last-child {
+    border-right: none;
+}
+
+.item-icone-beneficio img {
+    width: 32px;
+    height: 32px;
+}
+
+.item-icone-beneficio span {
+    font-size: 13px;
+    line-height: 1.3;
+    color: #ffffff;
+}
+
+/* ---------- Planos ---------- */
+
+.planos {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+}
+
+.titulo-planos {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 700;
+    color: #D64573;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.grid-planos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    align-items: stretch;
+}
+
+.card-plano {
+    background: #ffffff;
+    border: 2px solid #064E3B;
+    border-radius: 20px;
+    padding: 35px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    height: 100%;
+}
+
+.tag-destaque {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #064E3B;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 22px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.estrela-destaque {
+    color: #FFC107;
+    font-size: 12px;
+}
+
+/* Cabeçalho do Card */
+.cabecalho-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 95px;
+}
+
+.icone-plano {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.subtitulo-card {
+    display: block;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: #064E3B;
+    letter-spacing: 0.5px;
+}
+
+.nome-plano {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    color: #064E3B;
+    margin-bottom: 4px;
+    line-height: 1.15;
+}
+
+.descricao-plano {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: #717171;
+    line-height: 1.35;
+}
+
+.chave-alterar-plano {
+    display: inline-flex;
+    background-color: #ffffff;
+    border: 1px solid #064E3B;
+    padding: 3px;
+    border-radius: 50px;
+    margin: 25px 0 10px;
+    width: 100%;
+}
+
+.espacador-chave {
+    height: 38px;
+    margin: 25px 0 10px;
+}
+
+.botao-periodo {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 7px 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    border-radius: 50px;
+    color: #064E3B;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+    user-select: none;
+}
+
+input[name^="periodo-"] {
+    display: none;
+}
+
+#mensal-empresarial:checked ~ .chave-alterar-plano label[for="mensal-empresarial"],
+#anual-empresarial:checked ~ .chave-alterar-plano label[for="anual-empresarial"],
+#mensal-industrial:checked ~ .chave-alterar-plano label[for="mensal-industrial"],
+#anual-industrial:checked ~ .chave-alterar-plano label[for="anual-industrial"] {
+    background-color: #064E3B;
+    color: #ffffff;
+}
+
+.preco-anual {
+    display: none ;
+}
+
+.preco-mensal {
+    display: flex ;
+}
+
+#anual-empresarial:checked ~ .preco-mensal,
+#anual-industrial:checked ~ .preco-mensal {
+    display: none ;
+}
+
+#anual-empresarial:checked ~ .preco-anual,
+#anual-industrial:checked ~ .preco-anual {
+    display: flex ;
+}
+
+.preco-container {
+    flex-direction: column;
+    margin: 15px 0 15px;
+    min-height: 62px;
+}
+
+.header-preco-anual {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.valor {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 44px;
+    font-weight: 700;
+    color: #555555;
+    line-height: 1;
+}
+
+.periodo {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: #A0A0A0;
+    margin-top: 6px;
+}
+
+.badge-desconto-card {
+    background-color: #D64573;
+    color: #ffffff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.divisor-card {
+    border: none;
+    border-top: 1px solid #E5E5E5;
+    margin: 10px 0 20px;
+}
+
+.lista-recursos {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    flex-grow: 1;
+}
+
+.lista-recursos li {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13.5px;
+    color: #666666;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    line-height: 1.3;
+}
+
+.lista-recursos .check-icone {
+    width: 20px;
+    height: 20px;
+    background-color: #064E3B;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.botao-plano {
+    width: 100%;
+    background-color: #064E3B;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: auto;
+    text-decoration: none;
+}
+
+.botao-plano:hover {
+    background-color: #04382A;
+}
+
+.botao-plano .seta {
+    font-size: 18px;
+}
+
+/* ---------- Cooperativa ---------- */
+
+.cooperativa {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+    display: flex;
+    justify-content: center;
+}
+
+.container-cooperativa {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.conteudo-cooperativa {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-width: 400px;
+}
+
+.badge-cooperativa {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    background-color: #DFEADE;
+    color: #064E3B;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 24px;
+}
+
+.icone-folha-badge {
+    max-width: 20px;
+    align-items: center;
+}
+
+.titulo-cooperativa {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 700;
+    color: #064E3B;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.descricao-cooperativa {
+    font-family: 'Instrument Sans', sans-serif;
+    line-height: 1.6;
+    color: #717171;
+    max-width: 420px;
+    margin-bottom: 35px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.lista-recursos-cooperativa {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+.item-recurso-cooperativa {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icone-recurso-cooperativa {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #DFEADE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icone-recurso-cooperativa img {
+    width: 24px;
+    height: 24px;
+}
+
+.item-recurso-cooperativa span {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #717171;
+    line-height: 1.3;
+}
+
+.imagem-cooperativa {
+    width: 100%;
+    position: relative;
+}
+
+.imagem-cooperativa img {
+    width: 180%;
+    max-width: none;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    margin-left: -90px;
+}
+
+/* ----- Baixe aqui ----- */
+
+.baixe-aqui {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+    display: flex;
+    justify-content: center;
+}
+
+.container-baixe {
+    max-width: 1200px;
+    width: 100%;
+    display: grid;
+    gap: 10px;
+    align-items: center;
+}
+
+.linha-full {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    border-top: 1px solid #064E3B;
+    margin-bottom: 23px;
+}
+
+.titulo-baixe {
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    color: #064E3B;
+    font-size: clamp(32px, 6.5vw, 78px);
+    text-align: center;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.descricao-baixe {
+    font-family: 'Instrument Sans', sans-serif;
+    color: #717171;
+    text-align: center;
+    font-size: clamp(16px, 2vw, 24px);
+    font-weight: 600;
+    margin-top: 23px;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 700px;
+    line-height: 1.6;
+}
+
+.botoes-baixe {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    align-items: center;
+    margin-top: 23px;
+    gap: 30px;
+}
+
+.botoes-baixe img {
+    max-width: 180px;
+    height: auto;
+    display: block;
+}
+
+.mockup-baixe {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.mockup-baixe img {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin-bottom: -1%;
+}
+
+/* ----- Nossa Misão ----- */
+
+.nossa-missao {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+}
+
+.container-missao {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
+
+.conteudo-missao {
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-missao {
+    font-size: clamp(28px, 3.2vw, 38px);
+    margin-bottom: 20px;
+}
+
+.descricao-missao {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(15px, 1.8vw, 18px);
+    line-height: 1.6;
+    color: #717171;
+    margin-bottom: 40px;
+    max-width: 490px;
+}
+
+.grid-estatisticas-missao {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.item-estatistica {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 15px;
+    width: 100%;
+}
+
+.item-estatistica:not(:last-child) {
+    border-right: 1px solid #E5E5E5;
+}
+
+.icone-estatistica {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #DFEADE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.icone-estatistica img {
+    max-width: 30px;
+}
+
+.numero-estatistica {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(16px, 1.8vw, 20px);
+    font-weight: 700;
+    color: #064E3B;
+    margin-bottom: 6px;
+}
+
+.texto-estatistica {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: #717171;
+    line-height: 1.3;
+}
+
+.imagem-missao {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
+.imagem-missao img {
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    border-radius: 20px;
+    display: block;
+}
+
+/* ----- Equipe ----- */
+
+.quem-somos {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+}
+
+.container-quem-somos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+}
+
+.imagem-quem-somos {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.imagem-quem-somos img {
+    width: 100%;
+    max-width: 540px;
+    height: auto;
+    border-radius: 24px;
+    object-fit: cover;
+    display: block;
+}
+
+.conteudo-quem-somos {
+    display: flex;
+    flex-direction: column;
+}
+
+.titulo-quem-somos {
+    font-size: clamp(28px, 3.2vw, 38px);
+    line-height: 1.2;
+    margin-bottom: 24px;
+}
+
+.descricao-quem-somos {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(15px, 1.8vw, 18px);
+    line-height: 1.6;
+    color: #717171;
+    margin-bottom: 40px;
+}
+
+.grid-diferenciais-quem-somos {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    width: 100%;
+}
+
+.item-diferencial {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 12px;
+    width: 100%;
+}
+
+.item-diferencial:not(:last-child) {
+    border-right: 1px solid #E5E5E5;
+}
+
+.icone-diferencial {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #DFEADE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.icone-diferencial img {
+    max-width: 30px;
+}
+
+.titulo-diferencial {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(12px, 1.1vw, 15px);
+    font-weight: 700;
+    color: #064E3B;
+    margin-bottom: 8px;
+    line-height: 1.2;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+}
+
+.texto-diferencial {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: #717171;
+    line-height: 1.35;
+}
+
+/* ----- Seção Dúvidas (FAQ) ----- */
+
+.duvidas {
+    width: 100%;
+    margin-top: var(--espaco-secao);
+}
+
+.titulo-duvidas {
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(28px, 3.2vw, 38px);
+    font-weight: 700;
+    color: #D64573;
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.lista-duvidas {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.item-duvida {
+    border-radius: 16px;
+    border: 2px solid transparent;
+    border-image: linear-gradient(to right, #D64573, #064E3B) 1;
+    border-radius: 16px;
+    background-origin: border-box;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.entrada-faq {
+    display: none;
+}
+
+.pergunta-faq {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 28px;
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-size: clamp(15px, 1.6vw, 18px);
+    font-weight: 700;
+    color: #064E3B;
+    user-select: none;
+    gap: 20px;
+}
+
+.icone-plus {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: #DFEADE;
+    color: #064E3B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.icone-plus::before {
+    content: '+';
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.resposta-faq {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out, padding 0.3s ease;
+    padding: 0 28px;
+}
+
+.resposta-faq p {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(14px, 1.4vw, 16px);
+    color: #717171;
+    line-height: 1.6;
+    font-weight: 500;
+    padding-bottom: 24px;
+}
+
+.entrada-faq:checked ~ .resposta-faq {
+    max-height: 300px;
+}
+
+.entrada-faq:checked ~ .pergunta-faq .icone-plus {
+    background-color: #D64573;
+    color: #ffffff;
+    transform: rotate(45deg);
+}
+
+/* ----- RODAPÉ (FOOTER) ----- */
+
+.rodape {
+    background-color: #064E3B;
+    color: #ffffff;
+    padding: 60px 20px 30px;
+    width: 100%;
+    margin-top: var(--espaco-secao);
+}
+
+.container-rodape {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 40px;
+}
+
+.coluna-rodape {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-rodape img {
+    max-width: 180px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.slogan-rodape {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.4;
+    color: #E2E8F0;
+    max-width: 260px;
+    margin-bottom: 20px;
+}
+
+.redes-sociais {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.redes-sociais a {
+    color: #ffffff;
+    font-size: 20px;
+    transition: opacity 0.2s ease;
+}
+
+.redes-sociais a:hover {
+    opacity: 0.8;
+}
+
+.copyright {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: #A0AEC0;
+    margin-top: auto;
+}
+
+.divisor-vertical {
+    width: 2px;
+    background-color: #ffffff;
+    opacity: 0.8;
+    align-self: stretch;
+}
+
+.titulo-coluna {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.links-navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.links-navegacao a {
+    color: #ffffff;
+    text-decoration: underline;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 16px;
+    transition: opacity 0.2s ease;
+}
+
+.links-navegacao a:hover {
+    opacity: 0.8;
+}
+
+/* Coluna 3: Contato */
+.coluna-contato {
+    justify-content: space-between;
+}
+
+.info-contato p {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: #ffffff;
+}
+
+.links-termos {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    color: #A0AEC0;
+    text-align: right;
+    margin-top: auto;
+}
+
+.links-termos a {
+    color: #A0AEC0;
+    text-decoration: none;
+}
+
+.links-termos a:hover {
+    text-decoration: underline;
+}
+
+/* ----- Media Queries ----- */
+
+@media (max-width: 1200px) {
+    :root {
+        --margem-lateral: 40px;
+        --espaco-secao: 90px;
+    }
+
+    .navbar {
+        width: 94%;
+        padding: 12px 24px;
+    }
+
+    .logotipo-navbar {
+        margin-left: 15px;
+    }
+
+    .links-navbar {
+        gap: 28px;
+        margin-right: 15px;
+    }
+
+    .links-navbar a {
+        font-size: 13px;
+    }
+
+    .container-hero {
+        max-width: 1000px;
+        padding: 0 20px;
+        gap: 30px;
+    }
+
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 20px;
+    }
+
+    .titulo-beneficios {
+        line-height: normal;
+        max-width: 65%;
+    }
+
+    .descricao-hero {
+        font-size: 20px;
+    }
+
+    .mockups-hero img {
+        max-width: 440px;
+    }
+
+    .lista-funcionalidades {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-planos {
+        gap: 20px;
+    }
+
+    .card-plano {
+        padding: 30px 20px;
+    }
+
+    .valor {
+        font-size: 36px;
+    }
+
+    .container-cooperativa {
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .imagem-cooperativa img {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+        transform: none;
+    }
+
+    .titulo-baixe {
+        font-size: clamp(42px, 6.5vw, 64px);
+    }
+
+    .descricao-baixe {
+        max-width: 600px;
+    }
+
+    .botoes-baixe img {
+        max-width: 165px;
+    }
+
+    .mockup-baixe img {
+        max-width: 360px;
+    }
+
+    .container-missao,
+    .container-quem-somos {
+        gap: 30px;
+    }
+
+    .imagem-missao img {
+        max-width: 420px;
+    }
+
+    .imagem-quem-somos img {
+        max-width: 480px;
+    }
+
+    .item-estatistica,
+    .item-diferencial {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+}
+
+@media (max-width: 900px) {
+
+    :root {
+        --espaco-secao: 60px;
+        --margem-lateral: 24px;
+    }
+
+    .container {
+        padding: var(--espaco-secao) var(--margem-lateral);
+    }
+
+    .navbar {
+        width: 94%;
+        padding: 10px 16px;
+        flex-wrap: wrap;
+        border-radius: 28px;
+    }
+
+    .logotipo-navbar {
+        margin-left: 4px;
+    }
+
+    .botao-menu {
+        display: flex;
+    }
+
+    .links-navbar {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        gap: 0;
+        margin: 8px 0 4px;
+        border-top: 1px solid #F0E4E9;
+    }
+
+    .entrada-menu:checked ~ .links-navbar {
+        display: flex;
+    }
+
+    .links-navbar li {
+        padding: 12px 4px;
+    }
+
+    .links-navbar li + li {
+        border-top: 1px solid #F7F0F3;
+    }
+
+    .links-navbar a {
+        font-size: 15px;
+    }
+
+    .entrada-menu:checked ~ .botao-menu span:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+    }
+
+    .entrada-menu:checked ~ .botao-menu span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .entrada-menu:checked ~ .botao-menu span:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+    }
+
+    .hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 120px 24px 60px;
+    }
+
+    .container-hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 40px;
+    }
+
+    .conteudo-hero {
+        align-items: center;
+        gap: 20px;
+    }
+
+    .logotipo-hero img {
+        height: 32px;
+    }
+
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 30px;
+    }
+
+    .descricao-hero {
+        max-width: 650px;
+        font-size: 18px;
+    }
+
+    .mockups-hero img {
+        max-width: 400px;
+    }
+
+    .titulo-secao {
+        text-align: center;
+    }
+
+    .oferece {
+        max-width: 100%;
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+
+    .card-oferece {
+        padding: 0 0 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-oferece:not(:last-child) {
+        border-right: none;
+        border-bottom: 2px solid #DFEADE;
+    }
+
+    .card-oferece:last-child {
+        padding-bottom: 0;
+    }
+
+    .icone-oferece {
+        justify-content: center;
+    }
+
+    .texto-oferece {
+        max-width: 100%;
+    }
+
+    .card-cond-coop {
+        margin-top: 80px;
+        padding: 55px 35px;
+    }
+
+    .container-verde {
+        margin-top: 80px;
+        padding: 70px var(--margem-lateral);
+        margin-left: calc(var(--margem-lateral) * -1);
+        margin-right: calc(var(--margem-lateral) * -1);
+    }
+
+    .lista-funcionalidades {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+
+    .card-funcionalidades {
+        min-height: 350px;
+    }
+
+    .beneficios {
+        margin: 60px auto;
+        padding: 50px 30px;
+    }
+
+    .descricao-beneficios {
+        max-width: 100%;
+    }
+
+    .grid-icones-beneficios {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 100%;
+        gap: 20px;
+    }
+
+    .item-icone-beneficio:nth-child(2) {
+        border-right: none;
+    }
+
+    .planos {
+        padding: 0;
+    }
+
+    .grid-planos {
+        grid-template-columns: 1fr;
+        max-width: 550px;
+        margin: 0 auto;
+        gap: 30px;
+    }
+
+    .card-plano {
+        width: 100%;
+    }
+
+    .cabecalho-card {
+        min-height: auto;
+    }
+
+    .cooperativa {
+        margin-top: var(--espaco-secao);
+    }
+
+    .container-cooperativa {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        text-align: center;
+        max-width: 100%;
+    }
+
+    .imagem-cooperativa {
+        order: -1;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .imagem-cooperativa img {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+        margin-left: 0;
+        transform: none;
+    }
+
+    .conteudo-cooperativa {
+        align-items: center;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .descricao-cooperativa {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 450px;
+    }
+
+    .titulo-baixe {
+        font-size: clamp(36px, 7vw, 52px);
+    }
+
+    .descricao-baixe {
+        max-width: 550px;
+    }
+
+    .botoes-baixe {
+        gap: 20px;
+    }
+
+    .botoes-baixe img {
+        max-width: 150px;
+    }
+
+    .lista-recursos-cooperativa {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 380px;
+        margin: 0 auto;
+    }
+
+    .item-recurso-cooperativa {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        text-align: left;
+    }
+
+    .container-missao,
+    .container-quem-somos {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .conteudo-missao,
+    .conteudo-quem-somos {
+        width: 100%;
+    }
+
+    .imagem-missao,
+    .imagem-quem-somos {
+        width: 100%;
+    }
+
+    .imagem-missao img,
+    .imagem-quem-somos img {
+        max-width: 500px;
+    }
+
+    .titulo-missao,
+    .titulo-quem-somos {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 700px) {
+
+    :root {
+        --espaco-secao: 55px;
+        --margem-lateral: 20px;
+    }
+
+    .header {
+        top: 10px;
+    }
+
+    .logotipo-navbar {
+        margin-left: 0;
+    }
+
+    .hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        padding: 110px 20px 50px;
+    }
+
+    .container-hero {
+        gap: 30px;
+        padding: 0;
+    }
+
+    .titulo-secao {
+        text-align: center;
+    }
+
+    .texto-oferece {
+        text-align: center;
+    }
+
+    .icone-oferece {
+        justify-content: center;
+    }
+
+    .titulo-card-oferece {
+        display: block;
+        text-align: center;
+    }
+
+    .logotipo-hero img {
+        height: 28px;
+        max-width: 100%;
+    }
+
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 27px;
+        line-height: 1.2;
+    }
+
+    .descricao-hero {
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .mockups-hero img {
+        width: 100%;
+        max-width: 330px;
+    }
+
+    .container {
+        border-radius: 25px 25px 0 0;
+    }
+
+    .titulo-branco,
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 27px;
+    }
+
+    .oferece {
+        gap: 25px;
+    }
+
+    .card-oferece {
+        padding-bottom: 25px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .card-oferece .titulo-verde {
+        font-size: 21px !important;
+    }
+
+    .texto-oferece {
+        font-size: 15px;
+        line-height: 1.5;
+    }
+
+    .card-cond-coop {
+        margin-top: 65px;
+        padding: 35px 20px;
+        border-radius: 20px;
+    }
+
+    .card-cond-coop h2 {
+        font-size: 25px;
+    }
+
+    .chave-alterar {
+        width: 100%;
+        display: flex;
+        margin-bottom: 25px;
+    }
+
+    .botao-alterar {
+        flex: 1;
+        text-align: center;
+        padding: 8px 10px;
+    }
+
+    .lista-check li {
+        align-items: flex-start;
+        gap: 10px;
+        font-size: 16px !important;
+        line-height: 1.4;
+    }
+
+    .lista-check li::before {
+        width: 25px;
+        height: 25px;
+    }
+
+    .container-verde {
+        margin-top: 60px;
+        padding: 55px var(--margem-lateral);
+    }
+
+    .container-verde > .titulo-branco {
+        font-size: 27px;
+    }
+
+    .lista-funcionalidades {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        margin-top: 35px;
+    }
+
+    .card-funcionalidades {
+        min-height: 0;
+    }
+
+    .imagem-funcionalidades img {
+        height: 180px;
+    }
+
+    .conteudo-card-func {
+        padding: 22px 18px 25px;
+    }
+
+    .conteudo-card-func h3 {
+        font-size: 19px;
+    }
+
+    .conteudo-card-func p {
+        font-size: 14px;
+    }
+
+    .beneficios {
+        margin: 50px auto;
+        padding: 35px 20px;
+        border-radius: 22px;
+    }
+
+    .titulo-beneficios {
+        max-width: 300px;
+    }
+
+    .descricao-beneficios {
+        max-width: 100%;
+        font-size: 16px;
+    }
+
+    .grid-icones-beneficios {
+        grid-template-columns: 1fr;
+        gap: 18px;
+        max-width: 100%;
+    }
+
+    .item-icone-beneficio,
+    .item-icone-beneficio:nth-child(2) {
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+        padding-bottom: 15px;
+    }
+
+    .item-icone-beneficio:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .planos {
+        margin: 60px auto;
+        padding: 0;
+    }
+
+    .titulo-planos {
+        font-size: 30px;
+        margin-bottom: 45px;
+    }
+
+    .grid-planos {
+        grid-template-columns: 1fr;
+        gap: 35px;
+    }
+
+    .card-plano {
+        padding: 30px 22px;
+        border-radius: 18px;
+    }
+
+    .icone-plano {
+        max-width: 65px;
+    }
+
+    .nome-plano {
+        font-size: 19px;
+    }
+
+    .descricao-plano {
+        font-size: 13px;
+    }
+
+    .valor {
+        font-size: 34px;
+    }
+
+    .lista-recursos li {
+        font-size: 14px;
+        line-height: 1.4;
+        align-items: flex-start;
+    }
+
+    .botao-plano {
+        min-height: 52px;
+    }
+
+    .tag-destaque {
+        font-size: 11px;
+        padding: 6px 14px;
+        white-space: nowrap;
+    }
+
+    .imagem-cooperativa img {
+        max-width: 360px;
+    }
+
+    .baixe-aqui {
+        margin-top: 65px;
+    }
+
+    .titulo-baixe {
+        font-size: 34px;
+        margin: -5vw;
+        margin-bottom: 1px;
+    }
+
+    .descricao-baixe {
+        margin-top: 18px;
+        line-height: 1.5;
+        max-width: 300px;
+    }
+
+    .botoes-baixe {
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .botoes-baixe img {
+        max-width: 140px;
+    }
+
+    .mockup-baixe {
+        margin-top: 25px;
+    }
+
+    .mockup-baixe img {
+        max-width: 300px;
+    }
+
+    .nossa-missao,
+    .quem-somos {
+        margin-top: 65px;
+    }
+
+    .container-missao,
+    .container-quem-somos {
+        gap: 28px;
+    }
+
+    .titulo-missao,
+    .titulo-quem-somos {
+        font-size: 27px;
+        margin-bottom: 18px;
+        text-align: center;
+    }
+
+    .descricao-missao,
+    .descricao-quem-somos {
+        margin-bottom: 28px;
+        line-height: 1.5;
+        max-width: 320px;
+        text-align: center;
+        margin: auto;
+        margin-bottom: 40px;
+    }
+
+    .grid-estatisticas-missao,
+    .grid-diferenciais-quem-somos {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .item-estatistica,
+    .item-diferencial {
+        padding: 0 0 18px;
+    }
+
+    .item-estatistica:not(:last-child),
+    .item-diferencial:not(:last-child) {
+        border-right: none;
+        border-bottom: 1px solid #E5E5E5;
+    }
+
+    .item-estatistica:last-child,
+    .item-diferencial:last-child {
+        padding-bottom: 0;
+    }
+
+    .titulo-diferencial {
+        white-space: normal;
+        min-height: auto;
+    }
+}
+
+
+@media (max-width: 420px) {
+
+    :root {
+        --margem-lateral: 16px;
+        --espaco-secao: 45px;
+    }
+
+    .navbar {
+        width: calc(100% - 16px);
+        padding: 10px 12px;
+    }
+
+    .links-navbar {
+        gap: 8px 12px;
+    }
+
+    .links-navbar a {
+        font-size: 10px;
+    }
+
+    .hero {
+        padding: 140px 16px 45px;
+    }
+
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 24px;
+    }
+
+    .descricao-hero {
+        font-size: 15px;
+    }
+
+    .mockups-hero img {
+        max-width: 290px;
+    }
+
+    .titulo-branco,
+    .titulo-rosa,
+    .titulo-verde {
+        font-size: 24px;
+    }
+
+    .titulo-planos {
+        font-size: 27px;
+    }
+
+    .card-cond-coop {
+        padding: 30px 18px;
+    }
+
+    .card-cond-coop h2 {
+        font-size: 23px;
+    }
+
+    .botao-alterar {
+        font-size: 12px;
+        padding: 8px 6px;
+    }
+
+    .lista-check li {
+        font-size: 14px !important;
+    }
+
+    .container-verde {
+        padding: 45px var(--margem-lateral);
+    }
+
+    .imagem-funcionalidades img {
+        height: 150px;
+    }
+
+    .beneficios {
+        padding: 30px 20px;
+    }
+
+    .badge-beneficios {
+        width: auto;
+        align-self: flex-start;
+    }
+
+    .card-plano {
+        padding: 28px 18px;
+    }
+
+    .cabecalho-card {
+        gap: 10px;
+    }
+
+    .icone-plano {
+        max-width: 55px;
+    }
+
+    .nome-plano {
+        font-size: 18px;
+    }
+
+    .valor {
+        font-size: 30px;
+    }
+
+    .botao-plano {
+        font-size: 14px;
+    }
+
+    .imagem-cooperativa img {
+        max-width: 290px;
+    }
+
+    .titulo-baixe {
+        font-size: 28px;
+    }
+
+    .descricao-baixe {
+        font-size: 15px;
+    }
+
+    .botoes-baixe {
+        gap: 8px;
+    }
+
+    .botoes-baixe img {
+        max-width: 125px;
+    }
+
+    .mockup-baixe img {
+        max-width: 270px;
+    }
+
+    .nossa-missao,
+    .quem-somos {
+        margin-top: 55px;
+    }
+
+    .container-missao,
+    .container-quem-somos {
+        gap: 24px;
+    }
+
+    .titulo-missao,
+    .titulo-quem-somos {
+        font-size: 24px;
+        text-align: center;
+    }
+
+    .imagem-missao img,
+    .imagem-quem-somos img {
+        max-width: 290px;
+    }
+}
+
+@media (max-width: 900px) {
+    .rodape {
+        padding: 55px var(--margem-lateral) 28px;
+    }
+
+    .container-rodape {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+        text-align: center;
+    }
+
+    .coluna-rodape {
+        flex: none;
+        width: 100%;
+        align-items: center;
+    }
+
+    .slogan-rodape {
+        max-width: 320px;
+    }
+
+    .redes-sociais {
+        margin-bottom: 0;
+    }
+
+    .copyright {
+        margin-top: 24px;
+    }
+
+    .divisor-vertical {
+        width: 100%;
+        height: 1px;
+        align-self: auto;
+    }
+
+    .links-navegacao {
+        align-items: center;
+    }
+
+    .coluna-contato {
+        gap: 25px;
+    }
+
+    .links-termos {
+        text-align: center;
+        margin-top: 0;
+    }
+
+    .texto-oferece {
+        text-align: center;
+    }
+
+    .icone-oferece {
+        justify-content: center;
+    }
+
+    .titulo-card-oferece {
+        display: block;
+        text-align: center;
+    }
+
+    .texto-beneficios {
+        text-align: center;
+    }
+
+    .grid-icones-beneficios {
+        align-items: center;
+    }
+
+    .item-icone-beneficio {
+        align-items: center;
+    }
+}
+
+@media (max-width: 420px) {
+    .rodape {
+        padding: 45px var(--margem-lateral) 24px;
+    }
+
+    .container-rodape {
+        gap: 24px;
+    }
+
+    .logo-rodape img {
+        max-width: 155px;
+    }
+
+    .slogan-rodape {
+        font-size: 14px;
+    }
+
+    .titulo-coluna {
+        font-size: 20px;
+        margin-bottom: 16px;
+    }
+
+    .links-navegacao a,
+    .info-contato p {
+        font-size: 14px;
+    }
+
+    .links-termos {
+        font-size: 11px;
+    }
+
+    .texto-oferece {
+        text-align: center;
+    }
+
+    .icone-oferece {
+        justify-content: center;
+    }
+
+    .titulo-card-oferece {
+        display: block;
+        text-align: center;
+    }
+
+    .texto-beneficios {
+        text-align: center;
+    }
+
+    .grid-icones-beneficios {
+        align-items: center;
+    }
+
+    .item-icone-beneficio {
+        align-items: center;
+    }
+}
