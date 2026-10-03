@@ -1,3 +1,4 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -18,7 +19,7 @@
         }
 
         body {
-            background-image: url('assets/tela-fundo-login.png');
+            background-image: url('${pageContext.request.contextPath}/assets/tela-fundo-login.png');
             background-size: cover;
             background-position: center;
             min-height: 100vh;
@@ -426,7 +427,7 @@
 </head>
 <body>
 
-    <a href="index.html" class="botao-voltar" aria-label="Voltar para a página inicial">
+    <a href="${pageContext.request.contextPath}/index.jsp" class="botao-voltar" aria-label="Voltar para a página inicial">
         <span class="seta" aria-hidden="true">&larr;</span>
         <span>Voltar</span>
     </a>
@@ -434,14 +435,14 @@
     <div class="container">
 
         <div class="logotipo">
-            <img src="assets/logotipo-login.svg" alt="EcoCiente">
+            <img src="${pageContext.request.contextPath}/assets/logotipo-login.svg" alt="EcoCiente">
         </div>
 
         <div class="card-wrapper">
             <div class="container-login">
 
-                <input type="radio" name="aba" id="aba-login" class="aba-radio" checked>
-                <input type="radio" name="aba" id="aba-cadastro" class="aba-radio">
+               <input type="radio" name="aba" id="aba-login" class="aba-radio" ${param.aba != 'cadastro' ? 'checked' : ''}>
+               <input type="radio" name="aba" id="aba-cadastro" class="aba-radio" ${param.aba == 'cadastro' ? 'checked' : ''}>
 
                 <div class="tabs">
                     <label for="aba-login" class="tab-botao">Login</label>
@@ -458,7 +459,7 @@
                         Continue gerenciando seus dados de onde parou.
                     </p>
 
-                    <form>
+                    <form action="" method="POST">
                         <div class="form-group">
                             <label for="email">E-mail ou usuário</label>
                             <div class="input-wrapper">
