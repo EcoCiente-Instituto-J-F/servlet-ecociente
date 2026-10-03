@@ -1,22 +1,23 @@
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EcoCiente</title>
-    <link rel="icon" href="assets/favicon.png">
+    <link rel="icon" href="${pageContext.request.contextPath}/assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
 </head>
 <body>
     <div class="site-ajuste">
         <header class="header">
             <nav class="navbar">
                 <div class="logotipo-navbar">
-                    <img src="assets/logotipo-preto.svg" alt="Logo do EcoCiente">
+                    <img src="${pageContext.request.contextPath}/assets/logotipo-preto.svg" alt="Logo do EcoCiente">
                 </div>
 
                 <input type="checkbox" id="abrir-menu" class="entrada-menu">
@@ -38,7 +39,7 @@
             <div class="container-hero">
                 <div class="conteudo-hero">
                     <div class="logotipo-hero">
-                        <img src="assets/logotipo.svg" alt="logotipo EcoCiente">
+                        <img src="${pageContext.request.contextPath}/assets/logotipo.svg" alt="logotipo EcoCiente">
                     </div>
                     <h1 class="titulo-rosa titulo-hero">
                         Conectamos condomínios e cooperativas
@@ -49,7 +50,7 @@
                     </p>
                 </div>
                 <div class="mockups-hero">
-                    <img src="assets/celularesHero.png" alt="Aplicativo EcoCiente em celulares">
+                    <img src="${pageContext.request.contextPath}/assets/celularesHero.png" alt="Aplicativo EcoCiente em celulares">
                 </div>
             </div>
         </section>
@@ -59,21 +60,21 @@
             <div class="oferece">
                 <div class="card-oferece">
                     <div class="icone-oferece">
-                        <img src="assets/icone-grafico.svg" alt="Icone Redução de Custos">
+                        <img src="${pageContext.request.contextPath}/assets/icone-grafico.svg" alt="Icone Redução de Custos">
                     </div>
                     <span class="titulo-card-oferece">Redução de Custos</span>
                     <p class="texto-oferece">Conectamos você a cooperativas parceiras, reduzindo custos com descarte e promovendo uma gestão mais sustentável e eficiente.</p>
                 </div>
                 <div class="card-oferece">
                     <div class="icone-oferece">
-                        <img src="assets/icone-dinheiro.svg" alt="Icone valorização">
+                        <img src="${pageContext.request.contextPath}/assets/icone-dinheiro.svg" alt="Icone valorização">
                     </div>
                     <span class="titulo-card-oferece">Valorização do Imóvel</span>
                     <p class="texto-oferece">Além de contribuir para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
                 </div>
                 <div class="card-oferece">
                     <div class="icone-oferece">
-                        <img src="assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
+                        <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
                     </div>
                     <span class="titulo-card-oferece">Gestão Ambiental</span>
                     <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e adote práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
@@ -112,7 +113,7 @@
                 <ul class="lista-funcionalidades">
                     <li class="card-funcionalidades">
                         <div class="imagem-funcionalidades">
-                            <img src="assets/informe.png" alt="Informe e engaje">
+                            <img src="${pageContext.request.contextPath}/assets/informe.png" alt="Informe e engaje">
                         </div>
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Informe e engaje</h3>
@@ -123,7 +124,7 @@
 
                     <li class="card-funcionalidades">
                         <div class="imagem-funcionalidades">
-                            <img src="assets/coleta.png" alt="Coleta responsável">
+                            <img src="${pageContext.request.contextPath}/assets/coleta.png" alt="Coleta responsável">
                         </div>
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Coleta responsável</h3>
@@ -134,7 +135,7 @@
 
                     <li class="card-funcionalidades">
                         <div class="imagem-funcionalidades">
-                            <img src="assets/acompanhe-resultados.png" alt="Acompanhe resultados">
+                            <img src="${pageContext.request.contextPath}/assets/acompanhe-resultados.png" alt="Acompanhe resultados">
                         </div>
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Acompanhe</h3>
@@ -145,7 +146,7 @@
 
                     <li class="card-funcionalidades">
                         <div class="imagem-funcionalidades">
-                            <img src="assets/conecte.png" alt="Conecte-se">
+                            <img src="${pageContext.request.contextPath}/assets/conecte.png" alt="Conecte-se">
                         </div>
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Conecte-se</h3>
@@ -169,19 +170,19 @@
 
                     <div class="grid-icones-beneficios">
                         <div class="item-icone-beneficio">
-                            <img src="assets/icone-folha-rosa.svg" alt="Sustentabilidade">
+                            <img src="${pageContext.request.contextPath}/assets/icone-folha-rosa.svg" alt="Sustentabilidade">
                             <span>Sustentabilidade na prática</span>
                         </div>
                         <div class="item-icone-beneficio">
-                            <img src="assets/icone-shield-rosa.svg" alt="Gestão">
+                            <img src="${pageContext.request.contextPath}/assets/icone-shield-rosa.svg" alt="Gestão">
                             <span>Gestão que transforma</span>
                         </div>
                         <div class="item-icone-beneficio">
-                            <img src="assets/people-icon-rosa.svg" alt="Parcerias">
+                            <img src="${pageContext.request.contextPath}/assets/people-icon-rosa.svg" alt="Parcerias">
                             <span>Parcerias que fazem a diferença</span>
                         </div>
                         <div class="item-icone-beneficio">
-                            <img src="assets/grafico-icon-rosa.svg" alt="Resultados">
+                            <img src="${pageContext.request.contextPath}/assets/grafico-icon-rosa.svg" alt="Resultados">
                             <span>Resultados que geram impacto</span>
                         </div>
                     </div>
@@ -195,7 +196,7 @@
                     <!-- CARD 1: GRATUITO -->
                     <article class="card-plano">
                         <div class="cabecalho-card">
-                            <img src="assets/icone-comunidade.svg" alt="Ícone Comunidade" class="icone-plano">
+                            <img src="${pageContext.request.contextPath}/assets/icone-comunidade.svg" alt="Ícone Comunidade" class="icone-plano">
                             <div>
                                 <span class="subtitulo-card">GRATUITO</span>
                                 <h3 class="nome-plano">Comunidade</h3>
@@ -219,7 +220,7 @@
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
 
-                        <a href="cadastro_login.html" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -230,7 +231,7 @@
                         <div class="tag-destaque"><span class="estrela-destaque">★</span> Mais escolhido</div>
 
                         <div class="cabecalho-card">
-                            <img src="assets/icone-empresarial-residencial.svg" alt="Ícone Empresarial" class="icone-plano">
+                            <img src="${pageContext.request.contextPath}/assets/icone-empresarial-residencial.svg" alt="Ícone Empresarial" class="icone-plano">
                             <div>
                                 <span class="subtitulo-card">PLANO</span>
                                 <h3 class="nome-plano">Empresarial Residencial</h3>
@@ -268,7 +269,7 @@
                             <li><span class="check-icone">✓</span> Relatórios e históricos de coleta</li>
                         </ul>
 
-                        <a href="cadastro_login.html" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -277,7 +278,7 @@
                     <!-- CARD 3: INDUSTRIAL -->
                     <article class="card-plano">
                         <div class="cabecalho-card">
-                            <img src="assets/icone-industrial.svg" alt="Ícone Industrial" class="icone-plano">
+                            <img src="${pageContext.request.contextPath}/assets/icone-industrial.svg" alt="Ícone Industrial" class="icone-plano">
                             <div>
                                 <span class="subtitulo-card">PLANO</span>
                                 <h3 class="nome-plano">Industrial</h3>
@@ -315,7 +316,7 @@
                             <li><span class="check-icone">✓</span> Dashboards e relatórios avançados</li>
                         </ul>
 
-                        <a href="cadastro_login.html" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -327,7 +328,7 @@
                 <div class="container-cooperativa">
                     <div class="conteudo-cooperativa">
                         <div class="badge-cooperativa">
-                            <span class="icone-folha-badge">
+                            <span class="${pageContext.request.contextPath}/icone-folha-badge">
                                 <img src="assets/icone-folha.svg" alt="icone folha">
                             </span>
                             <span>Torne-se parceiro</span>
@@ -344,28 +345,28 @@
                         <ul class="lista-recursos-cooperativa">
                             <li class="item-recurso-cooperativa">
                                 <div class="icone-recurso-cooperativa">
-                                    <img src="assets/icone-celular.svg" alt="Receba solicitações">
+                                    <img src="${pageContext.request.contextPath}/assets/icone-celular.svg" alt="Receba solicitações">
                                 </div>
                                 <span>Receba novas solicitações de coleta</span>
                             </li>
 
                             <li class="item-recurso-cooperativa">
                                 <div class="icone-recurso-cooperativa">
-                                    <img src="assets/icone-caminhao.svg" alt="Organize coletas">
+                                    <img src="${pageContext.request.contextPath}/assets/icone-caminhao.svg" alt="Organize coletas">
                                 </div>
                                 <span>Organize e otimize suas coletas</span>
                             </li>
 
                             <li class="item-recurso-cooperativa">
                                 <div class="icone-recurso-cooperativa">
-                                    <img src="assets/grafico-verde-icone.svg" alt="Acompanhe materiais">
+                                    <img src="${pageContext.request.contextPath}/assets/grafico-verde-icone.svg" alt="Acompanhe materiais">
                                 </div>
                                 <span>Acompanhe materiais e resultados</span>
                             </li>
 
                             <li class="item-recurso-cooperativa">
                                 <div class="icone-recurso-cooperativa">
-                                    <img src="assets/icone-maos.svg" alt="Conecte-se">
+                                    <img src="${pageContext.request.contextPath}/assets/icone-maos.svg" alt="Conecte-se">
                                 </div>
                                 <span>Conecte-se com novos parceiros</span>
                             </li>
@@ -373,7 +374,7 @@
                     </div>
 
                     <div class="imagem-cooperativa">
-                        <img src="assets/caminhaoCooperativa.svg" alt="Caminhão da cooperativa de reciclagem EcoCiente">
+                        <img src="${pageContext.request.contextPath}/assets/caminhaoCooperativa.svg" alt="Caminhão da cooperativa de reciclagem EcoCiente">
                     </div>
                 </div>
             </section>
@@ -387,14 +388,14 @@
                     </p>
                     <div class="botoes-baixe">
                         <a href="">
-                            <img src="assets/google-play-botton.svg" alt="Botão Google play">
+                            <img src="${pageContext.request.contextPath}/assets/google-play-botton.svg" alt="Botão Google play">
                         </a>
                         <a href="">
-                            <img src="assets/app-store-botton.svg" alt="Botão Apple store">
+                            <img src="${pageContext.request.contextPath}/assets/app-store-botton.svg" alt="Botão Apple store">
                         </a>
                     </div>
                     <div class="mockup-baixe">
-                        <img src="assets/mockup-baixe.svg" alt="celulares baixe">
+                        <img src="${pageContext.request.contextPath}/assets/mockup-baixe.svg" alt="celulares baixe">
                     </div>
                     <div class="linha-full"></div>
                 </div>
@@ -413,7 +414,7 @@
                         <div class="grid-estatisticas-missao">
                             <div class="item-estatistica">
                                 <div class="icone-estatistica">
-                                    <img src="assets/icon-pessoa.svg" alt="Barreiras de informação">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-pessoa.svg" alt="Barreiras de informação">
                                 </div>
                                 <span class="numero-estatistica">39%</span>
                                 <p class="texto-estatistica">Enfrentam barreiras de informação ou motivação</p>
@@ -421,7 +422,7 @@
 
                             <div class="item-estatistica">
                                 <div class="icone-estatistica">
-                                    <img src="assets/icon-recicle.svg" alt="Símbolo de reciclagem">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-recicle.svg" alt="Símbolo de reciclagem">
                                 </div>
                                 <span class="numero-estatistica">8,3%</span>
                                 <p class="texto-estatistica">É tudo o que hoje é efetivamente reciclado.</p>
@@ -429,7 +430,7 @@
 
                             <div class="item-estatistica">
                                 <div class="icone-estatistica">
-                                    <img src="assets/icon-infinito.svg" alt="ODS 12.8">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-infinito.svg" alt="ODS 12.8">
                                 </div>
                                 <span class="numero-estatistica">ODS 12.8</span>
                                 <p class="texto-estatistica">É a meta da ONU que guia o projeto.</p>
@@ -438,14 +439,14 @@
                     </div>
 
                     <div class="imagem-missao">
-                        <img src="assets/ods-12.svg" alt="ODS 12 - Consumo e Produção Responsáveis">
+                        <img src="${pageContext.request.contextPath}/assets/ods-12.svg" alt="ODS 12 - Consumo e Produção Responsáveis">
                     </div>
                 </div>
             </section>
             <section class="quem-somos" id="quem-somos">
                 <div class="container-quem-somos">
                     <div class="imagem-quem-somos">
-                        <img src="assets/equipe-prototipo.svg" alt="Estudantes idealizadores do EcoCiente">
+                        <img src="${pageContext.request.contextPath}/assets/equipe-prototipo.svg" alt="Estudantes idealizadores do EcoCiente">
                     </div>
 
                     <div class="conteudo-quem-somos">
@@ -459,7 +460,7 @@
                         <div class="grid-diferenciais-quem-somos">
                             <div class="item-diferencial">
                                 <div class="icone-diferencial">
-                                    <img src="assets/icon-estudantes.svg" alt="Somos estudantes">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-estudantes.svg" alt="Somos estudantes">
                                 </div>
                                 <span class="titulo-diferencial">Somos estudantes</span>
                                 <p class="texto-diferencial">Movidos pelo propósito de fazer a diferença.</p>
@@ -467,7 +468,7 @@
 
                             <div class="item-diferencial">
                                 <div class="icone-diferencial">
-                                    <img src="assets/icon-ideia.svg" alt="Transformamos ideias">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-ideia.svg" alt="Transformamos ideias">
                                 </div>
                                 <span class="titulo-diferencial">Transformamos ideias</span>
                                 <p class="texto-diferencial">Criamos soluções práticas para desafios reais.</p>
@@ -475,7 +476,7 @@
 
                             <div class="item-diferencial">
                                 <div class="icone-diferencial">
-                                    <img src="assets/icon-planet.svg" alt="Geramos impacto">
+                                    <img src="${pageContext.request.contextPath}/assets/icon-planet.svg" alt="Geramos impacto">
                                 </div>
                                 <span class="titulo-diferencial">Geramos impacto</span>
                                 <p class="texto-diferencial">Acreditamos em um futuro mais sustentável.</p>
@@ -540,7 +541,7 @@
             <div class="container-rodape">
                 <div class="coluna-rodape">
                     <div class="logo-rodape">
-                        <img src="assets/logo-branco.png" alt="EcoCiente">
+                        <img src="${pageContext.request.contextPath}/assets/logo-branco.png" alt="EcoCiente">
                     </div>
                     <p class="slogan-rodape">Usando tecnologia para um futuro mais sustentável.</p>
                     <div class="redes-sociais">
