@@ -146,7 +146,7 @@ h2, h3, h4 {
     min-height: 100vh;
     min-height: 100dvh;
     z-index: 1;
-    background: url('WEB-INF/assets/fundoHero.jpg') center/cover no-repeat;
+    background: url('assets/fundoHero.jpg') center/cover no-repeat;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -267,7 +267,7 @@ h2, h3, h4 {
     margin-top: 120px;
     position: relative;
     border-radius: 24px;
-    background-image: url(WEB-INF/assets/prediosAvenida.png);
+    background-image: url(assets/prediosAvenida.png);
     background-size: cover;
     background-position: center;
     padding: 80px;
@@ -308,7 +308,7 @@ h2, h3, h4 {
     display: inline-block;
     width: 30px;
     height: 30px;
-    background-image: url('WEB-INF/assets/check.svg');
+    background-image: url('assets/check.svg');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -368,7 +368,7 @@ input[name="modo-card"] {
 }
 
 .card-cond-coop:has(#entrada-abas-cooperativa:checked) {
-    background-image: url('WEB-INF/assets/imagemCatadores.png');
+    background-image: url('assets/imagemCatadores.png');
     background-size: cover;
     background-position: center;
 }
@@ -464,7 +464,7 @@ input[name="modo-card"] {
 .beneficios {
     max-width: 1200px;
     margin: 80px auto;
-    background: url('WEB-INF/assets/imagemCasas\ \(1\).png') center/cover no-repeat;
+    background: url('assets/imagemCasas.png') center/cover no-repeat;
     border-radius: 30px;
     padding: 60px;
     color: #ffffff;

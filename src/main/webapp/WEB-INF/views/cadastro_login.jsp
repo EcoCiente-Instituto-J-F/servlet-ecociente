@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -106,8 +107,8 @@
             color: #ffffff;
         }
 
-        #aba-login:focus-visible ~ .tabs .tab-btn[for="aba-login"],
-        #aba-cadastro:focus-visible ~ .tabs .tab-btn[for="aba-cadastro"] {
+        #aba-login:focus-visible ~ .tabs .tab-botao[for="aba-login"],
+        #aba-cadastro:focus-visible ~ .tabs .tab-botao[for="aba-cadastro"] {
             outline: 2px solid #E05282;
             outline-offset: -2px;
         }
@@ -348,6 +349,16 @@
             line-height: 1;
         }
 
+        .mensagem-erro {
+           font-size: 12px;
+           padding: 8px 10px;
+           border-radius: 6px;
+           margin-bottom: 16px;
+           background-color: #FCE7EF;
+           color: #9D174D;
+           border-left: 3px solid #E05282;
+        }
+
         @media (max-width: 900px) {
             body {
                 align-items: flex-start;
@@ -459,11 +470,11 @@
                         Continue gerenciando seus dados de onde parou.
                     </p>
 
-                    <form action="" method="POST">
+                    <form action="${pageContext.request.contextPath}/login" method="POST">
                         <div class="form-group">
                             <label for="email">E-mail ou usuário</label>
                             <div class="input-wrapper">
-                                <input class="input-field" type="text" id="email" name="email" placeholder="Digite seu e-mail">
+                                <input class="input-field" type="text" id="email" name="email" value="<c:out value='${param.email}' />" placeholder="Digite seu e-mail">
                             </div>
                         </div>
 
@@ -484,6 +495,10 @@
                             <a href="#" class="forgot-password">Esqueceu sua senha?</a>
                         </div>
 
+                        <c:if test="${not empty erroLogin}">
+                            <p class="mensagem-erro"><c:out value="${erroLogin}" /></p>
+                        </c:if>
+
                         <button type="submit" class="botao-submit">Login</button>
 
                         <div class="divider">
@@ -497,6 +512,7 @@
                             </span>
                         </button>
                     </form>
+
                 </div>
 
                 <div class="painel painel-cadastro">
@@ -509,19 +525,23 @@
                         Comece sua jornada consciente de dados.
                     </p>
 
-                    <form>
-                        <!-- Campo Nome -->
+                   <c:if test="${not empty erroCadastro}">
+                       <p class="mensagem-erro"><c:out value="${erroCadastro}" /></p>
+                   </c:if>
+
+                    <form action="${pageContext.request.contextPath}/cadastro" method="POST">
+                        <input type="hidden" name="aba" value="cadastro">
                         <div class="form-group">
-                            <label for="cad-nome">Nome</label>
+                            <label for="cad-nome" >Nome</label>
                             <div class="input-wrapper">
-                                <input class="input-field" type="text" id="cad-nome" name="nome" placeholder="Digite seu nome completo" autocomplete="name">
+                                <input class="input-field" type="text" id="cad-nome" name="nome" value="<c:out value='${param.nome}' />" placeholder="Digite seu nome completo" autocomplete="name">
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="cad-email">E-mail</label>
+                            <label for="cad-email" >E-mail</label>
                             <div class="input-wrapper">
-                                <input class="input-field" type="email" id="cad-email" name="email" placeholder="Digite seu e-mail" autocomplete="email">
+                                <input class="input-field" type="email" id="cad-email" name="email" value="<c:out value='${param.email}' />" placeholder="Digite seu e-mail" autocomplete="email">
                             </div>
                         </div>
 
