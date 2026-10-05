@@ -328,9 +328,9 @@
                 <div class="container-cooperativa">
                     <div class="conteudo-cooperativa">
                         <div class="badge-cooperativa">
-                            <span class="${pageContext.request.contextPath}/icone-folha-badge">
-                                <img src="assets/icone-folha.svg" alt="icone folha">
-                            </span>
+                                <span class="icone-folha-badge">
+                                    <img src="${pageContext.request.contextPath}/assets/icone-folha.svg" alt="icone folha">
+                                </span>git
                             <span>Torne-se parceiro</span>
                         </div>
 
