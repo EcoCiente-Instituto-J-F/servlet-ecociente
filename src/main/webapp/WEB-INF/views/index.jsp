@@ -78,7 +78,7 @@
                         <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
                     </div>
                     <span class="titulo-card-oferece">Gestão Ambiental</span>
-                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e adote práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
+                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e ajudamos você a adotar práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
                 </div>
             </div>
 
@@ -152,7 +152,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Conecte-se</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Acompanhe os resultados e visualize os impactos positivos gerados pela gestão responsável dos resíduos do seu condomínio.</p>
+                            <p class="texto-card-func">Conecte seu condomínio a cooperativas parceiras da sua região e fortaleça a economia circular.</p>
                         </div>
                     </li>
                 </ul>
@@ -297,7 +297,7 @@
 
                         <div class="preco-container preco-mensal">
                             <span class="valor">R$ 0,50</span>
-                            <span class="periodo">Por apartamento / mês</span>
+                            <span class="periodo">Por metros quadrados (m²) / mês</span>
                         </div>
 
                         <div class="preco-container preco-anual">
@@ -305,7 +305,7 @@
                                 <span class="valor">R$ 0,42</span>
                                 <span class="badge-desconto-card">-15%</span>
                             </div>
-                            <span class="periodo">Por apartamento / anual</span>
+                            <span class="periodo">Por metros quadrados (m²) / anual</span>
                         </div>
 
                         <hr class="divisor-card">
@@ -331,7 +331,7 @@
                         <div class="badge-cooperativa">
                                 <span class="icone-folha-badge">
                                     <img src="${pageContext.request.contextPath}/assets/icone-folha.svg" alt="icone folha">
-                                </span>git
+                                </span>
                             <span>Torne-se parceiro</span>
                         </div>
 
@@ -388,10 +388,10 @@
                         Pequenas escolhas podem gerar grandes mudanças. No EcoCiente, você encontra soluções para viver de forma mais consciente, sustentável e conectada ao futuro.
                     </p>
                     <div class="botoes-baixe">
-                        <a href="">
+                        <a href="#">
                             <img src="${pageContext.request.contextPath}/assets/google-play-botton.svg" alt="Botão Google play">
                         </a>
-                        <a href="">
+                        <a href="#">
                             <img src="${pageContext.request.contextPath}/assets/app-store-botton.svg" alt="Botão Apple store">
                         </a>
                     </div>
@@ -504,7 +504,7 @@
                     <div class="item-duvida">
                         <input type="checkbox" id="faq-2" class="entrada-faq">
                         <label for="faq-2" class="pergunta-faq">
-                            <span>Como funciona a cobrança para condomínios indutriais?</span>
+                            <span>Como funciona a cobrança para condomínios industriais?</span>
                             <span class="icone-plus"></span>
                         </label>
                         <div class="resposta-faq">
