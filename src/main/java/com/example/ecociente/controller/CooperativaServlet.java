@@ -37,6 +37,9 @@ public class CooperativaServlet extends HttpServlet {
         if (caminho.equals("/adicionarCooperativa")) {
             adicionarCooperativa(request, response);
         }
+        else if (caminho.equals("/alterarCooperativa")) {
+            alterarCooperativa(request, response);
+        }
     }
 
     private void adicionarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -50,6 +53,19 @@ public class CooperativaServlet extends HttpServlet {
         ));
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void alterarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCooperativa"));
+
+        //Busca no banco e troca só o CNPJ que veio do formulário.
+        Cooperativa cooperativa = daoCooperativas.buscarPorId(id);
+        cooperativa.setCnpj(request.getParameter("cnpj"));
+
+        boolean alterado = daoCooperativas.atualizar(cooperativa);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
         mostrarSelects(request, response);
     }
 }
