@@ -11,10 +11,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "TelefoneServlet", value = "/telefones")
+@WebServlet(urlPatterns = {"/selecionarUsuario", "/adicionarUsuario", "/alterarUsuario", "/deletarUsuario" })
 public class TelefoneServlet extends HttpServlet {
 
     private TelefoneDAO telefoneDAO;
+
+    private static final String pagina_lista = "/WEB-INF/views/lista-usuarios.jsp";
 
     @Override
     public void init() {
