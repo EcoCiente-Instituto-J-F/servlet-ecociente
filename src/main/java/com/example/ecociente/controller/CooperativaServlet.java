@@ -40,6 +40,9 @@ public class CooperativaServlet extends HttpServlet {
         else if (caminho.equals("/alterarCooperativa")) {
             alterarCooperativa(request, response);
         }
+        else if (caminho.equals("/deletarCooperativa")) {
+            deletarCooperativa(request, response);
+        }
     }
 
     private void adicionarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -66,6 +69,15 @@ public class CooperativaServlet extends HttpServlet {
         boolean alterado = daoCooperativas.atualizar(cooperativa);
 
         request.setAttribute("alterado", alterado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void deletarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCooperativa"));
+
+        boolean deletado = daoCooperativas.deletar(id);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
     }
 }
