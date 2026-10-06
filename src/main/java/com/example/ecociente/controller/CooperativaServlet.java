@@ -29,4 +29,27 @@ public class CooperativaServlet extends HttpServlet {
         request.setAttribute("cooperativas", cooperativas);
         request.getRequestDispatcher("/WEB-INF/views/cooperativas.jsp").forward(request, response);
     }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarCooperativa")) {
+            adicionarCooperativa(request, response);
+        }
+    }
+
+    private void adicionarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String cnpj = request.getParameter("cnpj");
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+
+        //Dados do usuário vão vazios (a tabela cooperativa não usa). Id 0 porque o banco gera.
+        boolean adicionado = daoCooperativas.inserir(new Cooperativa(
+                idUsuario, null, null, null, null, false, 0, 0,
+                0, cnpj
+        ));
+
+        request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
 }
