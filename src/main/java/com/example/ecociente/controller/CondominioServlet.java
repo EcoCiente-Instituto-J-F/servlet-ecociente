@@ -44,6 +44,9 @@ public class CondominioServlet extends HttpServlet {
         if (caminho.equals("/adicionarCondominio")) {
             adicionarCondominio(request, response);
         }
+        else if (caminho.equals("/alterarCondominio")) {
+            alterarCondominio(request, response);
+        }
     }
 
     private void adicionarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -60,6 +63,23 @@ public class CondominioServlet extends HttpServlet {
         );
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void alterarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCondominio"));
+
+        //Busca no banco e troca só o que veio do formulário.
+        Condominio condominio = daoCondominios.selecionarPorId(id);
+        condominio.setNome(request.getParameter("nome"));
+        condominio.setCnpj(request.getParameter("cnpj"));
+        condominio.setStatus(request.getParameter("status") != null);
+        condominio.setIdEndereco(Integer.parseInt(request.getParameter("idEndereco")));
+        condominio.setIdTipoCondominio(Integer.parseInt(request.getParameter("idTipoCondominio")));
+
+        boolean alterado = daoCondominios.atualizarCondominio(condominio);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
         mostrarSelects(request, response);
     }
 }
