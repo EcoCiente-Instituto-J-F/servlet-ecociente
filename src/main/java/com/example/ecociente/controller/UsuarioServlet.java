@@ -42,6 +42,15 @@ public class UsuarioServlet extends HttpServlet {
 
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        if (request.getServletPath().equals("/cadastro")) {
+            cadastrarUsuario(request, response);
+        }
+    }
+
     private void cadastrarUsuario(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
         String email = request.getParameter("email");
