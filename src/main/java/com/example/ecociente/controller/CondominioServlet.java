@@ -36,4 +36,30 @@ public class CondominioServlet extends HttpServlet {
         request.setAttribute("condominios", condominios);
         request.getRequestDispatcher("/WEB-INF/views/condominios.jsp").forward(request, response);
     }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarCondominio")) {
+            adicionarCondominio(request, response);
+        }
+    }
+
+    private void adicionarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nome = request.getParameter("nome");
+        String cnpj = request.getParameter("cnpj");
+        boolean status = request.getParameter("status") != null; //checkbox marcado = true
+        String token = request.getParameter("token");
+        int idEndereco = Integer.parseInt(request.getParameter("idEndereco"));
+        int idTipoCondominio = Integer.parseInt(request.getParameter("idTipoCondominio"));
+
+        //Id 0 porque o banco gera.
+        boolean adicionado = daoCondominios.inserir(
+                new Condominio(0, nome, cnpj, status, token, idEndereco, idTipoCondominio)
+        );
+
+        request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
 }
