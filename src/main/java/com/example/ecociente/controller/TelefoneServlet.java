@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/selecionarUsuario", "/adicionarUsuario", "/alterarUsuario", "/deletarUsuario" })
+@WebServlet(urlPatterns = {"/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone" })
 public class TelefoneServlet extends HttpServlet {
 
     private TelefoneDAO telefoneDAO;
