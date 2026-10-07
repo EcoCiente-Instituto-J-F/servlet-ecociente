@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import com.example.ecociente.util.Senha;
+import java.time.LocalDate;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,6 +40,41 @@ public class UsuarioServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/login-cadastro?aba=cadastro");
         }
 
+    }
+
+    private void cadastrarUsuario(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nome = request.getParameter("nome");
+        String email = request.getParameter("email");
+        String senha = request.getParameter("senha");
+        String confirmaSenha = request.getParameter("confirma_senha");
+
+        String erro = validarCadastro(nome, email, senha, confirmaSenha);
+        if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
+            erro = "Este e-mail já está cadastrado.";
+        }
+        if (erro != null) {
+            request.setAttribute("erroCadastro", erro);
+            request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
+            return;
+        }
+
+        Usuario usuario = new Usuario(
+                0,
+                nome.trim(),
+                email.trim().toLowerCase(),
+                Senha.gerarHash(senha),
+                LocalDate.now(),
+                true,
+                1
+        );
+
+        if (!usuarioDAO.inserir(usuario)) {
+            request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
+            request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
+            return;
+        }
+
+        response.sendRedirect(request.getContextPath() + "/inicio");
     }
 
     private String validarCadastro(String nome, String email, String senha, String confirmaSenha) {
