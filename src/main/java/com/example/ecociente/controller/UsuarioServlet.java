@@ -39,4 +39,13 @@ public class UsuarioServlet extends HttpServlet {
         }
 
     }
+
+    private String validarCadastro(String nome, String email, String senha, String confirmaSenha) {
+        if (nome == null || nome.isBlank()) return "Informe seu nome.";
+        if (nome.trim().length() > 150) return "O nome pode ter no máximo 150 caracteres.";
+        if (email == null || !email.trim().matches("^[\\w.+-]+@[\\w-]+\\.[\\w.]+$")) return "Informe um e-mail válido.";
+        if (senha == null || senha.length() < 6) return "A senha precisa ter pelo menos 6 caracteres.";
+        if (!senha.equals(confirmaSenha)) return "As senhas não conferem.";
+        return null;
+    }
 }
