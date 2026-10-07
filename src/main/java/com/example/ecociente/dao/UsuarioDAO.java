@@ -4,8 +4,8 @@ import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Usuario;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.sql.Types;
 
 public class UsuarioDAO {
 
@@ -14,40 +14,35 @@ public class UsuarioDAO {
     // Metodo para inserir um usuário no banco
     public boolean inserir(Usuario usuario){
         String sql = """
-            INSERT INTO usuario
-                (id_usuario, nome, email, senha_hash, data_cadastro, id_endereco, id_tipo_usuario)
-            VALUES 
-                (?, ?, ?, ?, ?, ?, ?)
-            """;
+        INSERT INTO usuario
+            (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario)
+        VALUES
+            (?, ?, ?, ?, ?, ?, ?)
+        """;
 
         try (
-            Connection conexao = ConexaoBD.conectar();
-            PreparedStatement ps =
-                    conexao.prepareStatement(sql)
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
         ){
+            ps.setString(1, usuario.getNome());
+            ps.setString(2, usuario.getEmail());
+            ps.setString(3, usuario.getSenhaHash());
+            ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+            ps.setBoolean(5, usuario.isStatus());
 
-            ps.setInt(1, usuario.getIdUsuario());
-            ps.setString(2, usuario.getNome());
-            ps.setString(3, usuario.getEmail());
-            ps.setString(4, usuario.getSenhaHash());
-            ps.setDate(
-                    5,
-                    Date.valueOf(LocalDate.now())
-                    );
-            ps.setInt(6, usuario.getIdEndereco());
+            if (usuario.getIdEndereco() == 0) {
+                ps.setNull(6, Types.INTEGER);
+            } else {
+                ps.setInt(6, usuario.getIdEndereco());
+            }
+
             ps.setInt(7, usuario.getIdTipoUsuario());
 
-
-
             int linhasAfetadas = ps.executeUpdate();
-
             return linhasAfetadas > 0;
-        } catch (SQLException sqle) {
-            System.out.println(
-                    "Erro ao inserir usuario" +
-                            sqle.getMessage()
-            );
 
+        } catch (SQLException sqle) {
+            System.out.println("Erro ao inserir usuario" + sqle.getMessage());
             return false;
         }
     }
