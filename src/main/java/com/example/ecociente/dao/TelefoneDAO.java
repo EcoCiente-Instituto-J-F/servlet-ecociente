@@ -16,7 +16,7 @@ public class TelefoneDAO {
     public boolean inserir(Telefone t) {
         String sql = """
                 INSERT INTO telefone
-                    (numero, idUsuario)
+                    (numero, id_usuario)
                 VALUES
                     (?, ?)
                 """;
@@ -41,9 +41,9 @@ public class TelefoneDAO {
     public Telefone buscarPorId(int idTelefone) {
 
         String sql = """
-                SELECT idTelefone, numero, idUsuario
+                SELECT id_telefone, numero, id_usuario
                 FROM telefone
-                WHERE idTelefone = ?
+                WHERE id_telefone = ?
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
@@ -73,7 +73,7 @@ public class TelefoneDAO {
     public boolean buscarPorNumero(String numero) {
 
         String sql = """
-                SELECT idTelefone, numero, idUsuario
+                SELECT id_telefone, numero, id_usuario
                 FROM telefone
                 WHERE numero = ?
                 """;
@@ -98,7 +98,7 @@ public class TelefoneDAO {
         ArrayList<Telefone> telefones = new ArrayList<>();
 
         String sql = """
-                SELECT idTelefone, numero, idUsuario
+                SELECT id_telefone, numero, id_usuario
                 FROM telefone
                 """;
 
@@ -128,8 +128,8 @@ public class TelefoneDAO {
         String sql = """
                 UPDATE telefone
                 SET numero = ?,
-                    idUsuario = ?
-                WHERE idTelefone = ?
+                    id_usuario = ?
+                WHERE id_telefone = ?
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
@@ -153,7 +153,7 @@ public class TelefoneDAO {
 
         String sql = """
                 DELETE FROM telefone
-                WHERE idTelefone = ?
+                WHERE id_telefone = ?
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
