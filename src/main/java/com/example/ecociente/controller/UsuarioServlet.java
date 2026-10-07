@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "UsuarioServlet", value = "/usuarios")
+@WebServlet(urlPatterns = {"/cadastro", "/selectUsuario"})
 public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
@@ -26,13 +26,17 @@ public class UsuarioServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws ServletException, IOException {
+        String caminho = request.getServletPath();
 
-        List<Usuario> usuarios = usuarioDAO.selecionarTodos();
+        if (caminho.equals("/selectUsuario")){
+            List<Usuario> usuarios = usuarioDAO.selecionarTodos();
+            request.setAttribute("usuarios", usuarios);
+            request.getRequestDispatcher(
+                    "/WEB-INF/views/lista-usuarios.jsp" // não temos o caminho do jsp ainda
+            ).forward(request, response);
+        } else if (caminho.equals("/cadastro")) {
+            response.sendRedirect(request.getContextPath() + "/login-cadastro?aba=cadastro");
+        }
 
-        request.setAttribute("usuarios", usuarios);
-
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-usuarios.jsp" // não temos o caminho do jsp ainda
-        ).forward(request, response);
     }
 }
