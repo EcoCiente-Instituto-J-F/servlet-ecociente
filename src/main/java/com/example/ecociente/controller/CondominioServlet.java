@@ -47,6 +47,9 @@ public class CondominioServlet extends HttpServlet {
         else if (caminho.equals("/alterarCondominio")) {
             alterarCondominio(request, response);
         }
+        else if (caminho.equals("/deletarCondominio")) {
+            deletarCondominio(request, response);
+        }
     }
 
     private void adicionarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -80,6 +83,15 @@ public class CondominioServlet extends HttpServlet {
         boolean alterado = daoCondominios.atualizarCondominio(condominio);
 
         request.setAttribute("alterado", alterado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void deletarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCondominio"));
+
+        boolean deletado = daoCondominios.deletar(id);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
     }
 }
