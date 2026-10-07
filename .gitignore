@@ -41,3 +41,4 @@ build/
 ### Variáveis de ambiente ###
 src/main/resources/.env
 .env
+*.zip
