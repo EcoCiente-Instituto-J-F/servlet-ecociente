@@ -11,31 +11,87 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "CondominioServlet", value = "/condominios")
+//Servlet usada para as ações do CRUD de Condomínios.
+@WebServlet(urlPatterns = {"/selectCondominio", "/adicionarCondominio", "/alterarCondominio", "/deletarCondominio"})
 public class CondominioServlet extends HttpServlet {
+    CondominioDAO daoCondominios = new CondominioDAO();
 
-    private CondominioDAO CondominioDAO;
-
-
-    @Override
-    public void init() {
-        CondominioDAO = new CondominioDAO();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getServletPath().equals("/selectCondominio")) {
+            mostrarSelects(request, response);
+        }
     }
 
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-        List<Condominio> condominios = CondominioDAO.selecionarTodos();
+    //Busca os condomínios (com pesquisa por nome opcional) e envia para a JSP.
+    private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String procura = request.getParameter("search");
+
+        List<Condominio> condominios;
+        if (procura != null && !procura.isBlank()) {
+            condominios = daoCondominios.selecionarPorNomeCondominio(procura);
+        } else {
+            condominios = daoCondominios.selecionarTodos();
+        }
 
         request.setAttribute("condominios", condominios);
-
-
-        //Não sabemos o nome do caminho
-        request.getRequestDispatcher(
-                "WEB-INF/views/lista-condominios.jsp"
-        ).forward(request,response);
+        request.getRequestDispatcher("/WEB-INF/views/condominios.jsp").forward(request, response);
     }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarCondominio")) {
+            adicionarCondominio(request, response);
+        }
+        else if (caminho.equals("/alterarCondominio")) {
+            alterarCondominio(request, response);
+        }
+        else if (caminho.equals("/deletarCondominio")) {
+            deletarCondominio(request, response);
+        }
+    }
+
+    private void adicionarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nome = request.getParameter("nome");
+        String cnpj = request.getParameter("cnpj");
+        boolean status = request.getParameter("status") != null; //checkbox marcado = true
+        String token = request.getParameter("token");
+        int idEndereco = Integer.parseInt(request.getParameter("idEndereco"));
+        int idTipoCondominio = Integer.parseInt(request.getParameter("idTipoCondominio"));
+
+        //Id 0 porque o banco gera.
+        boolean adicionado = daoCondominios.inserir(
+                new Condominio(0, nome, cnpj, status, token, idEndereco, idTipoCondominio)
+        );
+
+        request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void alterarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCondominio"));
+
+        //Busca no banco e troca só o que veio do formulário.
+        Condominio condominio = daoCondominios.selecionarPorId(id);
+        condominio.setNome(request.getParameter("nome"));
+        condominio.setCnpj(request.getParameter("cnpj"));
+        condominio.setStatus(request.getParameter("status") != null);
+        condominio.setIdEndereco(Integer.parseInt(request.getParameter("idEndereco")));
+        condominio.setIdTipoCondominio(Integer.parseInt(request.getParameter("idTipoCondominio")));
+
+        boolean alterado = daoCondominios.atualizarCondominio(condominio);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void deletarCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idCondominio"));
+
+        boolean deletado = daoCondominios.deletar(id);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
 }
