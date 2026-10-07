@@ -38,6 +38,12 @@ public class SindicoServlet extends HttpServlet {
         if (caminho.equals("/adicionarSindico")) {
             adicionarSindico(request, response);
         }
+        else if (caminho.equals("/alterarSindico")) {
+            alterarSindico(request, response);
+        }
+        else if (caminho.equals("/deletarSindico")) {
+            deletarSindico(request, response);
+        }
     }
 
     private void adicionarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -54,6 +60,31 @@ public class SindicoServlet extends HttpServlet {
         ));
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void alterarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idSindico"));
+
+        //Busca no banco e troca só o que veio do formulário.
+        Sindico sindico = daoSindicos.buscarPorId(id);
+        sindico.setCpf(request.getParameter("cpf"));
+        sindico.setDataInicioMandato(LocalDate.parse(request.getParameter("dataInicioMandato")));
+        sindico.setDataFimMandato(lerDataFim(request));
+        sindico.setCondominio(Integer.parseInt(request.getParameter("idCondominio")));
+
+        boolean alterado = daoSindicos.atualizar(sindico);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
+        mostrarSelects(request, response);
+    }
+
+    private void deletarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idSindico"));
+
+        boolean deletado = daoSindicos.deletar(id);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
     }
 
