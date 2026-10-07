@@ -11,31 +11,29 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "CondominioServlet", value = "/condominios")
+//Servlet usada para as ações do CRUD de Condomínios.
+@WebServlet(urlPatterns = {"/selectCondominio", "/adicionarCondominio", "/alterarCondominio", "/deletarCondominio"})
 public class CondominioServlet extends HttpServlet {
+    CondominioDAO daoCondominios = new CondominioDAO();
 
-    private CondominioDAO CondominioDAO;
-
-
-    @Override
-    public void init() {
-        CondominioDAO = new CondominioDAO();
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getServletPath().equals("/selectCondominio")) {
+            mostrarSelects(request, response);
+        }
     }
 
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-        List<Condominio> condominios = CondominioDAO.selecionarTodos();
+    //Busca os condomínios (com pesquisa por nome opcional) e envia para a JSP.
+    private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String procura = request.getParameter("search");
+
+        List<Condominio> condominios;
+        if (procura != null && !procura.isBlank()) {
+            condominios = daoCondominios.selecionarPorNomeCondominio(procura);
+        } else {
+            condominios = daoCondominios.selecionarTodos();
+        }
 
         request.setAttribute("condominios", condominios);
-
-
-        //Não sabemos o nome do caminho
-        request.getRequestDispatcher(
-                "WEB-INF/views/lista-condominios.jsp"
-        ).forward(request,response);
+        request.getRequestDispatcher("/WEB-INF/views/condominios.jsp").forward(request, response);
     }
-
 }
