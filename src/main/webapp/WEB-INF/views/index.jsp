@@ -221,7 +221,7 @@
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -270,7 +270,7 @@
                             <li><span class="check-icone">✓</span> Relatórios e históricos de coleta</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -317,7 +317,7 @@
                             <li><span class="check-icone">✓</span> Dashboards e relatórios avançados</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/cadastro_login.jsp" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>

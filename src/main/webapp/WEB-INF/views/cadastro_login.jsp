@@ -438,7 +438,7 @@
 </head>
 <body>
 
-    <a href="${pageContext.request.contextPath}/index.jsp" class="botao-voltar" aria-label="Voltar para a página inicial">
+    <a href="${pageContext.request.contextPath}/inicio" class="botao-voltar" aria-label="Voltar para a página inicial">
         <span class="seta" aria-hidden="true">&larr;</span>
         <span>Voltar</span>
     </a>
