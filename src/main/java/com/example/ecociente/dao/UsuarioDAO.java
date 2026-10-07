@@ -155,6 +155,22 @@ public class UsuarioDAO {
         return encontrados;
     }
 
+    // Verifica se um email ja esta cadastrado
+    public boolean existeEmail(String email){
+        String sql = "SELECT 1 FROM usuario WHERE email = ?";
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException sqle){
+            System.out.println("Erro ao verificar email" + sqle.getMessage());
+            return false;
+        }
+    }
+
     //=======================MÉTODOS UPDATE=======================\
     public boolean atualizar(Usuario usuario){
         boolean retorno = false;
