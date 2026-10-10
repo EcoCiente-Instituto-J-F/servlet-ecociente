@@ -1,0 +1,79 @@
+/* BASE: reset, cabeçalho, menu lateral, títulos, botões, cartões*/
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--fonte-texto); font-size: 11px; color: var(--cor-texto); background: var(--cor-fundo-pagina); min-width: 1100px; }
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+img { display: block; }
+button { font: inherit; border: 0; background: none; cursor: pointer; }
+/* Texto só para leitores de tela (acessibilidade) */
+.somente-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* Estrutura da página: cabeçalho em cima, menu e conteúdo embaixo */
+.layout { display: grid; grid-template-columns: auto 1fr; min-height: 100vh; padding-bottom: 99px; }
+.layout > .cabecalho { grid-column: 1 / -1; }
+.conteudo { padding: 4px 117px 0 53px; }
+
+/* ---------- Cabeçalho ---------- */
+.cabecalho { display: flex; align-items: flex-start; height: var(--altura-cabecalho); padding: 0 58px 0 48px; }
+.cabecalho__logo { margin-top: 25px; }
+.cabecalho__logo img { width: 146px; height: 39px; }
+.busca { flex: 0 1 694px; display: flex; align-items: center; gap: 15px; height: 44px; margin: 30px 0 0 121px; padding: 0 27px;
+  border: 1px solid var(--cor-texto-claro); border-radius: 22px; }
+.busca img { width: 16px; height: 16px; }
+.busca input { flex: 1; border: 0; outline: 0; font: inherit; color: var(--cor-texto); background: none; }
+.busca input::placeholder { color: var(--cor-texto-claro); }
+.cabecalho__engrenagem { margin: 26px 16px 0 auto; }
+.cabecalho__engrenagem img { width: 30px; height: 30px; }
+.usuario-logado { margin-top: 19px; text-align: center; font-size: 9px; line-height: 11px; color: var(--cor-texto-claro); }
+.usuario-logado__avatar { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 2px; padding: 1.5px;
+  border: 1px solid var(--cor-texto-claro); border-radius: 50%; }
+.usuario-logado__iniciais { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 50%;
+  font-size: 13px; font-weight: 700; color: #fff; background: linear-gradient(225deg, #d64573 32%, #064e3b 100%); }
+
+/* ---------- Menu lateral ---------- */
+.menu-lateral { display: flex; flex-direction: column; align-items: center; width: 59px; height: 702px; margin-left: 48px;
+  background: var(--cor-fundo-menu); border-radius: 10px; }
+.menu-lateral__secao { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+.menu-lateral__secao::before, .menu-lateral__secao--navegacao::after { /* linhas divisórias */
+  content: ""; position: absolute; left: 9px; right: 9px; border-top: 1px solid var(--cor-divisor-menu); }
+.menu-lateral__secao::before { top: 0; }
+.menu-lateral__secao--navegacao::after { bottom: 0; }
+.menu-lateral__secao--topo { height: 60px; } .menu-lateral__secao--topo::before { display: none; }
+.menu-lateral__secao--inicio { height: 78px; }
+.menu-lateral__secao--navegacao { height: 230px; justify-content: flex-start; gap: 15.5px; padding-top: 22px; }
+.menu-lateral__secao--sair { height: 71px; margin-top: auto; }
+.menu-lateral__item { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 5px; }
+
+/* Página atual: quadrado verde com ícone branco. */
+.menu-lateral__item--ativo { background: var(--cor-primaria); box-shadow: 0 3px 4px rgb(0 0 0 / 25%); }
+.menu-lateral__item--ativo img { filter: brightness(0) invert(1); }
+.menu-lateral__item img { max-width: 25px; max-height: 25px; }
+
+/* ---------- Título da página e botões ---------- */
+.cabecalho-pagina { display: flex; justify-content: space-between; min-height: 82px; margin-bottom: 24px; }
+.cabecalho-pagina__etiqueta { font-size: 13px; line-height: 16px; font-weight: 700; text-transform: uppercase; color: var(--cor-destaque); }
+.cabecalho-pagina__titulo { font: 700 24px/30px var(--fonte-titulo); color: var(--cor-primaria); }
+.cabecalho-pagina__descricao { margin-top: 10px; font-size: 11px; line-height: 16px; color: var(--cor-texto-suave); }
+.cabecalho-pagina__acoes { display: flex; gap: 8px; margin-top: 50px; }
+.botao { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 32px; padding: 0 18px;
+  border: 1px solid transparent; border-radius: var(--raio-botao); font-size: 12px; font-weight: 700; color: #fff; }
+.botao img { width: 10px; height: 10px; }
+.botao--contorno { min-width: 119px; gap: 4px; border-color: var(--cor-texto-suave); color: var(--cor-texto-suave); }
+.botao--contorno img { width: 12px; height: 12px; }
+.botao--destaque { min-width: 125px; background: var(--cor-destaque); }
+.botao--primario { min-width: 143px; background: var(--cor-primaria); }
+
+/* ---------- Cartões de indicador (home e coletas) ---------- */
+.cartao { border: 1px solid var(--cor-borda); border-radius: var(--raio-cartao); background: var(--cor-fundo-cartao); }
+.indicador { position: relative; height: 110px; padding: 12px 17px; }
+.indicador__titulo { font-size: 14px; line-height: 18px; font-weight: 600; color: var(--cor-texto-suave); }
+.indicador__valor { margin-top: 10px; font: 700 22px/26px var(--fonte-titulo); color: var(--cor-primaria); }
+.indicador--simples { padding: 14px 19px; }
+.indicador--simples .indicador__valor { margin-top: 16px; }
+.indicador__icone { position: absolute; top: 8px; right: 10px; display: grid; place-items: center; width: 21px; height: 21px;
+  border-radius: 5px; background: var(--cor-selo-inativo); }
+.indicador__icone img { max-width: 14px; max-height: 14px; }
+.indicador__variacao { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 9px; line-height: 10px; font-weight: 700; color: var(--cor-tendencia-positiva); }
+.indicador__variacao--negativa { color: var(--cor-destaque); }
+.indicador__variacao img { width: 10px; height: 9px; }

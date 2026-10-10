@@ -1,0 +1,72 @@
+/* VARIÁVEIS DO PROJETO  */
+
+:root {
+  /* Cores principais */
+  --cor-primaria: #064e3b;          /* verde escuro: títulos, botão Cadastrar */
+  --cor-destaque: #d64573;          /* rosa: subtítulo de página, botão Detalhes */
+  --cor-fundo-menu: #deeade;        /* verde claro do menu lateral */
+  --cor-texto: #000000;
+  --cor-texto-suave: #6c6c6c;       /* cinza escuro: legendas, cabeçalho de tabela */
+  --cor-texto-claro: #acacac;       /* cinza claro: busca, engrenagem, meses */
+  --cor-borda: #9f9f9f;             /* bordas de cartões e tabelas */
+  --cor-divisor-menu: #bdc1bd;
+  --cor-trilho-barra: #dbdbdb;
+  --cor-selo-ativo: #c1d8b2;
+  --cor-selo-inativo: #f9bed1;
+  --cor-tendencia-positiva: #90b18f;
+
+  /* Cores do gráfico da home */
+  --cor-usuario: #064e3b;
+  --cor-sindico: #a863da;
+  --cor-cooperativa: #d64573;
+  --cor-legenda-cooperativa: #b93c63;
+  --cor-plastico: #064e3b;
+  --cor-papel: #d64573;
+  --cor-vidro: #e3ac3c;
+  --cor-metal: #9aa8c7;
+  --cor-organico: #c3d96f;
+
+  /* Fontes */
+  --fonte-titulo: "Nunito", sans-serif;
+  --fonte-texto: "Montserrat", sans-serif;
+
+  /* Fundos e detalhes que mudam no tema escuro */
+  --cor-fundo-pagina: #ffffff;
+  --cor-fundo-cartao: #ffffff;       /* cartões, tabelas e modais */
+  --cor-fundo-campo: #f9fbf7;        /* campos de formulário */
+  --cor-borda-campo: #e3eedd;
+  --cor-linha-selecionada: #fce8ee;  /* linha marcada na tabela */
+  --cor-area-grafico: #deeade;
+  --cor-grade-grafico: #e1e1e1;
+
+  /* Medidas */
+  --raio-cartao: 15px;
+  --raio-botao: 8px;
+  --altura-cabecalho: 99px;
+  --altura-linha-tabela: 57px;
+}
+
+/* TEMA ESCURO */
+
+:root[data-tema="escuro"] {
+  color-scheme: dark;                /* campos, rolagem e calendário ficam escuros */
+  --cor-primaria: #2e8b67;
+  --cor-fundo-pagina: #121a17;
+  --cor-fundo-cartao: #1b2622;
+  --cor-fundo-campo: #222f2a;
+  --cor-borda-campo: #33433c;
+  --cor-fundo-menu: #1f2d27;
+  --cor-divisor-menu: #34443d;
+  --cor-texto: #eef3f0;
+  --cor-texto-suave: #a9b8b0;
+  --cor-texto-claro: #7f8f87;
+  --cor-borda: #3a4a43;
+  --cor-trilho-barra: #33433c;
+  --cor-selo-ativo: #2c4a3a;
+  --cor-selo-inativo: #4a2535;
+  --cor-linha-selecionada: #3a2430;
+  --cor-area-grafico: #1f3a2f;
+  --cor-grade-grafico: #2c3a34;
+  --cor-usuario: #3cc79a;
+  --cor-plastico: #3cc79a;
+}
