@@ -1,0 +1,25 @@
+/* HOME: indicadores, gráfico de cadastros e volume por categoria*/
+
+.indicadores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 2px; }
+.indicadores--tres { grid-template-columns: repeat(3, 1fr); gap: 50px; margin-top: 0; }
+.paineis { display: grid; grid-template-columns: 683fr 450fr; gap: 30px; margin-top: 39px; }
+.painel { position: relative; height: 328px; padding: 23px 19px 0; }
+.painel__titulo { font-size: 12px; line-height: 16px; font-weight: 700; color: var(--cor-primaria); }
+
+/* Gráfico de linhas */
+.grafico__topo { display: flex; justify-content: space-between; margin-right: 22px; }
+.grafico__total { margin-top: 8px; font: 700 22px/26px var(--fonte-titulo); color: var(--cor-primaria); }
+.grafico__legenda { display: flex; gap: 31px; font-size: 11px; line-height: 16px; color: var(--cor-texto-suave); }
+.grafico__legenda li { display: flex; align-items: center; gap: 6px; }
+.grafico__legenda li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--cor); }
+.grafico__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* Volume por categoria.  */
+.categorias { margin-top: 25px; }
+.categoria + .categoria { margin-top: 18.6px; }
+.categoria__topo { display: flex; align-items: center; gap: 12px; height: 14px; box-sizing: content-box; padding-bottom: 4.5px; border-bottom: 1px solid var(--cor-borda); }
+.categoria__ponto { width: 10px; height: 10px; border-radius: 50%; background: var(--cor); }
+.categoria__nome { flex: 1; font-size: 11px; font-weight: 600; }
+.categoria__valor { font-size: 10px; color: var(--cor-texto-suave); }
+.categoria__barra { height: 3.5px; margin-top: 8px; border-radius: 2px; background: var(--cor-trilho-barra); }
+.categoria__barra span { display: block; width: var(--porcentagem); height: 100%; border-radius: 2px; background: var(--cor); }
