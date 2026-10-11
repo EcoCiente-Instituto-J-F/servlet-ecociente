@@ -1,0 +1,33 @@
+/* TABELAS (usuários, condomínios, cooperativas, coletas)*/
+
+.tabela-cartao { border: 1px solid var(--cor-borda); border-radius: var(--raio-cartao); overflow: hidden; }
+.tabela { width: 100%; table-layout: fixed; border-collapse: collapse; }
+.tabela th { height: 61px; text-align: left; font-size: 12px; font-weight: 600; color: var(--cor-texto-suave); }
+.tabela--alta th { height: 80px; }
+.tabela th:first-child { padding-left: 45px; }
+.tabela td { height: var(--altura-linha-tabela); border-top: 1px solid var(--cor-borda); font-size: 11px; font-weight: 600; vertical-align: middle; }
+.tabela__ordenar img { width: 11px; height: 15px; }
+.celula-principal { display: flex; align-items: center; gap: 16px; padding-left: 15px; }
+.tabela__selecionar { appearance: none; flex: none; width: 14px; height: 14px; border: 1px solid var(--cor-texto-suave); border-radius: 50%; background: var(--cor-fundo-cartao); }
+.tabela__selecionar:checked { box-shadow: inset 0 0 0 3px var(--cor-fundo-cartao); background: var(--cor-primaria); }
+.avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+.celula-quebra { line-height: 15px; }
+.celula-quebra--localidade { max-width: 100px; }
+.celula-quebra--tipo { max-width: 96px; }
+
+/* "..." */
+.acoes-linha { position: relative; display: block; width: 12px; height: 14px; }
+.acoes-linha::before { content: ""; position: absolute; top: 6px; left: 0; width: 2px; height: 2px; border-radius: 50%;
+  background: var(--cor-texto-suave); box-shadow: 4px 0 var(--cor-texto-suave), 8px 0 var(--cor-texto-suave); }
+
+/* Selo de status */
+.selo { display: inline-grid; place-items: center; width: 64px; height: 19px; border-radius: 10px; font-size: 9px; font-weight: 700; }
+.selo--ativa { background: var(--cor-selo-ativo); color: var(--cor-primaria); }
+.selo--inativa { background: var(--cor-selo-inativo); color: var(--cor-destaque); }
+
+/* Paginação centralizada */
+.paginacao { display: flex; justify-content: center; align-items: center; gap: 12px; height: 75px; padding-top: 8px;
+  border-top: 1px solid var(--cor-borda); font-size: 12px; color: var(--cor-texto-suave); }
+.paginacao a { display: grid; place-items: center; min-width: 16px; height: 16px; padding: 0 2px; border-radius: 2px; }
+.paginacao a[aria-current="page"] { background: var(--cor-destaque); color: #fff; }
+.paginacao img { width: 6px; height: 9px; }
