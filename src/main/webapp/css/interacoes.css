@@ -1,0 +1,96 @@
+/* INTERAÇÕES — menu lateral aberto, seleção de linha e modais */
+
+/* ---------- 1. Menu lateral aberto ---------- */
+.conteudo { min-width: 0; }                       /* conteúdo encolhe quando o menu abre */
+.menu-lateral { overflow: hidden; white-space: nowrap; transition: width .3s ease; }
+.menu-lateral__rotulo { display: none; font-size: 12px; font-weight: 700; }
+.menu-lateral--aberto { width: 190px; }           /* largura do menu aberto */
+.menu-lateral--aberto .menu-lateral__rotulo { display: inline; }
+.menu-lateral--aberto .menu-lateral__item { display: flex; justify-content: flex-start; gap: 6px; width: calc(100% - 22px);
+  padding-left: 5px; color: var(--cor-primaria); }
+.menu-lateral--aberto .menu-lateral__item--ativo { color: #fff; }
+.menu-lateral--aberto .menu-lateral__secao--sair .menu-lateral__item { color: var(--cor-destaque); }
+
+/* ---------- 2. Seleção de linha e botão Editar desabilitado ---------- */
+
+.tabela tbody tr:has(.tabela__selecionar:checked) td { background: var(--cor-linha-selecionada); }
+.botao[aria-disabled="true"] { opacity: .4; cursor: not-allowed; pointer-events: none; }
+
+/* ---------- 3. Modais  ---------- */
+
+.modal { margin: auto; /* centraliza  */
+  width: min(var(--largura, 640px), calc(100vw - 32px)); max-height: calc(100vh - 32px); padding: 0; border: 0; border-radius: 6px;
+  background: var(--cor-fundo-cartao); color: var(--cor-texto); font-family: var(--fonte-texto); box-shadow: 0 10px 40px rgb(0 0 0 / 25%); }
+.modal::backdrop { background: rgb(0 0 0 / 40%); }
+.modal__cabecalho { position: relative; padding: 22px 26px 0; }
+.modal__etiqueta { font-size: 13px; line-height: 16px; font-weight: 700; text-transform: uppercase; color: var(--cor-destaque); }
+.modal__titulo { font: 700 20px/26px var(--fonte-titulo); color: var(--cor-primaria); }
+.modal__fechar { position: absolute; top: 22px; right: 28px; display: grid; color: var(--cor-texto-suave); }
+.modal__fechar img { width: 16px; height: 16px; }
+.modal__linha { height: 1px; margin: 14px 26px 0; background: var(--cor-borda); }
+.modal__corpo { padding: 18px 26px 4px; }
+.modal__rodape { display: flex; justify-content: flex-end; gap: 12px; padding: 18px 26px 22px; }
+.modal__rodape .botao { height: 40px; min-width: 0; padding: 0 24px; font-size: 13px; }
+.modal__rodape .botao--contorno { min-width: 100px; }
+
+/* Formulários */
+.formulario { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.campo { display: grid; gap: 6px; font-size: 11px; font-weight: 600; color: var(--cor-texto-suave); }
+.campo--largo { grid-column: 1 / -1; }
+.campo input, .campo select { width: 100%; height: 36px; padding: 0 14px; border: 1px solid var(--cor-borda-campo); border-radius: 12px;
+  background: var(--cor-fundo-campo); font: 600 13px var(--fonte-texto); color: var(--cor-texto-suave); }
+.campo input::placeholder { color: var(--cor-texto-suave); opacity: .8; }
+.campo input:focus, .campo select:focus { outline: 2px solid var(--cor-primaria); outline-offset: 0; }
+.campo--rotulo-caixa { font-size: 10px; text-transform: uppercase; }
+
+/* Fichas (detalhes) */
+.ficha__perfil { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.ficha__foto { display: grid; place-items: center; flex: none; width: 84px; height: 84px; border-radius: 50%; object-fit: cover;
+  font: 700 28px var(--fonte-texto); color: #fff; background: #a863da; }
+.ficha__nome { font-size: 18px; font-weight: 700; }
+.ficha__tag { display: inline-block; margin-top: 4px; padding: 2px 10px; border-radius: 10px; font-size: 8px; font-weight: 700;
+  color: var(--cor-primaria); background: var(--cor-fundo-menu); }
+.ficha__item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--cor-borda); }
+.ficha__icone { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: 5px; color: var(--cor-primaria); background: var(--cor-fundo-menu); }
+.ficha__icone img { width: 15px; height: 15px; }
+.ficha__rotulo { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--cor-texto-suave); }
+.ficha__valor { font-size: 11px; font-weight: 700; }
+
+/* Configurações, perfil e sair */
+.config__secao { margin: 14px 0 8px; font-size: 12px; font-weight: 700; text-transform: uppercase; color: var(--cor-texto-suave); }
+.config__linha { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-top: 1px solid var(--cor-borda); font-size: 13px; font-weight: 600; }
+.interruptor { appearance: none; position: relative; width: 36px; height: 20px; border-radius: 10px; background: var(--cor-texto-claro); cursor: pointer; }
+.interruptor::before { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .2s; }
+.interruptor:checked { background: var(--cor-primaria); }
+.interruptor:checked::before { left: 18px; }
+.tema { display: flex; gap: 8px; }
+.tema label { position: relative; display: flex; align-items: center; gap: 6px; padding: 8px 14px; border: 1px solid var(--cor-borda); border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer; }
+.tema label:has(:checked) { border-color: var(--cor-primaria); color: #fff; background: var(--cor-primaria); }
+.tema input { position: absolute; opacity: 0; }
+.tema img { width: 14px; height: 14px; }
+.perfil__foto { display: flex; align-items: center; gap: 12px; grid-column: 1 / -1; }
+.perfil__foto .usuario-logado__iniciais { width: 56px; height: 56px; flex: none; }
+.modal--sair .modal__corpo { text-align: center; padding-top: 20px; }
+.modal--sair h2 { font-size: 13px; margin-top: 8px; }
+.modal--sair p { margin-top: 4px; font-size: 10px; color: var(--cor-texto-suave); }
+.modal--sair .modal__rodape { justify-content: center; }
+
+/* ---------- Complementos ---------- */
+.icone-fechar, .menu-lateral--aberto .icone-menu { display: none; }
+.menu-lateral--aberto .icone-fechar { display: block; width: 20px; height: 20px; margin: 0 2px; }
+.campo select { appearance: none; }
+.campo__com-icone { position: relative; display: block; }
+.campo__com-icone img { position: absolute; top: 10px; left: 12px; width: 16px; height: 16px; }
+.campo__com-icone input { padding-left: 36px; }
+.botao--primario img.icone-branco { filter: brightness(0) invert(1); }
+
+/* Tabela encolhe junto com a tela  */
+.tabela-cartao { overflow-x: auto; }
+
+/* Ícones de contorno */
+.tema label:has(:checked) img { filter: brightness(0) invert(1); }
+.modal__rodape .botao--contorno img { width: 14px; height: 14px; }
+
+/* ---------- Tema escuro: ícones e logo  ---------- */
+:root[data-tema="escuro"] :is(.cabecalho__logo img, .ficha__icone img, .modal__fechar img, .tema img,
+  .menu-lateral__item:not(.menu-lateral__item--ativo) img:not([src$="sair.svg"])) { filter: brightness(0) invert(.9); }
