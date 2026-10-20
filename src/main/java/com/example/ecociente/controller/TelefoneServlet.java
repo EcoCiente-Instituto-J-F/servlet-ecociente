@@ -11,30 +11,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone" })
+@WebServlet(urlPatterns = {"/adicionarTelefone", "/alterarTelefone", "/deletarTelefone"})
 public class TelefoneServlet extends HttpServlet {
+    TelefoneDAO daoTelefones = new TelefoneDAO();
 
-    private TelefoneDAO telefoneDAO;
 
-    private static final String pagina_lista = "/WEB-INF/views/lista-usuarios.jsp";
-
-    @Override
-    public void init() {
-        telefoneDAO = new TelefoneDAO();
-    }
-
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        List<Telefone> telefones = telefoneDAO.listarTodos();
-
-        request.setAttribute("telefones", telefones);
-
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-telefones.jsp" // não temos o caminho do jsp ainda
-        ).forward(request, response);
-    }
 }
