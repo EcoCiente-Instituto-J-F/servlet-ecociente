@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.sql.Statement;
 
 
 public class EnderecoDAO {
@@ -16,7 +17,7 @@ public class EnderecoDAO {
     public boolean inserir(Endereco endereco){
         String sql = """
                 INSERT INTO endereco 
-                    (id_endereco, cep, cidade, estado, bairro, rua, numero, complemento)
+                    (cep, cidade, estado, bairro, rua, numero, complemento)
                 VALUES
                     (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -26,7 +27,6 @@ public class EnderecoDAO {
                 PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
-            ps.setInt(1, endereco.getIdEndereco());
             ps.setString(2, endereco.getCep());
             ps.setString(3, endereco.getCidade());
             ps.setString(4, endereco.getEstado());
@@ -45,6 +45,35 @@ public class EnderecoDAO {
             System.out.println("Erro ao inserir endereço" + sqle.getMessage());
 
             return false;
+        }
+    }
+
+    public int inserirERetornarId(Endereco endereco){
+        String sql = """
+            INSERT INTO endereco (cep, cidade, estado, bairro, rua, numero, complemento)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)
+        ){
+            ps.setString(1, endereco.getCep());
+            ps.setString(2, endereco.getCidade());
+            ps.setString(3, endereco.getEstado());
+            ps.setString(4, endereco.getBairro());
+            ps.setString(5, endereco.getRua());
+            ps.setInt(6, endereco.getNumero());
+            ps.setString(7, endereco.getComplemento());
+            ps.executeUpdate();
+
+            ResultSet chaves = ps.getGeneratedKeys();
+            if (chaves.next()) {
+                return chaves.getInt(1);
+            }
+            return 0;
+        }catch (SQLException sqle){
+            System.out.println("Erro ao inserir endereço" + sqle.getMessage());
+            return 0;
         }
     }
 
