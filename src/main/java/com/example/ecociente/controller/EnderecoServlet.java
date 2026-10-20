@@ -48,4 +48,13 @@ public class EnderecoServlet extends HttpServlet {
 
         request.setAttribute("alterado", alterado ? "true" : "false");
     }
+
+    private void deletarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idEndereco"));
+
+        Endereco endereco = daoEnderecos.selecionarPorId(id);
+        boolean deletado = daoEnderecos.deletar(endereco);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
+    }
 }
