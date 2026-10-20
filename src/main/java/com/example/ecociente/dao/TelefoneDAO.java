@@ -166,7 +166,8 @@ public class TelefoneDAO {
             return true;
 
         } catch (SQLException sqle) {
-            throw new RuntimeException(sqle.getMessage());
+            System.out.println("Erro ao deletar telefone" + sqle.getMessage());
+            return false;
         }
     }
 }
