@@ -11,28 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "EnderecoServlet", value = "/enderecos")
+@WebServlet(urlPatterns = {"/adicionarEndereco", "/alterarEndereco", "/deletarEndereco"})
 public class EnderecoServlet extends HttpServlet {
-
-    private EnderecoDAO enderecoDAO;
-
-    @Override
-    public void init() {
-        enderecoDAO = new EnderecoDAO();
-    }
-
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
-
-        List<Endereco> enderecos = enderecoDAO.selecionarTodos();
-
-        request.setAttribute("enderecos", enderecos);
-
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-enderecos.jsp" // não temos o caminho do jsp ainda
-        ).forward(request, response);
-    }
+    EnderecoDAO daoEnderecos = new EnderecoDAO();
 }
