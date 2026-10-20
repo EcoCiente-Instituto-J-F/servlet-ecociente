@@ -25,4 +25,16 @@ public class TelefoneServlet extends HttpServlet {
         request.setAttribute("adicionado", adicionado ? "true" : "false");
     }
 
+    private void alterarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idTelefone"));
+
+        Telefone telefone = daoTelefones.buscarPorId(id);
+        telefone.setNumero(request.getParameter("numero"));
+        telefone.setUsuario(Integer.parseInt(request.getParameter("idUsuario")));
+
+        boolean alterado = daoTelefones.atualizar(telefone);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
+    }
+
 }
