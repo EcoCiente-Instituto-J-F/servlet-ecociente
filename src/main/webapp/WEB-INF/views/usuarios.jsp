@@ -81,7 +81,7 @@
         <label class="campo">Nome completo<input type="text" name="nome" placeholder="Nome do usuário"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="email@exemplo.com"></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000"></label>
-        <label class="campo">Tipo de usuário<select name="tipo"><option>Usuário comum</option><option>Usuário Comercial</option><option>Síndico Residencial</option><option>Cooperativa</option></select></label>
+        <label class="campo">Tipo de usuário<select name="tipo"><option value="1">Comum</option><option value="2">Morador</option><option value="3">Sindico</option><option value="4">Cooperativa</option><option value="5">Administrador</option></select></label>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000"></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo / SP"></label>
         <label class="campo campo--largo">Rua e número<input type="text" name="endereco" placeholder="Rua, número, complemento"></label>
