@@ -11,28 +11,65 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(name = "EnderecoServlet", value = "/enderecos")
+@WebServlet(urlPatterns = {"/adicionarEndereco", "/alterarEndereco", "/deletarEndereco"})
 public class EnderecoServlet extends HttpServlet {
+    EnderecoDAO daoEnderecos = new EnderecoDAO();
 
-    private EnderecoDAO enderecoDAO;
+    private void adicionarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String cep = request.getParameter("cep");
+        String cidade = request.getParameter("cidade");
+        String estado = request.getParameter("estado");
+        String bairro = request.getParameter("bairro");
+        String rua = request.getParameter("rua");
+        int numero = Integer.parseInt(request.getParameter("numero"));
+        String complemento = request.getParameter("complemento");
 
-    @Override
-    public void init() {
-        enderecoDAO = new EnderecoDAO();
+        //Id 0 porque o banco gera.
+        boolean adicionado = daoEnderecos.inserir(
+                new Endereco(0, cep, cidade, estado, bairro, rua, numero, complemento)
+        );
+
+        request.setAttribute("adicionado", adicionado ? "true" : "false");
     }
 
-    @Override
-    protected void doGet(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws ServletException, IOException {
+    private void alterarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idEndereco"));
 
-        List<Endereco> enderecos = enderecoDAO.selecionarTodos();
+        Endereco endereco = daoEnderecos.selecionarPorId(id);
+        endereco.setCep(request.getParameter("cep"));
+        endereco.setCidade(request.getParameter("cidade"));
+        endereco.setEstado(request.getParameter("estado"));
+        endereco.setBairro(request.getParameter("bairro"));
+        endereco.setRua(request.getParameter("rua"));
+        endereco.setNumero(Integer.parseInt(request.getParameter("numero")));
+        endereco.setComplemento(request.getParameter("complemento"));
 
-        request.setAttribute("enderecos", enderecos);
+        boolean alterado = daoEnderecos.atualizar(endereco);
 
-        request.getRequestDispatcher(
-                "/WEB-INF/views/lista-enderecos.jsp" // não temos o caminho do jsp ainda
-        ).forward(request, response);
+        request.setAttribute("alterado", alterado ? "true" : "false");
+    }
+
+    private void deletarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idEndereco"));
+
+        Endereco endereco = daoEnderecos.selecionarPorId(id);
+        boolean deletado = daoEnderecos.deletar(endereco);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarEndereco")) {
+            adicionarEndereco(request, response);
+        }
+        else if (caminho.equals("/alterarEndereco")) {
+            alterarEndereco(request, response);
+        }
+        else if (caminho.equals("/deletarEndereco")) {
+            deletarEndereco(request, response);
+        }
     }
 }
