@@ -37,4 +37,12 @@ public class TelefoneServlet extends HttpServlet {
         request.setAttribute("alterado", alterado ? "true" : "false");
     }
 
+    private void deletarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idTelefone"));
+
+        boolean deletado = daoTelefones.deletar(id);
+
+        request.setAttribute("deletado", deletado ? "true" : "false");
+    }
+
 }
