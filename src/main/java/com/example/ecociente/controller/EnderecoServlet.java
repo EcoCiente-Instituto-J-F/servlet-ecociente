@@ -31,4 +31,21 @@ public class EnderecoServlet extends HttpServlet {
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
     }
+
+    private void alterarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idEndereco"));
+
+        Endereco endereco = daoEnderecos.selecionarPorId(id);
+        endereco.setCep(request.getParameter("cep"));
+        endereco.setCidade(request.getParameter("cidade"));
+        endereco.setEstado(request.getParameter("estado"));
+        endereco.setBairro(request.getParameter("bairro"));
+        endereco.setRua(request.getParameter("rua"));
+        endereco.setNumero(Integer.parseInt(request.getParameter("numero")));
+        endereco.setComplemento(request.getParameter("complemento"));
+
+        boolean alterado = daoEnderecos.atualizar(endereco);
+
+        request.setAttribute("alterado", alterado ? "true" : "false");
+    }
 }
