@@ -45,4 +45,19 @@ public class TelefoneServlet extends HttpServlet {
         request.setAttribute("deletado", deletado ? "true" : "false");
     }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarTelefone")) {
+            adicionarTelefone(request, response);
+        }
+        else if (caminho.equals("/alterarTelefone")) {
+            alterarTelefone(request, response);
+        }
+        else if (caminho.equals("/deletarTelefone")) {
+            deletarTelefone(request, response);
+        }
+    }
+
 }
