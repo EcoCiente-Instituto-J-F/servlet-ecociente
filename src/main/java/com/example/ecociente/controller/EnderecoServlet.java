@@ -57,4 +57,19 @@ public class EnderecoServlet extends HttpServlet {
 
         request.setAttribute("deletado", deletado ? "true" : "false");
     }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setCharacterEncoding("UTF-8");
+
+        String caminho = request.getServletPath();
+        if (caminho.equals("/adicionarEndereco")) {
+            adicionarEndereco(request, response);
+        }
+        else if (caminho.equals("/alterarEndereco")) {
+            alterarEndereco(request, response);
+        }
+        else if (caminho.equals("/deletarEndereco")) {
+            deletarEndereco(request, response);
+        }
+    }
 }
