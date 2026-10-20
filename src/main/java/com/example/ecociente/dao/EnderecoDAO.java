@@ -16,7 +16,7 @@ public class EnderecoDAO {
     public boolean inserir(Endereco endereco){
         String sql = """
                 INSERT INTO endereco 
-                    (id_endereco, cep, cidade, estado, bairro, rua, numero, complemento)
+                    (cep, cidade, estado, bairro, rua, numero, complemento)
                 VALUES
                     (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
@@ -26,7 +26,6 @@ public class EnderecoDAO {
                 PreparedStatement ps =
                         conexao.prepareStatement(sql)
         ){
-            ps.setInt(1, endereco.getIdEndereco());
             ps.setString(2, endereco.getCep());
             ps.setString(3, endereco.getCidade());
             ps.setString(4, endereco.getEstado());
