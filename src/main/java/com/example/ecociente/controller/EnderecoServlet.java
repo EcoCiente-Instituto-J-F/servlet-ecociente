@@ -15,11 +15,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/adicionarEndereco", "/alterarEndereco", "/deletarEndereco"})
+@WebServlet(urlPatterns = {"/selectEndereco", "/adicionarEndereco", "/alterarEndereco", "/deletarEndereco"})
 public class EnderecoServlet extends HttpServlet {
     EnderecoDAO daoEnderecos = new EnderecoDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getServletPath().equals("/selectEndereco")) {
+            mostrarSelects(request, response);
+        }
+    }
+
+    //Busca os enderecos e envia para a JSP.
+    private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        List<Endereco> enderecos = daoEnderecos.selecionarTodos();
+
+        request.setAttribute("enderecos", enderecos);
+        request.getRequestDispatcher("/WEB-INF/views/lista-enderecos.jsp").forward(request, response);
+
+    }
 
     //Liga o endereco recem-criado ao dono certo (usuario ou condominio).
     private boolean vincularEndereco(String tipoDono, int idDono, int idEndereco) {
