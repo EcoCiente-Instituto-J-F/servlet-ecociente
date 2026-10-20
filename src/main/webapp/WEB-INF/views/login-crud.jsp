@@ -31,7 +31,6 @@
           Continue gerenciando seus dados de onde parou.
         </p>
 
-        <!-- TODO: LINK -> confirme a rota que vai receber o login do CRUD (hoje só existe a tela) -->
         <form class="login-crud__form" action="${ctx}/login-crud" method="POST">
 
           <div class="login-crud__grupo">
@@ -58,7 +57,6 @@
                 </svg>
               </button>
             </div>
-            <!-- TODO: LINK -> troque href="#" pela rota de recuperação de senha -->
             <a class="login-crud__esqueci" href="#">Esqueceu sua senha?</a>
           </div>
 
