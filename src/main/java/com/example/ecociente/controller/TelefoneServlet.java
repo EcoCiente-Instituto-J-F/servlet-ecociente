@@ -15,5 +15,14 @@ import java.util.List;
 public class TelefoneServlet extends HttpServlet {
     TelefoneDAO daoTelefones = new TelefoneDAO();
 
+    private void adicionarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String numero = request.getParameter("numero");
+        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
+
+        //Id 0 porque o banco gera.
+        boolean adicionado = daoTelefones.inserir(new Telefone(0, numero, idUsuario));
+
+        request.setAttribute("adicionado", adicionado ? "true" : "false");
+    }
 
 }
