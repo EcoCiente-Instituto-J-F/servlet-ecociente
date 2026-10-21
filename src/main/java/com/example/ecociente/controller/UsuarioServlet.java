@@ -1,6 +1,7 @@
 package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.UsuarioDAO;
+import com.example.ecociente.model.CadastroPendente;
 import com.example.ecociente.model.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -8,7 +9,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import com.example.ecociente.util.Senha;
+import jakarta.servlet.http.HttpSession;
+
 import java.time.LocalDate;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -41,6 +45,35 @@ public class UsuarioServlet extends HttpServlet {
         }
 
     }
+
+    private void processarEtapaConta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String nome = request.getParameter("nome");
+        String email = request.getParameter("email");
+        String senha = request.getParameter("senha");
+        String confirmaSenha = request.getParameter("confirma_senha");
+
+        String erro = validarCadastro(nome, email, senha, confirmaSenha);
+        if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
+            erro = "Este e-mail já está cadastrado.";
+        }
+        if (erro != null) {
+            request.setAttribute("erroCadastro", erro);
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = new CadastroPendente();
+        cad.setNome(nome.trim());
+        cad.setEmail(email.trim().toLowerCase());
+        cad.setSenhaHash(Senha.gerarHash(senha));
+
+        HttpSession sessao = request.getSession();
+        sessao.setAttribute("cadastroPendente", cad);
+        sessao.setAttribute("etapaCadastro", "perfil");
+
+        mostrarCadastro(request, response);
+    }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
