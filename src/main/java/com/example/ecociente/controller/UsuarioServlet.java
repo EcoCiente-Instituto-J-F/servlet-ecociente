@@ -47,7 +47,12 @@ public class UsuarioServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
 
         if (request.getServletPath().equals("/cadastro")) {
-            cadastrarUsuario(request, response);
+            String etapa = request.getParameter("etapa");
+            if ("perfil".equals(etapa)) {
+                processarEtapaPerfil(request, response);
+            } else {
+                processarEtapaConta(request, response);
+            }
         }
     }
 
