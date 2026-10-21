@@ -1,0 +1,35 @@
+<%@ page pageEncoding="UTF-8" %>
+<c:set var="tituloEtapa" value="Tipo de condomínio" />
+<c:set var="subtituloEtapa" value="Selecione o tipo do seu condomínio." />
+<%@ include file="_cabecalho.jsp" %>
+
+<form action="${ctx}/cadastro" method="POST">
+    <input type="hidden" name="etapa" value="tipo">
+
+    <div class="opcoes" role="radiogroup" aria-label="Tipo de condomínio">
+        <label class="opcao">
+            <input type="radio" name="tipoCondominio" value="residencial" required ${cad.tipoCondominio == 'residencial' ? 'checked' : ''}>
+            <span class="opcao-check" aria-hidden="true"></span>
+            <img class="opcao-icone" src="${ctx}/assets/icone-tipo-residencial.svg" alt="">
+            <span class="opcao-titulo">Residencial</span>
+            <span class="opcao-desc">Prédios e conjuntos de moradia.</span>
+        </label>
+        <label class="opcao">
+            <input type="radio" name="tipoCondominio" value="comercial" ${cad.tipoCondominio == 'comercial' ? 'checked' : ''}>
+            <span class="opcao-check" aria-hidden="true"></span>
+            <img class="opcao-icone" src="${ctx}/assets/icone-tipo-comercial.svg" alt="">
+            <span class="opcao-titulo">Comercial</span>
+            <span class="opcao-desc">Salas, escritórios e lojas.</span>
+        </label>
+        <label class="opcao">
+            <input type="radio" name="tipoCondominio" value="industrial" ${cad.tipoCondominio == 'industrial' ? 'checked' : ''}>
+            <span class="opcao-check" aria-hidden="true"></span>
+            <img class="opcao-icone" src="${ctx}/assets/icone-tipo-industrial.svg" alt="">
+            <span class="opcao-titulo">Industrial</span>
+            <span class="opcao-desc">Galpões e polos industriais.</span>
+        </label>
+    </div>
+
+    <c:set var="textoAvancar" value="Próximo" />
+    <%@ include file="_botoes.jsp" %>
+</form>
