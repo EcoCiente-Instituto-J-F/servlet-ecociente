@@ -36,7 +36,7 @@
       </div>
       <div class="cabecalho-pagina__acoes">
         <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-usuario" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
-        <a class="botao botao--destaque" href="#" data-abrir-modal="ficha-usuario"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
+                <a class="botao botao--destaque" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="ficha-usuario"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-usuario"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
@@ -99,7 +99,7 @@
   </form>
 </dialog>
 
-<dialog class="modal" id="ficha-usuario" style="--largura:403px" aria-labelledby="ficha-usuario-titulo">
+<dialog class="modal" id="ficha-usuario" data-ficha style="--largura:403px" aria-labelledby="ficha-usuario-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha do usuário</p>
       <h2 id="ficha-usuario-titulo" class="modal__titulo">Detalhes</h2>
@@ -108,14 +108,14 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="ficha__perfil">
-        <span class="ficha__foto" aria-hidden="true">MJ</span>
-        <div><p class="ficha__nome">Michael Jackson</p><span class="ficha__tag">Síndico</span></div>
+        <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
+        <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
       </div>
       <ul>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/email.svg" alt=""></span><div><p class="ficha__rotulo">E-mail</p><p class="ficha__valor">michaelson.ofc@gmail.com</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor">(11) 98877-1122</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor">Rua mágica, 100 - Estados Unidos, EUA</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Tipo de usuário</p><p class="ficha__valor">Síndico residencial</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/email.svg" alt=""></span><div><p class="ficha__rotulo">E-mail</p><p class="ficha__valor" data-campo="email">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor" data-campo="telefone">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Tipo de usuário</p><p class="ficha__valor" data-campo="tipo">—</p></div></li>
       </ul>
     </div>
     <footer class="modal__rodape">
