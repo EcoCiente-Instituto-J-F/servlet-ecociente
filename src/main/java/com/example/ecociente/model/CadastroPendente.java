@@ -21,6 +21,10 @@ public class CadastroPendente {
     private String bloco;
     private String apto;
     private String avisos;
+    private String termos;
+
+    public String getTermos() { return termos; }
+    public void setTermos(String termos) { this.termos = termos; }
 
     public String getAvisos() { return avisos; }
     public void setAvisos(String avisos) { this.avisos = avisos; }
