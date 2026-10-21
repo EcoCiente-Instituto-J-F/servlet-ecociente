@@ -14,14 +14,16 @@
   });
 
   /* ---------- 2. SELEÇÃO DE LINHA: habilita o botão Editar ---------- */
-  const botaoEditar = document.querySelector('[data-acao="editar"]');
+  // Botões que só funcionam com uma linha marcada (Editar e, em Usuários, Detalhes)
+  const botoesDeSelecao = document.querySelectorAll('[data-acao="editar"], [data-requer-selecao]');
   let bolinhaSelecionada = document.querySelector('input[name="linha"]:checked');
 
   function atualizarBotaoEditar() {
-    if (!botaoEditar) return;
     const habilitado = bolinhaSelecionada !== null;
-    botaoEditar.setAttribute('aria-disabled', String(!habilitado));
-    botaoEditar.tabIndex = habilitado ? 0 : -1;
+    botoesDeSelecao.forEach((botao) => {
+      botao.setAttribute('aria-disabled', String(!habilitado));
+      botao.tabIndex = habilitado ? 0 : -1;
+    });
   }
 
   document.addEventListener('click', (evento) => {
@@ -37,6 +39,40 @@
   });
   atualizarBotaoEditar();
 
+  /* ---------- FICHA: mostra os dados da linha selecionada ---------- */
+
+  const TELEFONES_FICTICIOS = ['(11) 98877-1122', '(11) 97654-3210', '(21) 99123-4567', '(31) 98456-7788', '(41) 99888-1020'];
+  const ENDERECOS_FICTICIOS = ['Rua das Acácias, 120', 'Av. Brasil, 1500', 'Rua do Comércio, 45', 'Rua das Palmeiras, 300', 'Av. Paulista, 900'];
+
+  function iniciais(nome) {
+    const partes = nome.split(/\s+/).filter(Boolean);
+    if (partes.length === 0) return '—';
+    const ultima = partes.length > 1 ? partes[partes.length - 1][0] : '';
+    return (partes[0][0] + ultima).toUpperCase();
+  }
+
+  function preencherFicha(modal) {
+    if (!modal.hasAttribute('data-ficha') || !bolinhaSelecionada) return;
+    const linha = bolinhaSelecionada.closest('tr');
+    const celulas = linha.children;                                   // 0 nome, 1 e-mail, 2 localidade, 3 tipo
+    const posicao = Array.from(linha.parentElement.children).indexOf(linha);
+    const nome = celulas[0].textContent.trim();
+    const localidade = celulas[2].textContent.trim();
+    const tipo = celulas[3].textContent.trim();
+    const dados = {
+      iniciais: iniciais(nome),
+      nome: nome,
+      tag: tipo.split(' ')[0],
+      email: celulas[1].textContent.trim(),
+      telefone: linha.dataset.telefone || TELEFONES_FICTICIOS[posicao % TELEFONES_FICTICIOS.length],
+      endereco: linha.dataset.endereco || ENDERECOS_FICTICIOS[posicao % ENDERECOS_FICTICIOS.length] + ' - ' + localidade,
+      tipo: tipo
+    };
+    modal.querySelectorAll('[data-campo]').forEach((elemento) => {
+      elemento.textContent = dados[elemento.dataset.campo] || '—';
+    });
+  }
+
   /* ---------- 3. MODAIS: abrir e fechar ---------- */
   function abrirModal(idDoModal, modo) {
     const modal = document.getElementById(idDoModal);
@@ -47,6 +83,7 @@
       elemento.dataset.textoNovo ??= elemento.textContent;
       elemento.textContent = modo === 'editar' ? elemento.dataset.textoEditar : elemento.dataset.textoNovo;
     });
+    preencherFicha(modal);
     modal.showModal();
   }
 
