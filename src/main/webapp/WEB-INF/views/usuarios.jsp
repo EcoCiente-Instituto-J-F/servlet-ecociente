@@ -82,9 +82,13 @@
         <label class="campo">E-mail<input type="email" name="email" placeholder="email@exemplo.com"></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000"></label>
         <label class="campo">Tipo de usuário<select name="tipo"><option>Usuário comum</option><option>Usuário Comercial</option><option>Síndico Residencial</option><option>Cooperativa</option></select></label>
-        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000"></label>
-        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo / SP"></label>
-        <label class="campo campo--largo">Rua e número<input type="text" name="endereco" placeholder="Rua, número, complemento"></label>
+        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
+        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo"></label>
+        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
+        <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
+        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua"></label>
+        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0"></label>
+        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
