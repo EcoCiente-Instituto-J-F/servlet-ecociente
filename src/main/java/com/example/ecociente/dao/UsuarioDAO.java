@@ -88,9 +88,37 @@ public class UsuarioDAO {
 
     }
 
+    // selecionar usuario por email
+
+    public Usuario selecionarPorEmail(String email){
+        String sql = """
+            SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
+            FROM usuario
+            WHERE email = ?
+            """;
+        Usuario retorno = null;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()){
+                retorno = new Usuario(
+                        rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4),
+                        rs.getDate(5).toLocalDate(), rs.getBoolean(6), rs.getInt(7), rs.getInt(8)
+                );
+            }
+
+        }catch (SQLException sqle){
+            System.out.println("Erro ao selecionar usuario por email" + sqle.getMessage());
+
+        }finally {
+            return retorno;
+        }
+    }
+
     //seleciona todos
-
-
 
     public ArrayList<Usuario> selecionarTodos(){
         ArrayList<Usuario> todosUsuarios = new ArrayList<>();
