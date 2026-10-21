@@ -205,11 +205,14 @@ public class UsuarioServlet extends HttpServlet {
         String cpf = request.getParameter("cpf");
         String nascimento = request.getParameter("nascimento");
         String termos = request.getParameter("termos");
+        String avisos = request.getParameter("avisos");
 
         cad.setNome(nome);
         cad.setTelefone(telefone);
         cad.setCpf(cpf);
         cad.setNascimento(nascimento);
+        cad.setAvisos(avisos);
+        cad.setTermos(termos);
         sessao.setAttribute("cadastroPendente", cad);
 
         if (nome == null || !nome.trim().matches("\\S+(\\s+\\S+)+")) {
