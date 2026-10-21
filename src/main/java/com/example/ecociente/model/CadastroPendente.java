@@ -20,6 +20,10 @@ public class CadastroPendente {
     private String bairro;
     private String bloco;
     private String apto;
+    private String avisos;
+
+    public String getAvisos() { return avisos; }
+    public void setAvisos(String avisos) { this.avisos = avisos; }
 
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
