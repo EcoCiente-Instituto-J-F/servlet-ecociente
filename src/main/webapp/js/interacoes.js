@@ -40,9 +40,10 @@
   atualizarBotaoEditar();
 
   /* ---------- FICHA: mostra os dados da linha selecionada ---------- */
-
   const TELEFONES_FICTICIOS = ['(11) 98877-1122', '(11) 97654-3210', '(21) 99123-4567', '(31) 98456-7788', '(41) 99888-1020'];
-  const ENDERECOS_FICTICIOS = ['Rua das Acácias, 120', 'Av. Brasil, 1500', 'Rua do Comércio, 45', 'Rua das Palmeiras, 300', 'Av. Paulista, 900'];
+  const RUAS_FICTICIAS = ['Rua das Acácias, 120', 'Av. Brasil, 1500', 'Rua do Comércio, 45', 'Rua das Palmeiras, 300', 'Av. Paulista, 900'];
+  const CIDADES_FICTICIAS = ['São Paulo, SP', 'Campinas, SP', 'Rio de Janeiro, RJ', 'Belo Horizonte, MG', 'Curitiba, PR'];
+  const COOPERATIVAS_FICTICIAS = ['Verde Viva', 'Recicla Mais', 'EcoCoop Cidade', 'Planeta Limpo', 'Mãos Verdes'];
 
   function iniciais(nome) {
     const partes = nome.split(/\s+/).filter(Boolean);
@@ -51,27 +52,40 @@
     return (partes[0][0] + ultima).toUpperCase();
   }
 
+  const FICHAS = {
+    'ficha-usuario': (c, extra) => ({
+      iniciais: iniciais(c[0]), nome: c[0], tag: c[3].split(' ')[0], email: c[1],
+      telefone: extra.telefone, endereco: extra.rua + ' - ' + c[2], tipo: c[3]
+    }),
+    'ficha-condominio': (c, extra) => ({
+      iniciais: iniciais(c[0]), nome: c[0], tag: c[2], cnpj: c[1],
+      endereco: extra.rua + ' - ' + extra.cidade, sindico: c[3]
+    }),
+    'ficha-cooperativa': (c, extra) => ({
+      iniciais: iniciais(c[0]), nome: extra.cooperativa, tag: c[3], cnpj: c[1],
+      telefone: extra.telefone, endereco: extra.rua + ' - ' + extra.cidade, responsavel: c[0]
+    })
+  };
+
   function preencherFicha(modal) {
-    if (!modal.hasAttribute('data-ficha') || !bolinhaSelecionada) return;
+    const montar = FICHAS[modal.id];
+    if (!montar || !modal.hasAttribute('data-ficha') || !bolinhaSelecionada) return;
     const linha = bolinhaSelecionada.closest('tr');
-    const celulas = linha.children;                                   // 0 nome, 1 e-mail, 2 localidade, 3 tipo
+    const colunas = Array.from(linha.children).map((celula) => celula.textContent.trim());
     const posicao = Array.from(linha.parentElement.children).indexOf(linha);
-    const nome = celulas[0].textContent.trim();
-    const localidade = celulas[2].textContent.trim();
-    const tipo = celulas[3].textContent.trim();
-    const dados = {
-      iniciais: iniciais(nome),
-      nome: nome,
-      tag: tipo.split(' ')[0],
-      email: celulas[1].textContent.trim(),
-      telefone: linha.dataset.telefone || TELEFONES_FICTICIOS[posicao % TELEFONES_FICTICIOS.length],
-      endereco: linha.dataset.endereco || ENDERECOS_FICTICIOS[posicao % ENDERECOS_FICTICIOS.length] + ' - ' + localidade,
-      tipo: tipo
-    };
+    const exemplo = (lista) => lista[posicao % lista.length];
+    const dados = montar(colunas, {
+      telefone: exemplo(TELEFONES_FICTICIOS),
+      rua: exemplo(RUAS_FICTICIAS),
+      cidade: exemplo(CIDADES_FICTICIAS),
+      cooperativa: exemplo(COOPERATIVAS_FICTICIAS)
+    });
+    Object.assign(dados, linha.dataset);   // dados reais (data-*) da linha passam na frente dos exemplos
     modal.querySelectorAll('[data-campo]').forEach((elemento) => {
       elemento.textContent = dados[elemento.dataset.campo] || '—';
     });
   }
+
 
   /* ---------- 3. MODAIS: abrir e fechar ---------- */
   function abrirModal(idDoModal, modo) {
