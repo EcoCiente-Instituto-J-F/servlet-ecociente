@@ -51,34 +51,6 @@ public class UsuarioServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
     }
 
-    private void processarEtapaConta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String nome = request.getParameter("nome");
-        String email = request.getParameter("email");
-        String senha = request.getParameter("senha");
-        String confirmaSenha = request.getParameter("confirma_senha");
-
-        String erro = validarCadastro(nome, email, senha, confirmaSenha);
-        if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
-            erro = "Este e-mail já está cadastrado.";
-        }
-        if (erro != null) {
-            request.setAttribute("erroCadastro", erro);
-            mostrarCadastro(request, response);
-            return;
-        }
-
-        CadastroPendente cad = new CadastroPendente();
-        cad.setNome(nome.trim());
-        cad.setEmail(email.trim().toLowerCase());
-        cad.setSenhaHash(Senha.gerarHash(senha));
-
-        HttpSession sessao = request.getSession();
-        sessao.setAttribute("cadastroPendente", cad);
-        sessao.setAttribute("etapaCadastro", "perfil");
-
-        mostrarCadastro(request, response);
-    }
-
     private void processarEtapaPerfil(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -126,47 +98,38 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
-    private void cadastrarUsuario(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String nome = request.getParameter("nome");
+    private String validarConta(String email, String senha, String confirmaSenha) {
+        if (email == null || !email.trim().matches("^[\\w.+-]+@[\\w-]+\\.[\\w.]+$")) return "Informe um e-mail válido.";
+        if (senha == null || senha.length() < 8) return "A senha precisa ter pelo menos 8 caracteres.";
+        if (!senha.equals(confirmaSenha)) return "As senhas não conferem.";
+        return null;
+    }
+
+    private void processarEtapaConta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String senha = request.getParameter("senha");
         String confirmaSenha = request.getParameter("confirma_senha");
 
-        String erro = validarCadastro(nome, email, senha, confirmaSenha);
+        String erro = validarConta(email, senha, confirmaSenha);
         if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
             erro = "Este e-mail já está cadastrado.";
         }
         if (erro != null) {
             request.setAttribute("erroCadastro", erro);
-            request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
+            mostrarCadastro(request, response);
             return;
         }
 
-        Usuario usuario = new Usuario(
-                0,
-                nome.trim(),
-                email.trim().toLowerCase(),
-                Senha.gerarHash(senha),
-                LocalDate.now(),
-                true,
-                1
-        );
+        CadastroPendente cad = new CadastroPendente();
+        cad.setEmail(email.trim().toLowerCase());
+        cad.setSenhaHash(Senha.gerarHash(senha));
 
-        if (!usuarioDAO.inserir(usuario)) {
-            request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
-            request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
-            return;
-        }
+        HttpSession sessao = request.getSession();
+        sessao.setAttribute("cadastroPendente", cad);
+        sessao.setAttribute("etapaCadastro", "perfil");
 
-        response.sendRedirect(request.getContextPath() + "/inicio");
+        mostrarCadastro(request, response);
     }
 
-    private String validarCadastro(String nome, String email, String senha, String confirmaSenha) {
-        if (nome == null || nome.isBlank()) return "Informe seu nome.";
-        if (nome.trim().length() > 150) return "O nome pode ter no máximo 150 caracteres.";
-        if (email == null || !email.trim().matches("^[\\w.+-]+@[\\w-]+\\.[\\w.]+$")) return "Informe um e-mail válido.";
-        if (senha == null || senha.length() < 6) return "A senha precisa ter pelo menos 6 caracteres.";
-        if (!senha.equals(confirmaSenha)) return "As senhas não conferem.";
-        return null;
-    }
+
 }
