@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.List;
 
 //Servlet usada para as ações do CRUD de Condomínios.
-@WebServlet(urlPatterns = {"/selectCondominio", "/adicionarCondominio", "/alterarCondominio", "/deletarCondominio"})
+@WebServlet(urlPatterns = {"/condominios", "/adicionarCondominio", "/alterarCondominio", "/deletarCondominio"})
 public class CondominioServlet extends HttpServlet {
     CondominioDAO daoCondominios = new CondominioDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getServletPath().equals("/selectCondominio")) {
+        if (request.getServletPath().equals("/condominios")) {
             mostrarSelects(request, response);
         }
     }
