@@ -17,6 +17,9 @@ import java.util.List;
 public class SindicoServlet extends HttpServlet {
     SindicoDAO daoSindicos = new SindicoDAO();
 
+    //Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000).
+    private static final String REGEX_CPF = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11}";
+
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/selectSindico")) {
             mostrarSelects(request, response);
@@ -48,6 +51,13 @@ public class SindicoServlet extends HttpServlet {
 
     private void adicionarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String cpf = request.getParameter("cpf");
+
+        if (cpf == null || !cpf.matches(REGEX_CPF)) {
+            request.setAttribute("erro", "CPF inválido. Use o formato 000.000.000-00");
+            mostrarSelects(request, response);
+            return;
+        }
+
         LocalDate dataInicio = LocalDate.parse(request.getParameter("dataInicioMandato"));
         LocalDate dataFim = lerDataFim(request);
         int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
@@ -65,10 +75,17 @@ public class SindicoServlet extends HttpServlet {
 
     private void alterarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idSindico"));
+        String cpf = request.getParameter("cpf");
+
+        if (cpf == null || !cpf.matches(REGEX_CPF)) {
+            request.setAttribute("erro", "CPF inválido. Use o formato 000.000.000-00");
+            mostrarSelects(request, response);
+            return;
+        }
 
         //Busca no banco e troca só o que veio do formulário.
         Sindico sindico = daoSindicos.buscarPorId(id);
-        sindico.setCpf(request.getParameter("cpf"));
+        sindico.setCpf(cpf);
         sindico.setDataInicioMandato(LocalDate.parse(request.getParameter("dataInicioMandato")));
         sindico.setDataFimMandato(lerDataFim(request));
         sindico.setCondominio(Integer.parseInt(request.getParameter("idCondominio")));
