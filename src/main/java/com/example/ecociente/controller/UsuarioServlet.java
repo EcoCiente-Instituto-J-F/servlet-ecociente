@@ -74,6 +74,38 @@ public class UsuarioServlet extends HttpServlet {
         mostrarCadastro(request, response);
     }
 
+    private void processarEtapaPerfil(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+        if (cad == null) {
+            // sessao expirou ou a etapa foi acessada fora de ordem -- volta pro inicio
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String perfil = request.getParameter("perfil");
+        if (perfil == null || perfil.isBlank()) {
+            request.setAttribute("erroCadastro", "Selecione um perfil.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        cad.setPerfil(perfil);
+        sessao.setAttribute("cadastroPendente", cad);
+
+        // TODO: a etapa seguinte (depois de "perfil") ainda nao esta conectada.
+        request.setAttribute("erroCadastro", "Perfil \"" + perfil + "\" selecionado. A próxima etapa ainda está em construção.");
+        mostrarCadastro(request, response);
+    }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
