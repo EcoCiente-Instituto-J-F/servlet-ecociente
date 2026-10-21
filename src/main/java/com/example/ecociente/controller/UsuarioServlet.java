@@ -46,6 +46,11 @@ public class UsuarioServlet extends HttpServlet {
 
     }
 
+    private void mostrarCadastro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getSession().setAttribute("abaAtiva", "cadastro");
+        request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
+    }
+
     private void processarEtapaConta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nome = request.getParameter("nome");
         String email = request.getParameter("email");
