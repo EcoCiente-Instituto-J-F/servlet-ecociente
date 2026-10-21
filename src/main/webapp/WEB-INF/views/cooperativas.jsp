@@ -36,7 +36,7 @@
       </div>
       <div class="cabecalho-pagina__acoes">
         <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-cooperativa" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
-        <a class="botao botao--destaque" href="#" data-abrir-modal="ficha-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
+        <a class="botao botao--destaque" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="ficha-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
@@ -98,7 +98,7 @@
   </form>
 </dialog>
 
-<dialog class="modal" id="ficha-cooperativa" style="--largura:399px" aria-labelledby="ficha-cooperativa-titulo">
+<dialog class="modal" id="ficha-cooperativa" data-ficha style="--largura:399px" aria-labelledby="ficha-cooperativa-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha da cooperativa</p>
       <h2 id="ficha-cooperativa-titulo" class="modal__titulo">Detalhes</h2>
@@ -106,16 +106,15 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
-      <!-- TODO: BACK-END -> preencha foto, nome e dados com o registro selecionado -->
       <div class="ficha__perfil">
-        <span class="ficha__foto" aria-hidden="true">CM</span>
-        <div><p class="ficha__nome">Verde Viva</p><span class="ficha__tag">Ativo</span></div>
+        <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
+        <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
       </div>
       <ul>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor">12.345.678/0001-90</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor">(11) 96754-9087</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor">Rua mágica, 100 - Estados Unidos, EUA</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Responsável</p><p class="ficha__valor">Carlos Mendes</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor" data-campo="cnpj">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor" data-campo="telefone">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Responsável</p><p class="ficha__valor" data-campo="responsavel">—</p></div></li>
       </ul>
     </div>
     <footer class="modal__rodape">

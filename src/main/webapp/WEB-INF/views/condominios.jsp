@@ -36,7 +36,7 @@
       </div>
       <div class="cabecalho-pagina__acoes">
         <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-condominio" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
-        <a class="botao botao--destaque" href="#" data-abrir-modal="ficha-condominio"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
+        <a class="botao botao--destaque" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="ficha-condominio"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-condominio"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
@@ -99,7 +99,7 @@
   </form>
 </dialog>
 
-<dialog class="modal" id="ficha-condominio" style="--largura:399px" aria-labelledby="ficha-condominio-titulo">
+<dialog class="modal" id="ficha-condominio" data-ficha style="--largura:399px" aria-labelledby="ficha-condominio-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha do condomínio</p>
       <h2 id="ficha-condominio-titulo" class="modal__titulo">Detalhes</h2>
@@ -108,13 +108,13 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="ficha__perfil">
-        <img class="ficha__foto" src="${ctx}/assets/img/condominios/jardins-do-vale.jpg" alt="Foto do condomínio Jardins do Vale">
-        <div><p class="ficha__nome">Jardins do Vale</p><span class="ficha__tag">Residencial</span></div>
+        <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
+        <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
       </div>
       <ul>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor">45.678.912/0001-23</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor">Rua das Hortênsias, 340 - São Paulo, SP</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Síndico responsável</p><p class="ficha__valor">Renato Souza</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor" data-campo="cnpj">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Síndico responsável</p><p class="ficha__valor" data-campo="sindico">—</p></div></li>
       </ul>
     </div>
     <footer class="modal__rodape">
