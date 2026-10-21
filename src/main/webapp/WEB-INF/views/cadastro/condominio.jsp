@@ -73,52 +73,6 @@
         </c:when>
     </c:choose>
 
-    <c:choose>
-        <c:when test="${tipo == 'residencial'}">
-            <c:set var="q1n" value="unidades" /><c:set var="q1l" value="Unidades" /><c:set var="q1p" value="Nº" />
-            <c:set var="q2n" value="blocos" /><c:set var="q2l" value="Blocos" /><c:set var="q2p" value="Nº" />
-            <c:set var="q3n" value="moradores" /><c:set var="q3l" value="Moradores" /><c:set var="q3p" value="Aprox." />
-        </c:when>
-        <c:when test="${tipo == 'comercial'}">
-            <c:set var="q1n" value="salas" /><c:set var="q1l" value="Salas" /><c:set var="q1p" value="Nº" />
-            <c:set var="q2n" value="andares" /><c:set var="q2l" value="Andares" /><c:set var="q2p" value="Nº" />
-            <c:set var="q3n" value="empresas" /><c:set var="q3l" value="Empresas" /><c:set var="q3p" value="Nº" />
-        </c:when>
-    </c:choose>
-
-    <c:if test="${tipo != 'industrial'}">
-    <div class="form-row quatro">
-        <div class="form-group" data-erro="Digite um número maior que zero.">
-            <label for="cad-q1">${q1l}</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="number" id="cad-q1" name="${q1n}" value="<c:out value='${cad[q1n]}' />" placeholder="${q1p}" min="1" max="100000" inputmode="numeric" required>
-            </div>
-        </div>
-        <div class="form-group" data-erro="Digite um número maior que zero.">
-            <label for="cad-q2">${q2l}</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="number" id="cad-q2" name="${q2n}" value="<c:out value='${cad[q2n]}' />" placeholder="${q2p}" min="1" max="100000" inputmode="numeric" required>
-            </div>
-        </div>
-        <div class="form-group" data-erro="Digite um número válido.">
-            <label for="cad-q3">${q3l}</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="number" id="cad-q3" name="${q3n}" value="<c:out value='${cad[q3n]}' />" placeholder="${q3p}" min="0" max="10000000" inputmode="numeric">
-            </div>
-        </div>
-        <div class="form-group" data-erro="Escolha Sim ou Não.">
-            <label for="cad-coleta">Coleta seletiva</label>
-            <div class="input-wrapper">
-                <select class="input-field" id="cad-coleta" name="coletaSeletiva" required>
-                    <option value="" disabled ${empty cad.coletaSeletiva ? 'selected' : ''}>Sim/Não</option>
-                    <option value="sim" ${cad.coletaSeletiva == 'sim' ? 'selected' : ''}>Sim</option>
-                    <option value="nao" ${cad.coletaSeletiva == 'nao' ? 'selected' : ''}>Não</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    </c:if>
-
     <c:set var="textoAvancar" value="Próximo" />
     <%@ include file="_botoes.jsp" %>
 </form>

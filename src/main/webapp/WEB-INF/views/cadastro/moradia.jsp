@@ -19,7 +19,7 @@
             <span class="opcao-check" aria-hidden="true"></span>
             <img class="opcao-icone" src="${ctx}/assets/icone-moradia-casa.svg" alt="">
             <span class="opcao-titulo">Não, moro em casa</span>
-            <span class="opcao-desc">Seguimos direto para o seu endereço.</span>
+            <span class="opcao-desc">Sua conta é criada em seguida.</span>
         </label>
     </div>
 
