@@ -13,11 +13,17 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 
 //Servlet responsavel pelo login da tela administrativa (login-crud.jsp).
-@WebServlet(urlPatterns = {"/login-crud"})
+@WebServlet(urlPatterns = {"/login-crud", "/logout"})
 public class LoginServlet extends HttpServlet {
     UsuarioDAO daoUsuarios = new UsuarioDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (request.getServletPath().equals("/logout")) {
+            HttpSession sessao = request.getSession(false);
+            if (sessao != null) sessao.invalidate();
+            response.sendRedirect(request.getContextPath() + "/inicio");
+            return;
+        }
         request.getRequestDispatcher("/WEB-INF/views/login-crud.jsp").forward(request, response);
     }
 
