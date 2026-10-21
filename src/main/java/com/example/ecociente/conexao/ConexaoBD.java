@@ -12,6 +12,11 @@ public class ConexaoBD {
     private static final Properties env = new Properties();
 
     static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Driver do PostgreSQL nao encontrado", e);
+        }
         try (InputStream input = ConexaoBD.class.getClassLoader().getResourceAsStream(".env")) {
             if (input == null) {
                 throw new RuntimeException("Arquivo .env não encontrado em src/main/resources");
