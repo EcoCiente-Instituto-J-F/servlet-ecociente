@@ -13,7 +13,7 @@ import java.time.LocalDate;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/cadastro", "/selectUsuario"})
+@WebServlet(urlPatterns = {"/cadastro", "/usuarios"})
 public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
@@ -30,7 +30,7 @@ public class UsuarioServlet extends HttpServlet {
     ) throws ServletException, IOException {
         String caminho = request.getServletPath();
 
-        if (caminho.equals("/selectUsuario")){
+        if (caminho.equals("/usuarios")){
             List<Usuario> usuarios = usuarioDAO.selecionarTodos();
             request.setAttribute("usuarios", usuarios);
             request.getRequestDispatcher(

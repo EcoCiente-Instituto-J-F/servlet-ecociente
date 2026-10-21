@@ -12,12 +12,12 @@ import java.io.IOException;
 import java.util.List;
 
 //Servlet usada para as ações do CRUD de Cooperativas.
-@WebServlet(urlPatterns = {"/selectCooperativa", "/adicionarCooperativa", "/alterarCooperativa", "/deletarCooperativa"})
+@WebServlet(urlPatterns = {"/cooperativas", "/adicionarCooperativa", "/alterarCooperativa", "/deletarCooperativa"})
 public class CooperativaServlet extends HttpServlet {
     CooperativaDAO daoCooperativas = new CooperativaDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getServletPath().equals("/selectCooperativa")) {
+        if (request.getServletPath().equals("/cooperativas")) {
             mostrarSelects(request, response);
         }
     }
