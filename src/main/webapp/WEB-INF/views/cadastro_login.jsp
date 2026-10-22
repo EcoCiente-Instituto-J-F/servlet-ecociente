@@ -1169,65 +1169,6 @@
             outline-offset: 2px;
         }
 
-        /* ===== Formulário maior e mais afastado do logotipo ===== */
-        .container {
-            max-width: 1400px;
-            grid-template-columns: minmax(0, 1fr) minmax(0, min(660px, 62vw));
-            gap: clamp(48px, 10vw, 180px);
-        }
-
-        .card-wrapper {
-            max-width: 660px;
-            padding: 14px;
-            border-radius: 24px;
-        }
-
-        .container-login {
-            padding: 40px 48px;
-            border-radius: 14px;
-        }
-
-        .tabs {
-            margin-bottom: 30px;
-        }
-
-        .tab-botao {
-            padding: 10px 14px;
-            font-size: 15px;
-        }
-
-        .titulo-padrao {
-            font-size: 25px;
-        }
-
-        .subtitulo {
-            font-size: 14px;
-            margin-bottom: 26px;
-        }
-
-        .form-group {
-            margin-bottom: 26px;
-        }
-
-        .form-group label {
-            font-size: 15px;
-            margin-bottom: 6px;
-        }
-
-        .input-field {
-            font-size: 16px;
-            padding: 9px 0;
-        }
-
-        .input-field::placeholder {
-            font-size: 15px;
-        }
-
-        .botao-submit {
-            min-height: 50px;
-            font-size: 16px;
-        }
-
         .form-group::after,
         .aceite-termos::after {
             display: none;
@@ -1551,4 +1492,4 @@
     </div>
 
 </body>
-</html>
+</html>
