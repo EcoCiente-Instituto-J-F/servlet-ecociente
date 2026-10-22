@@ -653,26 +653,27 @@ input[name="modo-card"] {
     line-height: 1.35;
 }
 
-.chave-alterar-plano {
-    display: inline-flex;
-    background-color: #ffffff;
-    border: 1px solid #064E3B;
-    padding: 3px;
-    border-radius: 50px;
-    margin: 25px 0 10px;
-    width: 100%;
+/* Seletor compartilhado dos planos */
+#mensal-planos,
+#anual-planos {
+    display: none;
 }
 
-.espacador-chave {
-    height: 38px;
-    margin: 25px 0 10px;
+.chave-planos {
+    display: flex;
+    width: fit-content;
+    margin: 0 auto 40px;
+    padding: 4px;
+    background-color: #ffffff;
+    border: 1px solid #064E3B;
+    border-radius: 50px;
 }
 
 .botao-periodo {
     flex: 1;
     border: none;
     background: transparent;
-    padding: 7px 12px;
+    padding: 9px 24px;
     font-family: 'Montserrat', sans-serif;
     font-size: 13px;
     font-weight: 600;
@@ -682,36 +683,33 @@ input[name="modo-card"] {
     text-align: center;
     transition: all 0.25s ease;
     user-select: none;
+    white-space: nowrap;
 }
 
-input[name^="periodo-"] {
-    display: none;
-}
-
-#mensal-empresarial:checked ~ .chave-alterar-plano label[for="mensal-empresarial"],
-#anual-empresarial:checked ~ .chave-alterar-plano label[for="anual-empresarial"],
-#mensal-industrial:checked ~ .chave-alterar-plano label[for="mensal-industrial"],
-#anual-industrial:checked ~ .chave-alterar-plano label[for="anual-industrial"] {
+#mensal-planos:checked ~ .chave-planos label[for="mensal-planos"],
+#anual-planos:checked ~ .chave-planos label[for="anual-planos"] {
     background-color: #064E3B;
     color: #ffffff;
 }
 
 .preco-anual {
-    display: none ;
+    display: none;
 }
 
 .preco-mensal {
-    display: flex ;
+    display: flex;
 }
 
-#anual-empresarial:checked ~ .preco-mensal,
-#anual-industrial:checked ~ .preco-mensal {
-    display: none ;
+#anual-planos:checked ~ .grid-planos .preco-mensal {
+    display: none;
 }
 
-#anual-empresarial:checked ~ .preco-anual,
-#anual-industrial:checked ~ .preco-anual {
-    display: flex ;
+#anual-planos:checked ~ .grid-planos .preco-anual {
+    display: flex;
+}
+
+.preco-fixo {
+    display: flex;
 }
 
 .preco-container {
@@ -817,6 +815,11 @@ input[name^="periodo-"] {
 
 .botao-plano .seta {
     font-size: 18px;
+}
+
+.acao-planos {
+    max-width: 320px;
+    margin: 30px auto 0;
 }
 
 /* ---------- Cooperativa ---------- */

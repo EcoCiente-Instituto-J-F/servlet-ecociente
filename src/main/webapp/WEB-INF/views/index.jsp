@@ -190,10 +190,20 @@
                 </div>
             </section>
 
+
             <section class="planos" id="planos">
                 <h2 class="titulo-planos">Planos de assinatura</h2>
 
+                <input type="radio" id="mensal-planos" name="periodo-planos" checked>
+                <input type="radio" id="anual-planos" name="periodo-planos">
+
+                <div class="chave-planos">
+                    <label for="mensal-planos" class="botao-periodo">Mensal</label>
+                    <label for="anual-planos" class="botao-periodo">Anual</label>
+                </div>
+
                 <div class="grid-planos">
+
                     <!-- CARD 1: GRATUITO -->
                     <article class="card-plano">
                         <div class="cabecalho-card">
@@ -205,11 +215,9 @@
                             </div>
                         </div>
 
-                        <div class="espacador-chave"></div>
-
-                        <div class="preco-container preco-mensal">
-                            <span class="valor">R$ 0,00</span>
-                            <span class="periodo">Gratuito</span>
+                        <div class="preco-container preco-fixo">
+                           <span class="valor">R$ 0,00</span>
+                           <span class="periodo">Gratuito</span>
                         </div>
 
                         <hr class="divisor-card">
@@ -221,7 +229,7 @@
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
+                        <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-plano">
                             <span>Começar agora</span>
                             <span class="seta">&rarr;</span>
                         </a>
@@ -238,14 +246,6 @@
                                 <h3 class="nome-plano">Empresarial Residencial</h3>
                                 <p class="descricao-plano">Ideal para condomínios empresariais e residenciais.</p>
                             </div>
-                        </div>
-
-                        <input type="radio" id="mensal-empresarial" name="periodo-empresarial" checked>
-                        <input type="radio" id="anual-empresarial" name="periodo-empresarial">
-
-                        <div class="chave-alterar-plano">
-                            <label for="mensal-empresarial" class="botao-periodo">Mensal</label>
-                            <label for="anual-empresarial" class="botao-periodo">Anual</label>
                         </div>
 
                         <div class="preco-container preco-mensal">
@@ -270,10 +270,6 @@
                             <li><span class="check-icone">✓</span> Relatórios e históricos de coleta</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
                     </article>
 
                     <!-- CARD 3: INDUSTRIAL -->
@@ -285,14 +281,6 @@
                                 <h3 class="nome-plano">Industrial</h3>
                                 <p class="descricao-plano">Ideal para grandes empresas e grandes áreas.</p>
                             </div>
-                        </div>
-
-                        <input type="radio" id="mensal-industrial" name="periodo-industrial" checked>
-                        <input type="radio" id="anual-industrial" name="periodo-industrial">
-
-                        <div class="chave-alterar-plano">
-                            <label for="mensal-industrial" class="botao-periodo">Mensal</label>
-                            <label for="anual-industrial" class="botao-periodo">Anual</label>
                         </div>
 
                         <div class="preco-container preco-mensal">
@@ -317,12 +305,15 @@
                             <li><span class="check-icone">✓</span> Dashboards e relatórios avançados</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
                     </article>
                 </div>
+
+                 <div class="acao-planos">
+                     <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-plano">
+                        <span>Começar agora</span>
+                        <span class="seta">&rarr;</span>
+                     </a>
+                 </div>
             </section>
 
             <section class="cooperativa">
