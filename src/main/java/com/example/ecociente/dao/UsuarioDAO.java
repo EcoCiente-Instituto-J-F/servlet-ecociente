@@ -94,7 +94,7 @@ public class UsuarioDAO {
         String sql = """
             SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
             FROM usuario
-            WHERE email = ?
+            WHERE LOWER(email) = LOWER(?)
             """;
         Usuario retorno = null;
         try (
@@ -216,7 +216,11 @@ public class UsuarioDAO {
             ps.setString(1, usuario.getNome());
             ps.setString(2, usuario.getEmail());
             ps.setString(3, usuario.getSenhaHash());
-            ps.setInt(4, usuario.getIdEndereco());
+            if (usuario.getIdEndereco() == 0) {
+                ps.setNull(4, Types.INTEGER);
+            } else {
+                ps.setInt(4, usuario.getIdEndereco());
+            }
             ps.setInt(5, usuario.getIdUsuario());
 
             int linhasAfetadas = ps.executeUpdate();
@@ -234,61 +238,56 @@ public class UsuarioDAO {
     public boolean deletar(Usuario usuario){
         int idUsuario = usuario.getIdUsuario();
 
-        try (
-                Connection conexao = ConexaoBD.conectar();
-                PreparedStatement ps = conexao.prepareStatement("DELETE FROM telefone WHERE idUsuario = ?")
-        ){
-            ps.setInt(1, idUsuario);
-            ps.executeUpdate();
-        } catch (SQLException sqle) {
-            System.out.println("Erro ao deletar telefones do usuario" + sqle.getMessage());
-            return false;
-        }
+        String[] sqls = {
+                "DELETE FROM telefone WHERE id_usuario = ?",
+                "DELETE FROM parceira WHERE id_cooperativa IN (SELECT id_cooperativa FROM cooperativa WHERE id_usuario = ?)",
+                "DELETE FROM cooperativa WHERE id_usuario = ?",
+                "DELETE FROM sindico WHERE id_usuario = ?",
+                "DELETE FROM morador WHERE id_usuario = ?",
+                "DELETE FROM usuario WHERE id_usuario = ?"
+        };
 
-        try (
-                Connection conexao = ConexaoBD.conectar();
-                PreparedStatement ps = conexao.prepareStatement("DELETE FROM cooperativa WHERE id_usuario = ?")
-        ){
-            ps.setInt(1, idUsuario);
-            ps.executeUpdate();
-        } catch (SQLException sqle) {
-            System.out.println("Erro ao deletar cooperativa do usuario" + sqle.getMessage());
-            return false;
-        }
+        try (Connection conexao = ConexaoBD.conectar()){
+            conexao.setAutoCommit(false);
+            try {
+                int idEndereco = 0;
+                try (PreparedStatement ps = conexao.prepareStatement("SELECT id_endereco FROM usuario WHERE id_usuario = ?")) {
+                    ps.setInt(1, idUsuario);
+                    try (ResultSet rs = ps.executeQuery()) {
+                        if (rs.next()) idEndereco = rs.getInt(1);
+                    }
+                }
 
-        try (
-                Connection conexao = ConexaoBD.conectar();
-                PreparedStatement ps = conexao.prepareStatement("DELETE FROM sindico WHERE id_usuario = ?")
-        ){
-            ps.setInt(1, idUsuario);
-            ps.executeUpdate();
-        } catch (SQLException sqle) {
-            System.out.println("Erro ao deletar sindico do usuario" + sqle.getMessage());
-            return false;
-        }
+                int linhasUsuario = 0;
+                for (String sql : sqls) {
+                    try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+                        ps.setInt(1, idUsuario);
+                        linhasUsuario = ps.executeUpdate();
+                    }
+                }
 
-        try (
-                Connection conexao = ConexaoBD.conectar();
-                PreparedStatement ps = conexao.prepareStatement("DELETE FROM morador WHERE id_usuario = ?")
-        ){
-            ps.setInt(1, idUsuario);
-            ps.executeUpdate();
-        } catch (SQLException sqle) {
-            System.out.println("Erro ao deletar morador do usuario" + sqle.getMessage());
-            return false;
-        }
-
-        String sql = """
-            DELETE FROM usuario
-            WHERE id_usuario = ?
-            """;
-        try (
-                Connection conexao = ConexaoBD.conectar();
-                PreparedStatement ps = conexao.prepareStatement(sql)
-        ){
-            ps.setInt(1, idUsuario);
-            int linhasAfetadas = ps.executeUpdate();
-            return linhasAfetadas > 0;
+                //endereço que ficou sem dono também sai
+                if (linhasUsuario > 0 && idEndereco != 0) {
+                    String apagarEndereco = """
+                            DELETE FROM endereco
+                            WHERE id_endereco = ?
+                              AND NOT EXISTS (SELECT 1 FROM usuario WHERE id_endereco = ?)
+                              AND NOT EXISTS (SELECT 1 FROM condominio WHERE id_endereco = ?)
+                            """;
+                    try (PreparedStatement ps = conexao.prepareStatement(apagarEndereco)) {
+                        ps.setInt(1, idEndereco);
+                        ps.setInt(2, idEndereco);
+                        ps.setInt(3, idEndereco);
+                        ps.executeUpdate();
+                    }
+                }
+                conexao.commit();
+                return linhasUsuario > 0;
+            } catch (SQLException sqle) {
+                conexao.rollback();
+                System.out.println("Erro ao deletar usuario" + sqle.getMessage());
+                return false;
+            }
         } catch (SQLException sqle) {
             System.out.println("Erro ao deletar usuario" + sqle.getMessage());
             return false;

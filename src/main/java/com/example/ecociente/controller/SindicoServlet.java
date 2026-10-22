@@ -1,6 +1,8 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.CondominioDAO;
 import com.example.ecociente.dao.SindicoDAO;
+import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Sindico;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +18,7 @@ import java.util.List;
 @WebServlet(urlPatterns = {"/selectSindico", "/adicionarSindico", "/alterarSindico", "/deletarSindico"})
 public class SindicoServlet extends HttpServlet {
     SindicoDAO daoSindicos = new SindicoDAO();
+    CondominioDAO daoCondominios = new CondominioDAO();
 
     //Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000).
     private static final String REGEX_CPF = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11}";
@@ -26,26 +29,33 @@ public class SindicoServlet extends HttpServlet {
         }
     }
 
-    //Busca os síndicos e envia para a JSP.
+    //Busca os síndicos e os condomínios (para o select) e envia para a JSP.
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Sindico> sindicos = daoSindicos.listarTodos();
+        List<Condominio> condominios = daoCondominios.selecionarTodos();
 
         request.setAttribute("sindicos", sindicos);
+        request.setAttribute("condominios", condominios);
         request.getRequestDispatcher("/WEB-INF/views/sindicos.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String caminho = request.getServletPath();
-        if (caminho.equals("/adicionarSindico")) {
-            adicionarSindico(request, response);
-        }
-        else if (caminho.equals("/alterarSindico")) {
-            alterarSindico(request, response);
-        }
-        else if (caminho.equals("/deletarSindico")) {
-            deletarSindico(request, response);
+        try {
+            String caminho = request.getServletPath();
+            if (caminho.equals("/adicionarSindico")) {
+                adicionarSindico(request, response);
+            }
+            else if (caminho.equals("/alterarSindico")) {
+                alterarSindico(request, response);
+            }
+            else if (caminho.equals("/deletarSindico")) {
+                deletarSindico(request, response);
+            }
+        } catch (RuntimeException e) {
+            request.setAttribute("erro", "Operação não concluída. Confira os dados informados e se o registro já existe ou possui vínculos.");
+            mostrarSelects(request, response);
         }
     }
 
@@ -58,6 +68,7 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
+        cpf = cpf.replaceAll("\\D", ""); //banco guarda só os 11 dígitos
         LocalDate dataInicio = LocalDate.parse(request.getParameter("dataInicioMandato"));
         LocalDate dataFim = lerDataFim(request);
         int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
@@ -85,7 +96,7 @@ public class SindicoServlet extends HttpServlet {
 
         //Busca no banco e troca só o que veio do formulário.
         Sindico sindico = daoSindicos.buscarPorId(id);
-        sindico.setCpf(cpf);
+        sindico.setCpf(cpf.replaceAll("\\D", ""));
         sindico.setDataInicioMandato(LocalDate.parse(request.getParameter("dataInicioMandato")));
         sindico.setDataFimMandato(lerDataFim(request));
         sindico.setCondominio(Integer.parseInt(request.getParameter("idCondominio")));
