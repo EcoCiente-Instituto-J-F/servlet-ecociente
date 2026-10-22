@@ -11,8 +11,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet(urlPatterns = {"/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone"})public class TelefoneServlet extends HttpServlet {
+@WebServlet(urlPatterns = {"/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone"})
+public class TelefoneServlet extends HttpServlet {
     TelefoneDAO daoTelefones = new TelefoneDAO();
+
+    //Aceita celular/fixo com DDD, com ou sem traço: (11) 91234-5678 ou (11) 1234-5678.
+    private static final String REGEX_CELULAR = "\\(\\d{2}\\)\\s?\\d{4,5}-?\\d{4}";
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/selectTelefone")) {
@@ -32,6 +36,11 @@ import java.util.List;
         String numero = request.getParameter("numero");
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
+        if (numero == null || !numero.matches(REGEX_CELULAR)) {
+            request.setAttribute("erro", "Celular inválido. Use o formato (11) 91234-5678");
+            return;
+        }
+
         //Id 0 porque o banco gera.
         boolean adicionado = daoTelefones.inserir(new Telefone(0, numero, idUsuario));
 
@@ -40,9 +49,15 @@ import java.util.List;
 
     private void alterarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idTelefone"));
+        String numero = request.getParameter("numero");
+
+        if (numero == null || !numero.matches(REGEX_CELULAR)) {
+            request.setAttribute("erro", "Celular inválido. Use o formato (11) 91234-5678");
+            return;
+        }
 
         Telefone telefone = daoTelefones.buscarPorId(id);
-        telefone.setNumero(request.getParameter("numero"));
+        telefone.setNumero(numero);
         telefone.setUsuario(Integer.parseInt(request.getParameter("idUsuario")));
 
         boolean alterado = daoTelefones.atualizar(telefone);
@@ -72,5 +87,4 @@ import java.util.List;
             deletarTelefone(request, response);
         }
     }
-
 }

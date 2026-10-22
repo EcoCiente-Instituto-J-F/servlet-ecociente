@@ -37,7 +37,7 @@ public class UsuarioServlet extends HttpServlet {
             List<Usuario> usuarios = usuarioDAO.selecionarTodos();
             request.setAttribute("usuarios", usuarios);
             request.getRequestDispatcher(
-                    "/WEB-INF/views/lista-usuarios.jsp" // não temos o caminho do jsp ainda
+                    "/WEB-INF/views/usuarios.jsp"
             ).forward(request, response);
         } else if (caminho.equals("/cadastro")) {
             response.sendRedirect(request.getContextPath() + "/login-cadastro?aba=cadastro");
