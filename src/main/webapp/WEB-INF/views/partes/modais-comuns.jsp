@@ -5,7 +5,7 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 <!-- ===== Configurações (engrenagem) ===== -->
 <dialog class="modal" id="modal-configuracoes" style="--largura:470px" aria-labelledby="modal-configuracoes-titulo">
-  <form action="#" method="post"> <!-- TODO: BACK-END -> rota que salva as configurações -->
+  <form method="dialog"> <%-- tema fica salvo no navegador (interacoes.js); não há rota de servidor --%>
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Configurações</p>
       <h2 id="modal-configuracoes-titulo" class="modal__titulo">Detalhes</h2>
@@ -35,9 +35,9 @@
   </form>
 </dialog>
 
-<!-- ===== Perfil do administrador (clique em "Admin") ===== -->
+<!-- ===== Perfil do administrador (clique no nome) ===== -->
 <dialog class="modal" id="modal-perfil" style="--largura:450px" aria-labelledby="modal-perfil-titulo">
-  <form action="#" method="post"> <!-- TODO: BACK-END -> rota que salva o perfil -->
+  <form method="dialog">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Perfil do administrador</p>
       <h2 id="modal-perfil-titulo" class="modal__titulo">Detalhes</h2>
@@ -46,17 +46,30 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <div class="perfil__foto"><span class="usuario-logado__iniciais">AD</span>
-          <button class="botao botao--contorno" type="button"><img class="" src="${ctx}/assets/icones/camera.svg" alt="">Alterar foto</button></div>
-        <label class="campo campo--largo campo--rotulo-caixa">Nome<input type="text" name="nome" value="adm top do EcoCiente"></label>
-        <label class="campo campo--largo campo--rotulo-caixa">E-mail<input type="email" name="email" placeholder="E-mail"></label>
-        <label class="campo campo--largo campo--rotulo-caixa">Cargo<input type="text" name="cargo" value="Administrador"></label>
-        <label class="campo campo--largo"><span class="somente-leitor">Alterar senha</span><span class="campo__com-icone"><img class="" src="${ctx}/assets/icones/cadeado.svg" alt=""><input type="password" name="senha" placeholder="Alterar senha"></span></label>
+        <div class="perfil__foto"><span class="usuario-logado__iniciais"><c:out value="${empty sessionScope.iniciaisUsuarioLogado ? 'AD' : sessionScope.iniciaisUsuarioLogado}"/></span></div>
+        <label class="campo campo--largo campo--rotulo-caixa">Nome<input type="text" name="nome" value="<c:out value='${sessionScope.nomeUsuarioLogado}'/>" readonly></label>
+        <label class="campo campo--largo campo--rotulo-caixa">Cargo<input type="text" name="cargo" value="Administrador" readonly></label>
       </div>
     </div>
     <footer class="modal__rodape">
+      <button class="botao botao--contorno" type="button" data-fechar-modal>Fechar</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- ===== Excluir (usado por todas as telas: interacoes.js preenche rota e id) ===== -->
+<dialog class="modal modal--sair" id="modal-excluir" style="--largura:340px" aria-labelledby="modal-excluir-titulo">
+  <form method="post">
+    <input type="hidden" name="acao" value="excluir" data-campo-acao>
+    <input type="hidden" name="id" data-chave-id>
+    <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar" style="top:14px;right:16px"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
+    <div class="modal__corpo">
+      <h2 id="modal-excluir-titulo">Excluir <strong data-excluir-rotulo>este registro</strong>?</h2>
+      <p>Essa ação não pode ser desfeita</p>
+    </div>
+    <footer class="modal__rodape">
       <button class="botao botao--contorno" type="button" data-fechar-modal>Cancelar</button>
-      <button class="botao botao--primario" type="submit">Salvar alterações</button>
+      <button class="botao botao--destaque" type="submit">Excluir</button>
     </footer>
   </form>
 </dialog>

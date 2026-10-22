@@ -34,9 +34,9 @@
         <form class="login-crud__form" action="${ctx}/login-crud" method="POST">
 
           <div class="login-crud__grupo">
-            <label class="login-crud__rotulo" for="login-email">E-mail ou usuário</label>
+            <label class="login-crud__rotulo" for="login-email">E-mail</label>
             <div class="login-crud__campo">
-              <input class="login-crud__input" type="text" id="login-email" name="email"
+              <input class="login-crud__input" type="email" id="login-email" name="email"
                      value="<c:out value='${param.email}' />"
                      placeholder="Digite seu e-mail" autocomplete="username" required>
             </div>
@@ -57,7 +57,7 @@
                 </svg>
               </button>
             </div>
-            <a class="login-crud__esqueci" href="#">Esqueceu sua senha?</a>
+            
           </div>
 
           <c:if test="${not empty erroLogin}">

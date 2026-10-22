@@ -1,4 +1,4 @@
-/* INTERAÇÕES — menu lateral, seleção de linha e modais */
+/* INTERAÇÕES — menu lateral, seleção de linha, modais, formulários e exclusão */
 
 (() => {
   'use strict';
@@ -39,11 +39,10 @@
   });
   atualizarBotaoEditar();
 
-  /* ---------- FICHA: mostra os dados da linha selecionada ---------- */
-  const TELEFONES_FICTICIOS = ['(11) 98877-1122', '(11) 97654-3210', '(21) 99123-4567', '(31) 98456-7788', '(41) 99888-1020'];
-  const RUAS_FICTICIAS = ['Rua das Acácias, 120', 'Av. Brasil, 1500', 'Rua do Comércio, 45', 'Rua das Palmeiras, 300', 'Av. Paulista, 900'];
-  const CIDADES_FICTICIAS = ['São Paulo, SP', 'Campinas, SP', 'Rio de Janeiro, RJ', 'Belo Horizonte, MG', 'Curitiba, PR'];
-  const COOPERATIVAS_FICTICIAS = ['Verde Viva', 'Recicla Mais', 'EcoCoop Cidade', 'Planeta Limpo', 'Mãos Verdes'];
+  /* ---------- LINHA SELECIONADA: dados vêm dos data-* do <tr> ---------- */
+  function dadosDaLinha() {
+    return bolinhaSelecionada ? bolinhaSelecionada.closest('tr').dataset : null;
+  }
 
   function iniciais(nome) {
     const partes = nome.split(/\s+/).filter(Boolean);
@@ -52,45 +51,70 @@
     return (partes[0][0] + ultima).toUpperCase();
   }
 
-  const FICHAS = {
-    'ficha-usuario': (c, extra) => ({
-      iniciais: iniciais(c[0]), nome: c[0], tag: c[3].split(' ')[0], email: c[1],
-      telefone: extra.telefone, endereco: extra.rua + ' - ' + c[2], tipo: c[3]
-    }),
-    'ficha-condominio': (c, extra) => ({
-      iniciais: iniciais(c[0]), nome: c[0], tag: c[2], cnpj: c[1],
-      endereco: extra.rua + ' - ' + extra.cidade, sindico: c[3]
-    }),
-    'ficha-cooperativa': (c, extra) => ({
-      iniciais: iniciais(c[0]), nome: extra.cooperativa, tag: c[3], cnpj: c[1],
-      telefone: extra.telefone, endereco: extra.rua + ' - ' + extra.cidade, responsavel: c[0]
-    })
-  };
-
   function preencherFicha(modal) {
-    const montar = FICHAS[modal.id];
-    if (!montar || !modal.hasAttribute('data-ficha') || !bolinhaSelecionada) return;
-    const linha = bolinhaSelecionada.closest('tr');
-    const colunas = Array.from(linha.children).map((celula) => celula.textContent.trim());
-    const posicao = Array.from(linha.parentElement.children).indexOf(linha);
-    const exemplo = (lista) => lista[posicao % lista.length];
-    const dados = montar(colunas, {
-      telefone: exemplo(TELEFONES_FICTICIOS),
-      rua: exemplo(RUAS_FICTICIAS),
-      cidade: exemplo(CIDADES_FICTICIAS),
-      cooperativa: exemplo(COOPERATIVAS_FICTICIAS)
-    });
-    Object.assign(dados, linha.dataset);   // dados reais (data-*) da linha passam na frente dos exemplos
+    const dados = dadosDaLinha();
+    if (!modal.hasAttribute('data-ficha') || !dados) return;
+    const valores = { ...dados };
+    if (!valores.iniciais) valores.iniciais = iniciais(dados.nome || '');
     modal.querySelectorAll('[data-campo]').forEach((elemento) => {
-      elemento.textContent = dados[elemento.dataset.campo] || '—';
+      elemento.textContent = valores[elemento.dataset.campo] || '—';
     });
   }
 
+  /* ---------- FORMULÁRIO: limpa ou preenche conforme cadastrar/editar ---------- */
+  const maiuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
+
+  function preencherFormulario(modal, modo) {
+    const form = modal.querySelector('form');
+    if (!form || modal.id === 'modal-excluir') return;
+    const editando = modo === 'editar';
+    const dados = editando ? dadosDaLinha() : null;
+    form.reset();
+
+    // Um mesmo form pode ter rotas diferentes para cadastrar e editar
+    if (form.dataset.acaoEditar) {
+      form.action = editando ? form.dataset.acaoEditar : form.dataset.acaoNovo;
+    }
+    const campoId = form.querySelector('[data-chave-id]');
+    if (campoId) campoId.value = dados ? (dados.id || '') : '';
+
+    form.querySelectorAll('[name]').forEach((campo) => {
+      if (campo === campoId) return;
+      if (campo.hasAttribute('data-obrigatorio-novo')) campo.required = !editando;
+      if (!dados || campo.type === 'password' || campo.type === 'checkbox') return;
+      // data-form-xxx tem prioridade (ex.: data ISO para <input type="date">)
+      let valor = dados['form' + maiuscula(campo.name)] ?? dados[campo.name];
+      // select sem id na linha: procura a opção pelo texto exibido na tabela
+      if (!valor && campo.dataset.porRotulo) {
+        const opcao = Array.from(campo.options).find((o) => o.text.trim() === dados[campo.dataset.porRotulo]);
+        if (opcao) valor = opcao.value;
+      }
+      if (valor !== undefined) campo.value = valor;
+    });
+  }
+
+  /* ---------- EXCLUIR: um único modal de confirmação para todas as telas ---------- */
+  function prepararExclusao(modal, gatilho) {
+    const dados = dadosDaLinha();
+    const form = modal.querySelector('form');
+    if (!dados || !form) return false;
+    form.action = gatilho.dataset.excluirUrl;
+    const campoId = form.querySelector('[data-chave-id]');
+    campoId.name = gatilho.dataset.excluirCampo || 'id';
+    campoId.value = dados.id || '';
+    const campoAcao = form.querySelector('[data-campo-acao]');
+    campoAcao.value = gatilho.dataset.excluirAcao || '';
+    campoAcao.disabled = !gatilho.dataset.excluirAcao;
+    modal.querySelector('[data-excluir-rotulo]').textContent = dados.nome || dados.rotulo || 'este registro';
+    return true;
+  }
 
   /* ---------- 3. MODAIS: abrir e fechar ---------- */
-  function abrirModal(idDoModal, modo) {
+  function abrirModal(idDoModal, modo, gatilho) {
     const modal = document.getElementById(idDoModal);
     if (!modal) return;
+
+    if (idDoModal === 'modal-excluir' && !(gatilho && prepararExclusao(modal, gatilho))) return;
 
     // Textos que mudam no modo "editar"
     modal.querySelectorAll('[data-texto-editar]').forEach((elemento) => {
@@ -98,7 +122,9 @@
       elemento.textContent = modo === 'editar' ? elemento.dataset.textoEditar : elemento.dataset.textoNovo;
     });
     preencherFicha(modal);
+    preencherFormulario(modal, modo);
     modal.showModal();
+    return modal;
   }
 
   document.addEventListener('click', (evento) => {
@@ -107,13 +133,30 @@
       evento.preventDefault();
       if (gatilho.getAttribute('aria-disabled') === 'true') return; // Editar desabilitado
       document.querySelectorAll('dialog[open]').forEach((aberto) => aberto.close());
-      abrirModal(gatilho.dataset.abrirModal, gatilho.dataset.modo);
+      abrirModal(gatilho.dataset.abrirModal, gatilho.dataset.modo, gatilho);
       return;
     }
     const fechar = evento.target.closest('[data-fechar-modal]');
     if (fechar) fechar.closest('dialog').close();
     else if (evento.target.tagName === 'DIALOG') evento.target.close();
   });
+
+  /* ---------- Erro do servidor: reabre o modal com o que a pessoa digitou ---------- */
+  const reabrir = document.getElementById('reabrir-modal');
+  if (reabrir) {
+    const modal = abrirModal(reabrir.dataset.modal, reabrir.dataset.modo);
+    if (modal) {
+      reabrir.querySelectorAll('[data-nome]').forEach((item) => {
+        modal.querySelectorAll('[name="' + item.dataset.nome + '"]').forEach((campo) => {
+          if (campo.type !== 'password' && campo.type !== 'checkbox' && !campo.hasAttribute('data-chave-id')) {
+            campo.value = item.dataset.valor;
+          }
+        });
+      });
+      const campoId = modal.querySelector('[data-chave-id]');
+      if (campoId && reabrir.dataset.id) campoId.value = reabrir.dataset.id;
+    }
+  }
 
   /* ---------- 4. TEMA CLARO/ESCURO ---------- */
   const CHAVE_DO_TEMA = 'tema-ecociente';   // nome com que o tema fica salvo no navegador

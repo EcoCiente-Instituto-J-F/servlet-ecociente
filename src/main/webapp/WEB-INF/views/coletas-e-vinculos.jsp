@@ -35,8 +35,13 @@
         <h1 class="cabecalho-pagina__titulo">Coletas &amp; vínculos</h1>
         <p class="cabecalho-pagina__descricao">Parcerias ativas entre condomínios e cooperativas</p>
       </div>
-      <div class="cabecalho-pagina__acoes"><a class="botao botao--primario" href="#" data-abrir-modal="modal-vinculo"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Novo vínculo</a></div>
+      <div class="cabecalho-pagina__acoes">
+        <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-vinculo" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
+        <a class="botao botao--contorno" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="modal-excluir" data-excluir-url="${ctx}/vinculos" data-excluir-acao="excluir">Excluir</a>
+        <a class="botao botao--primario" href="#" data-abrir-modal="modal-vinculo"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Novo vínculo</a>
+      </div>
     </header>
+    <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-vinculo"/></jsp:include>
     <section class="indicadores indicadores--tres" aria-label="Resumo">
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Vínculos ativos</h2><p class="indicador__valor">${vinculosAtivos}</p></article>
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Coletas este mês</h2><p class="indicador__valor">${coletasMes}</p></article>
@@ -49,7 +54,7 @@
         <thead><tr><th scope="col">Condomínio</th><th scope="col">Cooperativa</th><th scope="col">Início</th><th scope="col">Fim</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="v" items="${vinculos}">
-            <tr>
+            <tr data-id="<c:out value="${v.id}"/>" data-nome="<c:out value="${v.condominio}"/>" data-condominio="<c:out value="${v.condominio}"/>" data-cooperativa="<c:out value="${v.cooperativa}"/>" data-form-inicio="<c:out value="${v.inicioIso}"/>" data-form-fim="<c:out value="${v.fimIso}"/>" data-id-condominio="<c:out value="${v.idCondominio}"/>" data-id-cooperativa="<c:out value="${v.idCooperativa}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${v.id}" aria-label="Selecionar linha"><span><c:out value="${v.condominio}"/></span></div></td>
               <td><c:out value="${v.cooperativa}"/></td>
               <td><c:out value="${v.inicio}"/></td>
@@ -72,19 +77,19 @@
 
 <dialog class="modal" id="modal-vinculo" style="--largura:649px" aria-labelledby="modal-vinculo-titulo">
   <form action="${ctx}/vinculos" method="post">
-    <input type="hidden" name="id"> <%-- vazio = cadastrar; preenchido = editar --%>
+    <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
-      <p class="modal__etiqueta">Nova parceria</p>
-      <h2 id="modal-vinculo-titulo" class="modal__titulo">Novo vínculo</h2>
+      <p class="modal__etiqueta" data-texto-editar="Editar parceria">Nova parceria</p>
+      <h2 id="modal-vinculo-titulo" class="modal__titulo" data-texto-editar="Editar vínculo">Novo vínculo</h2>
       <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <label class="campo">Condomínio<input type="text" name="condominio" placeholder="Jadins do Vale"></label>
-        <label class="campo">Cooperativa<input type="text" name="cooperativa" placeholder="Verde Viva"></label>
-        <label class="campo">Data de início<input type="date" name="inicio" placeholder=""></label>
-        <label class="campo">Data de Fim<input type="date" name="fim" placeholder=""></label>
+        <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.id}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.id}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Data de início<input type="date" name="inicio" required></label>
+        <label class="campo">Data de fim (opcional)<input type="date" name="fim"></label>
       </div>
     </div>
     <div class="modal__linha"></div>

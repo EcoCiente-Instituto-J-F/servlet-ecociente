@@ -94,3 +94,8 @@
 /* ---------- Tema escuro: ícones e logo  ---------- */
 :root[data-tema="escuro"] :is(.cabecalho__logo img, .ficha__icone img, .modal__fechar img, .tema img,
   .menu-lateral__item:not(.menu-lateral__item--ativo) img:not([src$="sair.svg"])) { filter: brightness(0) invert(.9); }
+
+/* ---------- Avisos de sucesso e erro (partes/avisos.jsp) ---------- */
+.aviso { margin: 0 0 16px; padding: 10px 16px; border-radius: 8px; font: 600 12px var(--fonte-texto); }
+.aviso--sucesso { background: var(--cor-selo-ativo); color: var(--cor-primaria); }
+.aviso--erro { background: var(--cor-selo-inativo); color: var(--cor-destaque); }
