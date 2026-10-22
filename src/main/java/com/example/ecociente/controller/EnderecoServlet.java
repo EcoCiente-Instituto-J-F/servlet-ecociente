@@ -32,7 +32,7 @@ public class EnderecoServlet extends HttpServlet {
         List<Endereco> enderecos = daoEnderecos.selecionarTodos();
 
         request.setAttribute("enderecos", enderecos);
-        request.getRequestDispatcher("/WEB-INF/views/lista-enderecos.jsp").forward(request, response);
+        request.getRequestDispatcher("/WEB-INF/views/enderecos.jsp").forward(request, response);
 
     }
 
@@ -53,7 +53,7 @@ public class EnderecoServlet extends HttpServlet {
     }
 
     private void adicionarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String cep = request.getParameter("cep");
+        String cep = request.getParameter("cep").replaceAll("\\D", ""); //banco guarda só os 8 dígitos
         String cidade = request.getParameter("cidade");
         String estado = request.getParameter("estado");
         String bairro = request.getParameter("bairro");
@@ -67,13 +67,20 @@ public class EnderecoServlet extends HttpServlet {
         );
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
+        mostrarSelects(request, response);
     }
 
     private void alterarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idEndereco"));
 
         Endereco endereco = daoEnderecos.selecionarPorId(id);
-        endereco.setCep(request.getParameter("cep"));
+        if (endereco == null) {
+            request.setAttribute("alterado", "false");
+            request.setAttribute("erro", "Endereço não encontrado.");
+            mostrarSelects(request, response);
+            return;
+        }
+        endereco.setCep(request.getParameter("cep").replaceAll("\\D", ""));
         endereco.setCidade(request.getParameter("cidade"));
         endereco.setEstado(request.getParameter("estado"));
         endereco.setBairro(request.getParameter("bairro"));
@@ -84,29 +91,51 @@ public class EnderecoServlet extends HttpServlet {
         boolean alterado = daoEnderecos.atualizar(endereco);
 
         request.setAttribute("alterado", alterado ? "true" : "false");
+        mostrarSelects(request, response);
     }
 
     private void deletarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idEndereco"));
 
         Endereco endereco = daoEnderecos.selecionarPorId(id);
+        if (endereco == null) {
+            request.setAttribute("deletado", "false");
+            request.setAttribute("erro", "Endereço não encontrado.");
+            mostrarSelects(request, response);
+            return;
+        }
+
+        //Não deixa apagar endereço que ainda é usado por usuário ou condomínio.
+        if (daoEnderecos.contarVinculos(id) != 0) {
+            request.setAttribute("deletado", "false");
+            request.setAttribute("erro", "Endereço vinculado a um usuário ou condomínio. Desvincule antes de excluir.");
+            mostrarSelects(request, response);
+            return;
+        }
+
         boolean deletado = daoEnderecos.deletar(endereco);
 
         request.setAttribute("deletado", deletado ? "true" : "false");
+        mostrarSelects(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String caminho = request.getServletPath();
-        if (caminho.equals("/adicionarEndereco")) {
-            adicionarEndereco(request, response);
-        }
-        else if (caminho.equals("/alterarEndereco")) {
-            alterarEndereco(request, response);
-        }
-        else if (caminho.equals("/deletarEndereco")) {
-            deletarEndereco(request, response);
+        try {
+            String caminho = request.getServletPath();
+            if (caminho.equals("/adicionarEndereco")) {
+                adicionarEndereco(request, response);
+            }
+            else if (caminho.equals("/alterarEndereco")) {
+                alterarEndereco(request, response);
+            }
+            else if (caminho.equals("/deletarEndereco")) {
+                deletarEndereco(request, response);
+            }
+        } catch (RuntimeException e) {
+            request.setAttribute("erro", "Operação não concluída. Confira os dados informados e se o registro já existe ou possui vínculos.");
+            mostrarSelects(request, response);
         }
     }
 }
