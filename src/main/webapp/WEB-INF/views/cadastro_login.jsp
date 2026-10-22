@@ -1472,7 +1472,7 @@
                         <c:when test="${etapaCadastro == 'cooperativa-endereco'}">
                             <%@ include file="cadastro/cooperativa_endereco.jsp" %>
                         </c:when>
-                        <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'morador-dados'}">
+                        <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'condominio-dados' or etapaCadastro == 'morador-dados'}">
                             <%@ include file="cadastro/dados_pessoais.jsp" %>
                         </c:when>
                         <c:when test="${etapaCadastro == 'moradia'}">

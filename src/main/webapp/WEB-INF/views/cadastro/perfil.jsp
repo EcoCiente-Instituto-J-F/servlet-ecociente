@@ -15,11 +15,11 @@
             <span class="opcao-desc">Recebe e destina os materiais recicláveis.</span>
         </label>
         <label class="opcao">
-            <input type="radio" name="perfil" value="condominio" ${cad.perfil == 'condominio' ? 'checked' : ''}>
+            <input type="radio" name="perfil" value="sindico" ${cad.perfil == 'sindico' ? 'checked' : ''}>
             <span class="opcao-check" aria-hidden="true"></span>
-            <img class="opcao-icone" src="${ctx}/assets/icone-perfil-condominio.svg" alt="">
-            <span class="opcao-titulo">Condomínio</span>
-            <span class="opcao-desc">Residencial, comercial ou industrial.</span>
+            <img class="opcao-icone" src="${ctx}/assets/icones/icone-perfil-sindico.svg" alt="">
+            <span class="opcao-titulo">Síndico</span>
+            <span class="opcao-desc">Cadastra o condomínio e acompanha a coleta.</span>
         </label>
         <label class="opcao">
             <input type="radio" name="perfil" value="morador" ${cad.perfil == 'morador' ? 'checked' : ''}>
