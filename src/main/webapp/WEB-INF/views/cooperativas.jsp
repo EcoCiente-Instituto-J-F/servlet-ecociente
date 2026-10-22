@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Nunito:wght@700&display=swap" rel="stylesheet">
-  <!-- Aplica o tema salvo antes de pintar a página  -->
+  <!-- Aplica o tema salvo antes de pintar a página -->
   <script>document.documentElement.dataset.tema = localStorage.getItem("tema-ecociente") || "claro";</script>
   <link rel="stylesheet" href="${ctx}/css/variaveis.css">
   <link rel="stylesheet" href="${ctx}/css/base.css">
@@ -36,17 +36,19 @@
       </div>
       <div class="cabecalho-pagina__acoes">
         <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-cooperativa" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
+        <a class="botao botao--contorno" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="modal-excluir" data-excluir-url="${ctx}/cooperativas" data-excluir-acao="excluir">Excluir</a>
         <a class="botao botao--destaque" href="#" data-requer-selecao aria-disabled="true" data-abrir-modal="ficha-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Detalhes</a>
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-cooperativa"/></jsp:include>
     <section class="tabela-cartao">
       <table class="tabela">
         <colgroup><col style="width:33%"><col style="width:23%"><col style="width:25%"><col style="width:14%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col">Responsável</th><th scope="col">CNPJ</th><th scope="col">Condomínios vinculados</th><th scope="col">Status</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${cooperativas}">
-            <tr>
+            <tr data-id="<c:out value="${c.id}"/>" data-nome="<c:out value="${c.responsavel}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.ativa}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.id}" aria-label="Selecionar linha"><span><c:out value="${c.responsavel}"/></span></div></td>
               <td><c:out value="${c.cnpj}"/></td>
               <td><c:out value="${c.condominiosVinculados}"/></td>
@@ -66,28 +68,29 @@
 
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
-
-<dialog class="modal" id="modal-cooperativa" style="--largura:649px" aria-labelledby="modal-cooperativa-titulo">
+<dialog class="modal" id="modal-cooperativa" style="--largura:640px" aria-labelledby="modal-cooperativa-titulo">
   <form action="${ctx}/cooperativas" method="post">
-    <input type="hidden" name="id"> <%-- vazio = cadastrar; preenchido = editar --%>
+    <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
       <p class="modal__etiqueta" data-texto-editar="Editar registro">Novo registro</p>
-      <h2 id="modal-cooperativa-titulo" class="modal__titulo" data-texto-editar="Editar cooperativa">Cadastrar cooperativas</h2>
+      <h2 id="modal-cooperativa-titulo" class="modal__titulo" data-texto-editar="Editar cooperativa">Cadastrar cooperativa</h2>
       <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <label class="campo">Responsável<input type="text" name="responsavel" placeholder="Carlos Mendes"></label>
-        <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/-0001-00"></label>
-        <label class="campo">Status<select name="status"><option>Ativa</option><option>Inativa</option></select></label>
-        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
-        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo"></label>
-        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
+        <label class="campo">Nome / responsável<input type="text" name="nome" placeholder="Carlos Mendes" required maxlength="100"></label>
+        <label class="campo">E-mail<input type="email" name="email" placeholder="contato@cooperativa.com" data-obrigatorio-novo maxlength="150"></label>
+        <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
+        <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-obrigatorio-novo minlength="6" autocomplete="new-password"></label>
+        <label class="campo">Status<select name="status"><option value="true">Ativa</option><option value="false">Inativa</option></select></label>
+        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
+        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
+        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
         <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
-        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua"></label>
-        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0"></label>
-        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
+        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
+        <label class="campo campo--largo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -98,7 +101,7 @@
   </form>
 </dialog>
 
-<dialog class="modal" id="ficha-cooperativa" data-ficha style="--largura:399px" aria-labelledby="ficha-cooperativa-titulo">
+<dialog class="modal" id="ficha-cooperativa" data-ficha style="--largura:420px" aria-labelledby="ficha-cooperativa-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha da cooperativa</p>
       <h2 id="ficha-cooperativa-titulo" class="modal__titulo">Detalhes</h2>
@@ -122,7 +125,6 @@
       <button class="botao botao--primario" type="button" data-abrir-modal="modal-cooperativa" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
     </footer>
 </dialog>
-
 
 </body>
 </html>
