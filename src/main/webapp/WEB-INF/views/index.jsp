@@ -57,7 +57,7 @@
         </section>
 
         <div class="container">
-            <h2 class="titulo-secao">O EcoCiente oferece</h2>
+            <h2 class="titulo-secao">O EcoCiente oferece:</h2>
             <div class="oferece">
                 <div class="card-oferece">
                     <div class="icone-oferece">
@@ -71,14 +71,14 @@
                         <img src="${pageContext.request.contextPath}/assets/icone-dinheiro.svg" alt="Icone valorização">
                     </div>
                     <span class="titulo-card-oferece">Valorização do Imóvel</span>
-                    <p class="texto-oferece">Além de contribuir para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
+                    <p class="texto-oferece">Contribuímos para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
                 </div>
                 <div class="card-oferece">
                     <div class="icone-oferece">
                         <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
                     </div>
                     <span class="titulo-card-oferece">Gestão Ambiental</span>
-                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e ajudamos você a adotar práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
+                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e a adoção de práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
                 </div>
             </div>
 
@@ -119,7 +119,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Informe e engaje</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Informe os dados do seu condomínio, compartilhe informações sobre a geração de resíduos e solicite uma coleta no período disponível.</p>
+                            <p class="texto-card-func">Preencha seus dados, nos informe sobre a geração de resíduos e solicite um dia fixo disponível na semana.</p>
                         </div>
                     </li>
 
@@ -130,7 +130,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Coleta responsável</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">A cooperativa parceira realiza a coleta de forma segura, responsável e comprometida com a destinação adequada dos materiais recicláveis.</p>
+                            <p class="texto-card-func">A cooperativa realiza a coleta com compromisso, juntamente de segurança e responsabilidade.</p>
                         </div>
                     </li>
 
@@ -141,7 +141,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Acompanhe</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Acompanhe os resultados e visualize os impactos positivos gerados pela gestão responsável dos resíduos do seu condomínio.</p>
+                            <p class="texto-card-func">Visualize os impactos positivos do seu condomínio.</p>
                         </div>
                     </li>
 
@@ -152,7 +152,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Conecte-se</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Conecte seu condomínio a cooperativas parceiras da sua região e fortaleça a economia circular.</p>
+                            <p class="texto-card-func">Fazemos a conexão com as cooperativas da sua região</p>
                         </div>
                     </li>
                 </ul>
@@ -184,7 +184,7 @@
                         </div>
                         <div class="item-icone-beneficio">
                             <img src="${pageContext.request.contextPath}/assets/grafico-icon-rosa.svg" alt="Resultados">
-                            <span>Resultados que geram impacto</span>
+                            <span>Resultados que geram impactos</span>
                         </div>
                     </div>
                 </div>
