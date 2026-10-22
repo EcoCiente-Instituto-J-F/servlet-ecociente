@@ -41,7 +41,7 @@ button { font: inherit; border: 0; background: none; cursor: pointer; }
 .menu-lateral__secao--navegacao::after { bottom: 0; }
 .menu-lateral__secao--topo { height: 60px; } .menu-lateral__secao--topo::before { display: none; }
 .menu-lateral__secao--inicio { height: 78px; }
-.menu-lateral__secao--navegacao { height: 230px; justify-content: flex-start; gap: 15.5px; padding-top: 22px; }
+.menu-lateral__secao--navegacao { height: 430px; justify-content: flex-start; gap: 15.5px; padding-top: 22px; }
 .menu-lateral__secao--sair { height: 71px; margin-top: auto; }
 .menu-lateral__item { display: grid; place-items: center; width: 35px; height: 35px; border-radius: 5px; }
 
