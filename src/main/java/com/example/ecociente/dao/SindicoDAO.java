@@ -5,12 +5,27 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Sindico;
 
 public class SindicoDAO {
+
+    // Datas do mandato podem ser nulas no banco
+    private static LocalDate dataOuNulo(Date data) {
+        return data == null ? null : data.toLocalDate();
+    }
+
+    private static void setDataOuNulo(PreparedStatement ps, int indice, LocalDate data) throws SQLException {
+        if (data == null) {
+            ps.setNull(indice, Types.DATE);
+        } else {
+            ps.setDate(indice, Date.valueOf(data));
+        }
+    }
 
     // ======================= MÉTODOS CREATE =======================
 
@@ -28,8 +43,8 @@ public class SindicoDAO {
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
             ps.setString(1, s.getCpf());
-            ps.setDate(2, Date.valueOf(s.getDataInicioMandato()));
-            ps.setDate(3, Date.valueOf(s.getDataFimMandato()));
+            setDataOuNulo(ps, 2, s.getDataInicioMandato());
+            setDataOuNulo(ps, 3, s.getDataFimMandato());
             ps.setInt(4, s.getIdCondominio());
             ps.setInt(5, s.getIdUsuario());
 
@@ -84,8 +99,8 @@ public class SindicoDAO {
                             rs.getInt(8),
                             rs.getInt(9),
                             rs.getString(10),
-                            rs.getDate(11).toLocalDate(),
-                            rs.getDate(12).toLocalDate(),
+                            dataOuNulo(rs.getDate(11)),
+                            dataOuNulo(rs.getDate(12)),
                             rs.getInt(13)
                     );
                 }
@@ -185,8 +200,8 @@ public class SindicoDAO {
                             rs.getInt(8),
                             rs.getInt(9),
                             rs.getString(10),
-                            rs.getDate(11).toLocalDate(),
-                            rs.getDate(12).toLocalDate(),
+                            dataOuNulo(rs.getDate(11)),
+                            dataOuNulo(rs.getDate(12)),
                             rs.getInt(13)
                     );
                 }
@@ -240,8 +255,8 @@ public class SindicoDAO {
                         rs.getInt(8),
                         rs.getInt(9),
                         rs.getString(10),
-                        rs.getDate(11).toLocalDate(),
-                        rs.getDate(12).toLocalDate(),
+                        dataOuNulo(rs.getDate(11)),
+                        dataOuNulo(rs.getDate(12)),
                         rs.getInt(13)
                 ));
             }
@@ -272,8 +287,8 @@ public class SindicoDAO {
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
             ps.setString(1, s.getCpf());
-            ps.setDate(2, Date.valueOf(s.getDataInicioMandato()));
-            ps.setDate(3, Date.valueOf(s.getDataFimMandato()));
+            setDataOuNulo(ps, 2, s.getDataInicioMandato());
+            setDataOuNulo(ps, 3, s.getDataFimMandato());
             ps.setInt(4, s.getIdCondominio());
             ps.setInt(5, s.getIdUsuario());
             ps.setInt(6, s.getIdSindico());
