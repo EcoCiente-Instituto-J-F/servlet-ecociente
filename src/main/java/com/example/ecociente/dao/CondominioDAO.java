@@ -13,19 +13,18 @@ public class CondominioDAO{
         boolean retorno = false;
         String sql = """
                 INSERT INTO condominio
-                    (id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio)
+                    (nome, cnpj, status, token, id_endereco, id_tipo_condominio)
                 VALUES
-                    (?,?,?,?,?,?,?)
+                    (?,?,?,?,?,?)
                 """;
-        try(Connection conexao = ConexaoBD.conectar()){
-            PreparedStatement ps = conexao.prepareStatement(sql);
-            ps.setInt(1, condominio.getIdCondominio());
-            ps.setString(2, condominio.getNome());
-            ps.setString(3, condominio.getCnpj());
-            ps.setBoolean(4, condominio.isStatus());
-            ps.setString(5, condominio.getToken());
-            ps.setInt(6, condominio.idEndereco());
-            ps.setInt(7, condominio.getIdTipoCondominio());
+        try(Connection conexao = ConexaoBD.conectar();
+            PreparedStatement ps = conexao.prepareStatement(sql)){
+            ps.setString(1, condominio.getNome());
+            ps.setString(2, condominio.getCnpj());
+            ps.setBoolean(3, condominio.isStatus());
+            ps.setString(4, condominio.getToken());
+            ps.setInt(5, condominio.idEndereco());
+            ps.setInt(6, condominio.getIdTipoCondominio());
 
             retorno = ps.executeUpdate() == 1;
         }
@@ -67,9 +66,9 @@ public class CondominioDAO{
                 SELECT * FROM condominio
                          ORDER BY nome
                 """;
-        try(Connection conexao = ConexaoBD.conectar()){
-            Statement ps = conexao.createStatement();
-            ResultSet condominio = ps.executeQuery(sql);
+        try(Connection conexao = ConexaoBD.conectar();
+            PreparedStatement ps = conexao.prepareStatement(sql);
+            ResultSet condominio = ps.executeQuery()){
 
             while(condominio.next()){
                 condominios.add(new Condominio(
