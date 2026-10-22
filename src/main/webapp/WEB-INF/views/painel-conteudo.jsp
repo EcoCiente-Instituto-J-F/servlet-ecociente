@@ -22,7 +22,7 @@
           </ul>
         </div>
         <p class="grafico__total"><fmt:formatNumber value="${totalCadastros}" pattern="#,##0"/></p>
-        <svg class="grafico__svg" viewBox="160 360 683 328" role="img" aria-label="Cadastros por tipo de conta de fevereiro a agosto">
+        <svg class="grafico__svg" viewBox="160 360 683 328" role="img" aria-label="Cadastros por tipo de conta nos últimos meses">
         <g style="stroke:var(--cor-grade-grafico)" stroke-width="1"><line x1="199" x2="806" y1="442.5" y2="442.5"/><line x1="199" x2="806" y1="476.7" y2="476.7"/><line x1="199" x2="806" y1="510.9" y2="510.9"/><line x1="199" x2="806" y1="545" y2="545"/><line x1="199" x2="806" y1="579.2" y2="579.2"/><line x1="199" x2="806" y1="613.4" y2="613.4"/></g>
         <polygon points="${areaUsuarios}" style="fill:var(--cor-area-grafico)"/>
         <g fill="none" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
@@ -32,7 +32,8 @@
         </g>
         <c:set var="pu" value="${fn:split(ultimoUsuarios, ',')}"/><c:set var="ps" value="${fn:split(ultimoSindicos, ',')}"/><c:set var="pc" value="${fn:split(ultimoCooperativas, ',')}"/>
         <circle cx="${pu[0]}" cy="${pu[1]}" r="5.35" style="fill:var(--cor-usuario)"/><circle cx="${ps[0]}" cy="${ps[1]}" r="5.35" fill="#a863da"/><circle cx="${pc[0]}" cy="${pc[1]}" r="5.35" fill="#d64573"/>
-        <g fill="#acacac" font-size="11" font-family="Montserrat, sans-serif"><text x="211.6" y="659.5" text-anchor="middle">Fev</text><text x="308.6" y="659.5" text-anchor="middle">Mar</text><text x="405.9" y="659.5" text-anchor="middle">Abr</text><text x="502.9" y="659.5" text-anchor="middle">Mai</text><text x="600.1" y="659.5" text-anchor="middle">Jun</text><text x="694.7" y="659.5" text-anchor="middle">Jul</text><text x="790.3" y="659.5" text-anchor="middle">Ago</text></g>
+        <c:set var="posicoesMeses" value="${fn:split('211.6,308.6,405.9,502.9,600.1,694.7,790.3', ',')}"/>
+        <g fill="#acacac" font-size="11" font-family="Montserrat, sans-serif"><c:forEach var="mes" items="${mesesGrafico}" varStatus="m"><text x="${posicoesMeses[m.index]}" y="659.5" text-anchor="middle"><c:out value="${mes}"/></text></c:forEach></g>
       </svg>
       </article>
       <article class="cartao painel">
