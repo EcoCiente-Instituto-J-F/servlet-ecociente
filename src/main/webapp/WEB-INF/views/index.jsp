@@ -228,11 +228,7 @@
                             <li><span class="check-icone">✓</span> Acompanhe sua contribuição</li>
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
-
-                        <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
+                        
                     </article>
 
                     <!-- CARD 2: EMPRESARIAL RESIDENCIAL -->
