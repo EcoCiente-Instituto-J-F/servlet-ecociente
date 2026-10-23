@@ -47,20 +47,20 @@
         <colgroup><col style="width:30%"><col style="width:20%"><col style="width:25%"><col style="width:20%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col">Nome do morador</th><th scope="col">Apartamento</th><th scope="col">Torre</th><th scope="col">Engajamento</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
-          <c:forEach var="m" items="${moradores}">
-            <c:set var="nomeTorre" value="---"/>
-            <c:forEach var="t" items="${torres}"><c:if test="${t.idTorre == m.idTorre}"><c:set var="nomeTorre" value="${t.nome}"/></c:if></c:forEach>
-            <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${nomeTorre}"/>" data-id-torre="<c:out value="${m.idTorre}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-nivel-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-tag="<c:out value="${'Morador'}"/>">
-              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${m.idMorador}" aria-label="Selecionar linha"><span><c:out value="${m.nome}"/></span></div></td>
-              <td><c:out value="${m.numeroApartamento}"/></td>
-              <td><c:out value="${nomeTorre}"/></td>
-              <td><c:out value="${m.nivelEngajamento}"/></td>
-              <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
-            </tr>
-          </c:forEach>
-          <c:forEach begin="${fn:length(moradores)}" end="7">
-            <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
-          </c:forEach>
+        <c:forEach var="m" items="${moradores}">
+          <c:set var="nomeTorre" value="---"/>
+          <c:forEach var="t" items="${torres}"><c:if test="${t.idTorre == m.idTorre}"><c:set var="nomeTorre" value="${t.nome}"/></c:if></c:forEach>
+          <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${nomeTorre}"/>" data-id-torre="<c:out value="${m.idTorre}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-nivel-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-tag="<c:out value="${'Morador'}"/>">
+            <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${m.idMorador}" aria-label="Selecionar linha"><span><c:out value="${m.nome}"/></span></div></td>
+            <td><c:out value="${m.numeroApartamento}"/></td>
+            <td><c:out value="${nomeTorre}"/></td>
+            <td><c:out value="${m.nivelEngajamento}"/></td>
+            <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
+          </tr>
+        </c:forEach>
+        <c:forEach begin="${fn:length(moradores)}" end="7">
+          <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
+        </c:forEach>
         </tbody>
       </table>
     </section>
@@ -80,7 +80,8 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.id}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
+        <%-- ALTERADO: u.id -> u.idUsuario --%>
+        <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
         <label class="campo">Número do apartamento<input type="text" name="numeroApartamento" placeholder="101" required maxlength="10"></label>
         <label class="campo">Torre<select name="idTorre"><option value="">Sem torre</option><c:forEach var="t" items="${torres}"><option value="${t.idTorre}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
         <label class="campo">Nível de engajamento<select name="nivelEngajamento" required><option value="Baixo">Baixo</option><option value="Médio">Médio</option><option value="Alto">Alto</option></select></label>
@@ -95,27 +96,27 @@
 </dialog>
 
 <dialog class="modal" id="ficha-morador" data-ficha style="--largura:420px" aria-labelledby="ficha-morador-titulo">
-    <header class="modal__cabecalho">
-      <p class="modal__etiqueta">Ficha do morador</p>
-      <h2 id="ficha-morador-titulo" class="modal__titulo">Detalhes</h2>
-      <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
-    </header>
-    <div class="modal__linha"></div>
-    <div class="modal__corpo">
-      <div class="ficha__perfil">
-        <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
-        <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
-      </div>
-      <ul>
+  <header class="modal__cabecalho">
+    <p class="modal__etiqueta">Ficha do morador</p>
+    <h2 id="ficha-morador-titulo" class="modal__titulo">Detalhes</h2>
+    <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
+  </header>
+  <div class="modal__linha"></div>
+  <div class="modal__corpo">
+    <div class="ficha__perfil">
+      <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
+      <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
+    </div>
+    <ul>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Apartamento</p><p class="ficha__valor" data-campo="apartamento">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/condominios.svg" alt=""></span><div><p class="ficha__rotulo">Torre</p><p class="ficha__valor" data-campo="torre">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Engajamento</p><p class="ficha__valor" data-campo="engajamento">—</p></div></li>
-      </ul>
-    </div>
-    <footer class="modal__rodape">
-      <button class="botao botao--contorno" type="button" data-fechar-modal>Fechar</button>
-      <button class="botao botao--primario" type="button" data-abrir-modal="modal-morador" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
-    </footer>
+    </ul>
+  </div>
+  <footer class="modal__rodape">
+    <button class="botao botao--contorno" type="button" data-fechar-modal>Fechar</button>
+    <button class="botao botao--primario" type="button" data-abrir-modal="modal-morador" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
+  </footer>
 </dialog>
 
 </body>
