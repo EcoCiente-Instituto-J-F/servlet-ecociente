@@ -12,7 +12,7 @@
             <span class="opcao-check" aria-hidden="true"></span>
             <img class="opcao-icone" src="${ctx}/assets/icone-tipo-residencial.svg" alt="">
             <span class="opcao-titulo">Sim, moro em condomínio</span>
-            <span class="opcao-desc">Você vai precisar do token enviado pelo síndico.</span>
+            <span class="opcao-desc">Você pode informar o token enviado pelo síndico.</span>
         </label>
         <label class="opcao">
             <input type="radio" name="moradia" value="casa" ${cad.moradia == 'casa' ? 'checked' : ''}>
