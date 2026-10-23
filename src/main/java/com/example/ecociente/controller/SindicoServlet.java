@@ -2,8 +2,10 @@ package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.CondominioDAO;
 import com.example.ecociente.dao.SindicoDAO;
+import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Sindico;
+import com.example.ecociente.model.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,6 +21,7 @@ import java.util.List;
 public class SindicoServlet extends HttpServlet {
     SindicoDAO daoSindicos = new SindicoDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
+    UsuarioDAO daoUsuarios = new UsuarioDAO();
 
     //Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000).
     private static final String REGEX_CPF = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11}";
@@ -29,13 +32,15 @@ public class SindicoServlet extends HttpServlet {
         }
     }
 
-    //Busca os síndicos e os condomínios (para o select) e envia para a JSP.
+    //Busca os síndicos, os condomínios e os usuários (para os selects) e envia para a JSP.
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Sindico> sindicos = daoSindicos.listarTodos();
         List<Condominio> condominios = daoCondominios.selecionarTodos();
+        List<Usuario> usuarios = daoUsuarios.selecionarTodos();
 
         request.setAttribute("sindicos", sindicos);
         request.setAttribute("condominios", condominios);
+        request.setAttribute("usuarios", usuarios);
         request.getRequestDispatcher("/WEB-INF/views/sindicos.jsp").forward(request, response);
     }
 

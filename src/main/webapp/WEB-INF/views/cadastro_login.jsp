@@ -350,13 +350,13 @@
         }
 
         .mensagem-erro {
-           font-size: 12px;
-           padding: 8px 10px;
-           border-radius: 6px;
-           margin-bottom: 16px;
-           background-color: #FCE7EF;
-           color: #9D174D;
-           border-left: 3px solid #E05282;
+            font-size: 12px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            margin-bottom: 16px;
+            background-color: #FCE7EF;
+            color: #9D174D;
+            border-left: 3px solid #E05282;
         }
 
 
@@ -1364,132 +1364,132 @@
 </head>
 <body>
 
-    <a href="${pageContext.request.contextPath}/inicio" class="botao-voltar" aria-label="Voltar para a página inicial">
-        <span class="seta" aria-hidden="true">&larr;</span>
-        <span>Voltar</span>
-    </a>
+<a href="${pageContext.request.contextPath}/inicio" class="botao-voltar" aria-label="Voltar para a página inicial">
+    <span class="seta" aria-hidden="true">&larr;</span>
+    <span>Voltar</span>
+</a>
 
-    <div class="container">
+<div class="container">
 
-        <div class="logotipo">
-            <img src="${pageContext.request.contextPath}/assets/logotipo-login.svg" alt="EcoCiente">
-        </div>
+    <div class="logotipo">
+        <img src="${pageContext.request.contextPath}/assets/logotipo-login.svg" alt="EcoCiente">
+    </div>
 
-        <div class="card-wrapper">
-            <div class="container-login">
+    <div class="card-wrapper">
+        <div class="container-login">
 
-               <c:set var="abrirCadastro" value="${param.aba == 'cadastro' or abaAtiva == 'cadastro'}" />
-               <input type="radio" name="aba" id="aba-login" class="aba-radio" ${not abrirCadastro ? 'checked' : ''}>
-               <input type="radio" name="aba" id="aba-cadastro" class="aba-radio" ${abrirCadastro ? 'checked' : ''}>
+            <c:set var="abrirCadastro" value="${param.aba == 'cadastro' or abaAtiva == 'cadastro'}" />
+            <input type="radio" name="aba" id="aba-login" class="aba-radio" ${not abrirCadastro ? 'checked' : ''}>
+            <input type="radio" name="aba" id="aba-cadastro" class="aba-radio" ${abrirCadastro ? 'checked' : ''}>
 
-                <c:if test="${not (etapaCadastro == 'pag-dados' or etapaCadastro == 'pag-resumo' or etapaCadastro == 'pag-pagamento')}">
+            <c:if test="${not (etapaCadastro == 'pag-dados' or etapaCadastro == 'pag-resumo' or etapaCadastro == 'pag-pagamento')}">
                 <div class="tabs">
                     <label for="aba-login" class="tab-botao">Login</label>
                     <label for="aba-cadastro" class="tab-botao">Cadastro</label>
                 </div>
-                </c:if>
+            </c:if>
 
-                <div class="painel painel-login">
+            <div class="painel painel-login">
 
-                    <div class="titulo-container">
-                        <h3 class="titulo-padrao">Acesse sua conta</h3>
+                <div class="titulo-container">
+                    <h3 class="titulo-padrao">Acesse sua conta</h3>
+                </div>
+                <p class="subtitulo">
+                    Bem-vindo de volta!<br>
+                    Continue gerenciando seus dados de onde parou.
+                </p>
+
+                <form action="${pageContext.request.contextPath}/login" method="POST">
+                    <div class="form-group">
+                        <label for="email">E-mail ou usuário</label>
+                        <div class="input-wrapper">
+                            <input class="input-field" type="text" id="email" name="email" value="<c:out value='${param.email}' />" placeholder="Digite seu e-mail">
+                        </div>
                     </div>
-                    <p class="subtitulo">
-                        Bem-vindo de volta!<br>
-                        Continue gerenciando seus dados de onde parou.
-                    </p>
 
-                    <form action="${pageContext.request.contextPath}/login" method="POST">
-                        <div class="form-group">
-                            <label for="email">E-mail ou usuário</label>
-                            <div class="input-wrapper">
-                                <input class="input-field" type="text" id="email" name="email" value="<c:out value='${param.email}' />" placeholder="Digite seu e-mail">
-                            </div>
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <div class="input-wrapper">
+                            <input class="input-field campo-senha" type="text" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+                            <input type="checkbox" id="ver-senha-login" class="ver-senha" aria-label="Mostrar senha">
+                            <label for="ver-senha-login" class="toggle-password">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <line class="risco" x1="2" y1="2" x2="22" y2="22"></line>
+                                </svg>
+                            </label>
                         </div>
+                        <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                    </div>
 
-                        <div class="form-group">
-                            <label for="senha">Senha</label>
-                            <div class="input-wrapper">
-                                <input class="input-field campo-senha" type="text" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+                    <c:if test="${not empty erroLogin}">
+                        <p class="mensagem-erro"><c:out value="${erroLogin}" /></p>
+                    </c:if>
 
-                                <input type="checkbox" id="ver-senha-login" class="ver-senha" aria-label="Mostrar senha">
-                                <label for="ver-senha-login" class="toggle-password">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                        <line class="risco" x1="2" y1="2" x2="22" y2="22"></line>
-                                    </svg>
-                                </label>
-                            </div>
-                            <a href="#" class="forgot-password">Esqueceu sua senha?</a>
-                        </div>
+                    <button type="submit" class="botao-submit">Login</button>
 
-                        <c:if test="${not empty erroLogin}">
-                            <p class="mensagem-erro"><c:out value="${erroLogin}" /></p>
-                        </c:if>
+                    <div class="divider">
+                        <span>ou</span>
+                    </div>
 
-                        <button type="submit" class="botao-submit">Login</button>
-
-                        <div class="divider">
-                            <span>ou</span>
-                        </div>
-
-                        <button type="button" class="botao-google">
-                            Continuar com
-                            <span>
+                    <button type="button" class="botao-google">
+                        Continuar com
+                        <span>
                                 <strong class="google-text-g">G</strong><strong class="google-text-o1">o</strong><strong class="google-text-o2">o</strong><strong class="google-text-g2">g</strong><strong class="google-text-l">l</strong><strong class="google-text-e">e</strong>
                             </span>
-                        </button>
-                    </form>
-
-                </div>
-
-                <c:set var="ctx" value="${pageContext.request.contextPath}" />
-                <c:set var="cad" value="${sessionScope.cadastroPendente}" />
-                <div class="painel painel-cadastro">
-                    <c:choose>
-                        <c:when test="${etapaCadastro == 'pag-dados'}">
-                            <%@ include file="cadastro/pag_dados.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'pag-resumo'}">
-                            <%@ include file="cadastro/pag_resumo.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'pag-pagamento'}">
-                            <%@ include file="cadastro/pag_pagamento.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'perfil'}">
-                            <%@ include file="cadastro/perfil.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'tipo'}">
-                            <%@ include file="cadastro/tipo.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'condominio'}">
-                            <%@ include file="cadastro/condominio.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'endereco'}">
-                            <%@ include file="cadastro/endereco.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'cooperativa-endereco'}">
-                            <%@ include file="cadastro/cooperativa_endereco.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'morador-dados'}">
-                            <%@ include file="cadastro/dados_pessoais.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'moradia'}">
-                            <%@ include file="cadastro/moradia.jsp" %>
-                        </c:when>
-                        <c:when test="${etapaCadastro == 'token'}">
-                            <%@ include file="cadastro/token.jsp" %>
-                        </c:when>
-                        <c:otherwise>
-                            <%@ include file="cadastro/conta.jsp" %>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
+                    </button>
+                </form>
 
             </div>
+
+            <c:set var="ctx" value="${pageContext.request.contextPath}" />
+            <c:set var="cad" value="${sessionScope.cadastroPendente}" />
+            <div class="painel painel-cadastro">
+                <c:choose>
+                    <c:when test="${etapaCadastro == 'pag-dados'}">
+                        <%@ include file="cadastro/pag_dados.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'pag-resumo'}">
+                        <%@ include file="cadastro/pag_resumo.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'pag-pagamento'}">
+                        <%@ include file="cadastro/pag_pagamento.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'perfil'}">
+                        <%@ include file="cadastro/perfil.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'tipo'}">
+                        <%@ include file="cadastro/tipo.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'condominio'}">
+                        <%@ include file="cadastro/condominio.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'endereco'}">
+                        <%@ include file="cadastro/endereco.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'cooperativa-endereco'}">
+                        <%@ include file="cadastro/cooperativa_endereco.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'condominio-dados' or etapaCadastro == 'morador-dados'}">
+                        <%@ include file="cadastro/dados_pessoais.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'moradia'}">
+                        <%@ include file="cadastro/moradia.jsp" %>
+                    </c:when>
+                    <c:when test="${etapaCadastro == 'token'}">
+                        <%@ include file="cadastro/token.jsp" %>
+                    </c:when>
+                    <c:otherwise>
+                        <%@ include file="cadastro/conta.jsp" %>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+
         </div>
     </div>
+</div>
 
 </body>
 </html>
