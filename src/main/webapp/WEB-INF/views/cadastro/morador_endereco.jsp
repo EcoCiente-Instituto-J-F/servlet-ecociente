@@ -6,7 +6,7 @@
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="morador-endereco">
 
-    <div class="form-row tres">
+    <div class="form-row">
         <div class="form-group" data-erro="CEP incompleto: digite os 8 números, ex.: 01310-100.">
             <label for="cad-cep">CEP</label>
             <div class="input-wrapper">
@@ -22,10 +22,19 @@
                 </select>
             </div>
         </div>
+    </div>
+
+    <div class="form-row">
         <div class="form-group">
             <label for="cad-cidade">Cidade</label>
             <div class="input-wrapper">
                 <input class="input-field" type="text" id="cad-cidade" name="cidade" value="<c:out value='${cad.cidade}' />" placeholder="Digite a cidade" autocomplete="address-level2" required maxlength="80">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="cad-bairro">Bairro</label>
+            <div class="input-wrapper">
+                <input class="input-field" type="text" id="cad-bairro" name="bairro" value="<c:out value='${cad.bairro}' />" placeholder="Digite o bairro" required maxlength="80">
             </div>
         </div>
     </div>
@@ -45,24 +54,10 @@
         </div>
     </div>
 
-    <div class="form-row tres">
-        <div class="form-group">
-            <label for="cad-bairro">Bairro</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="text" id="cad-bairro" name="bairro" value="<c:out value='${cad.bairro}' />" placeholder="Digite o bairro" required maxlength="80">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="cad-bloco">Bloco/Torre</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="text" id="cad-bloco" name="bloco" value="<c:out value='${cad.bloco}' />" placeholder="Opcional" maxlength="20">
-            </div>
-        </div>
-        <div class="form-group">
-            <label for="cad-apto">Apto/Casa</label>
-            <div class="input-wrapper">
-                <input class="input-field" type="text" id="cad-apto" name="apto" value="<c:out value='${cad.apto}' />" placeholder="Nº" maxlength="20" ${cad.moradia == 'condominio' ? 'required' : ''}>
-            </div>
+    <div class="form-group">
+        <label for="cad-complemento">Complemento <span class="opcional">(opcional)</span></label>
+        <div class="input-wrapper">
+            <input class="input-field" type="text" id="cad-complemento" name="complemento" value="<c:out value='${cad.complemento}' />" placeholder="Casa, comércios..." autocomplete="address-line2" maxlength="80">
         </div>
     </div>
 
