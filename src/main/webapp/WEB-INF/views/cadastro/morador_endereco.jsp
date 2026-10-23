@@ -37,10 +37,10 @@
                 <input class="input-field" type="text" id="cad-rua" name="rua" value="<c:out value='${cad.rua}' />" placeholder="Digite o nome da rua" autocomplete="address-line1" required maxlength="150">
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" data-erro="Digite só números. Se não houver número, use 0.">
             <label for="cad-numero">Número</label>
             <div class="input-wrapper">
-                <input class="input-field" type="text" id="cad-numero" name="numero" value="<c:out value='${cad.numero}' />" placeholder="Nº" required maxlength="10">
+                <input class="input-field" type="text" id="cad-numero" name="numero" value="<c:out value='${cad.numero}' />" placeholder="Nº" inputmode="numeric" pattern="[0-9]{1,9}" title="Somente números" required maxlength="9">
             </div>
         </div>
     </div>

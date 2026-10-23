@@ -1443,50 +1443,51 @@
                 </form>
 
             </div>
-
-            <c:set var="ctx" value="${pageContext.request.contextPath}" />
-            <c:set var="cad" value="${sessionScope.cadastroPendente}" />
-            <div class="painel painel-cadastro">
-                <c:choose>
-                    <c:when test="${etapaCadastro == 'pag-dados'}">
-                        <%@ include file="cadastro/pag_dados.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'pag-resumo'}">
-                        <%@ include file="cadastro/pag_resumo.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'pag-pagamento'}">
-                        <%@ include file="cadastro/pag_pagamento.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'perfil'}">
-                        <%@ include file="cadastro/perfil.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'tipo'}">
-                        <%@ include file="cadastro/tipo.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'condominio'}">
-                        <%@ include file="cadastro/condominio.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'endereco'}">
-                        <%@ include file="cadastro/endereco.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'cooperativa-endereco'}">
-                        <%@ include file="cadastro/cooperativa_endereco.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'condominio-dados' or etapaCadastro == 'morador-dados'}">
-                        <%@ include file="cadastro/dados_pessoais.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'moradia'}">
-                        <%@ include file="cadastro/moradia.jsp" %>
-                    </c:when>
-                    <c:when test="${etapaCadastro == 'token'}">
-                        <%@ include file="cadastro/token.jsp" %>
-                    </c:when>
-                    <c:otherwise>
-                        <%@ include file="cadastro/conta.jsp" %>
-                    </c:otherwise>
-                </c:choose>
-            </div>
-
+                <c:set var="ctx" value="${pageContext.request.contextPath}" />
+                <c:set var="cad" value="${sessionScope.cadastroPendente}" />
+                <div class="painel painel-cadastro">
+                    <c:choose>
+                        <c:when test="${etapaCadastro == 'pag-dados'}">
+                            <%@ include file="cadastro/pag_dados.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'pag-resumo'}">
+                            <%@ include file="cadastro/pag_resumo.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'pag-pagamento'}">
+                            <%@ include file="cadastro/pag_pagamento.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'perfil'}">
+                            <%@ include file="cadastro/perfil.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'tipo'}">
+                            <%@ include file="cadastro/tipo.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'condominio'}">
+                            <%@ include file="cadastro/condominio.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'endereco'}">
+                            <%@ include file="cadastro/endereco.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'cooperativa-endereco'}">
+                            <%@ include file="cadastro/cooperativa_endereco.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'cooperativa-dados' or etapaCadastro == 'sindico-dados' or etapaCadastro == 'morador-dados'}">
+                            <%@ include file="cadastro/dados_pessoais.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'moradia'}">
+                            <%@ include file="cadastro/moradia.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'token'}">
+                            <%@ include file="cadastro/token.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'morador-endereco'}">
+                            <%@ include file="cadastro/morador_endereco.jsp" %>
+                        </c:when>
+                        <c:otherwise>
+                            <%@ include file="cadastro/conta.jsp" %>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
         </div>
     </div>
 </div>

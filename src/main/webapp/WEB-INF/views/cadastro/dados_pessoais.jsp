@@ -1,11 +1,20 @@
 <%@ page pageEncoding="UTF-8" %>
 <c:set var="ehCooperativa" value="${cad.perfil == 'cooperativa'}" />
+<c:set var="ehSindico" value="${cad.perfil == 'sindico'}" />
 <c:set var="tituloEtapa" value="Dados pessoais" />
-<c:set var="subtituloEtapa" value="${ehCooperativa ? 'Dados do responsável pela cooperativa.' : 'Deixe seu contato para receber os avisos de coleta do seu bairro.'}" />
+<c:set var="subtituloEtapa"
+    value="${ehCooperativa
+        ? 'Dados do responsável pela cooperativa.'
+        : (ehSindico
+            ? 'Dados do síndico responsável pelo condomínio.'
+            : 'Deixe seu contato para receber os avisos de coleta do seu bairro.')}" />
 <%@ include file="_cabecalho.jsp" %>
 
 <form action="${ctx}/cadastro" method="POST">
-    <input type="hidden" name="etapa" value="${ehCooperativa ? 'cooperativa-dados' : 'morador-dados'}">
+    <input type="hidden" name="etapa"
+        value="${ehCooperativa
+            ? 'cooperativa-dados'
+            : (ehSindico ? 'sindico-dados' : 'morador-dados')}">
 
     <div class="form-group" data-erro="Digite o nome completo, com nome e sobrenome.">
         <label for="cad-nome">Nome completo</label>
@@ -29,30 +38,13 @@
         </div>
     </div>
 
-    <c:choose>
-        <c:when test="${ehCooperativa}">
-            <div class="form-group">
-                <label for="cad-cargo">Cargo na cooperativa</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="text" id="cad-cargo" name="cargo" value="<c:out value='${cad.cargo}' />" placeholder="Ex.: presidente, coordenador(a)" autocomplete="organization-title" required maxlength="80">
-                </div>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div class="form-group" data-erro="Informe uma data de nascimento válida.">
-                <label for="cad-nascimento">Data de nascimento</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="date" id="cad-nascimento" name="nascimento" value="<c:out value='${cad.nascimento}' />" autocomplete="bday" required min="1900-01-01" max="${hoje}">
-                </div>
-            </div>
-        </c:otherwise>
-    </c:choose>
+    <%@ include file="_nascimento.jsp" %>
 
     <%@ include file="_avisos.jsp" %>
 
     <c:set var="textoLgpd" value="${ehCooperativa ? 'Usamos esses dados apenas para validar a cooperativa, conforme a LGPD.' : 'Usamos telefone e CPF apenas para identificar sua conta, conforme a LGPD.'}" />
     <%@ include file="_aceite.jsp" %>
 
-    <c:set var="textoAvancar" value="${ehCooperativa ? 'Criar conta' : 'Próximo'}" />
+    <c:set var="textoAvancar" value="Próximo" />
     <%@ include file="_botoes.jsp" %>
 </form>

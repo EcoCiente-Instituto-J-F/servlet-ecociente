@@ -57,7 +57,7 @@
         </section>
 
         <div class="container">
-            <h2 class="titulo-secao">O EcoCiente oferece</h2>
+            <h2 class="titulo-secao">O EcoCiente oferece:</h2>
             <div class="oferece">
                 <div class="card-oferece">
                     <div class="icone-oferece">
@@ -71,14 +71,14 @@
                         <img src="${pageContext.request.contextPath}/assets/icone-dinheiro.svg" alt="Icone valorização">
                     </div>
                     <span class="titulo-card-oferece">Valorização do Imóvel</span>
-                    <p class="texto-oferece">Além de contribuir para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
+                    <p class="texto-oferece">Contribuímos para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
                 </div>
                 <div class="card-oferece">
                     <div class="icone-oferece">
                         <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
                     </div>
                     <span class="titulo-card-oferece">Gestão Ambiental</span>
-                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e ajudamos você a adotar práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
+                    <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e a adoção de práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
                 </div>
             </div>
 
@@ -119,7 +119,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Informe e engaje</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Informe os dados do seu condomínio, compartilhe informações sobre a geração de resíduos e solicite uma coleta no período disponível.</p>
+                            <p class="texto-card-func">Preencha seus dados, nos informe sobre a geração de resíduos e solicite um dia fixo disponível na semana.</p>
                         </div>
                     </li>
 
@@ -130,7 +130,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Coleta responsável</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">A cooperativa parceira realiza a coleta de forma segura, responsável e comprometida com a destinação adequada dos materiais recicláveis.</p>
+                            <p class="texto-card-func">A cooperativa realiza a coleta com compromisso, juntamente de segurança e responsabilidade.</p>
                         </div>
                     </li>
 
@@ -141,7 +141,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Acompanhe</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Acompanhe os resultados e visualize os impactos positivos gerados pela gestão responsável dos resíduos do seu condomínio.</p>
+                            <p class="texto-card-func">Visualize os impactos positivos do seu condomínio.</p>
                         </div>
                     </li>
 
@@ -152,7 +152,7 @@
                         <div class="conteudo-card-func">
                             <h3 class="titulo-verde">Conecte-se</h3>
                             <span class="linha-rosa"></span>
-                            <p class="texto-card-func">Conecte seu condomínio a cooperativas parceiras da sua região e fortaleça a economia circular.</p>
+                            <p class="texto-card-func">Fazemos a conexão com as cooperativas da sua região</p>
                         </div>
                     </li>
                 </ul>
@@ -184,16 +184,26 @@
                         </div>
                         <div class="item-icone-beneficio">
                             <img src="${pageContext.request.contextPath}/assets/grafico-icon-rosa.svg" alt="Resultados">
-                            <span>Resultados que geram impacto</span>
+                            <span>Resultados que geram impactos</span>
                         </div>
                     </div>
                 </div>
             </section>
 
+
             <section class="planos" id="planos">
                 <h2 class="titulo-planos">Planos de assinatura</h2>
 
+                <input type="radio" id="mensal-planos" name="periodo-planos" checked>
+                <input type="radio" id="anual-planos" name="periodo-planos">
+
+                <div class="chave-planos">
+                    <label for="mensal-planos" class="botao-periodo">Mensal</label>
+                    <label for="anual-planos" class="botao-periodo">Anual</label>
+                </div>
+
                 <div class="grid-planos">
+
                     <!-- CARD 1: GRATUITO -->
                     <article class="card-plano">
                         <div class="cabecalho-card">
@@ -205,11 +215,9 @@
                             </div>
                         </div>
 
-                        <div class="espacador-chave"></div>
-
-                        <div class="preco-container preco-mensal">
-                            <span class="valor">R$ 0,00</span>
-                            <span class="periodo">Gratuito</span>
+                        <div class="preco-container preco-fixo">
+                           <span class="valor">R$ 0,00</span>
+                           <span class="periodo">Gratuito</span>
                         </div>
 
                         <hr class="divisor-card">
@@ -220,11 +228,7 @@
                             <li><span class="check-icone">✓</span> Acompanhe sua contribuição</li>
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
-
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
+                        
                     </article>
 
                     <!-- CARD 2: EMPRESARIAL RESIDENCIAL -->
@@ -238,14 +242,6 @@
                                 <h3 class="nome-plano">Empresarial Residencial</h3>
                                 <p class="descricao-plano">Ideal para condomínios empresariais e residenciais.</p>
                             </div>
-                        </div>
-
-                        <input type="radio" id="mensal-empresarial" name="periodo-empresarial" checked>
-                        <input type="radio" id="anual-empresarial" name="periodo-empresarial">
-
-                        <div class="chave-alterar-plano">
-                            <label for="mensal-empresarial" class="botao-periodo">Mensal</label>
-                            <label for="anual-empresarial" class="botao-periodo">Anual</label>
                         </div>
 
                         <div class="preco-container preco-mensal">
@@ -270,10 +266,6 @@
                             <li><span class="check-icone">✓</span> Relatórios e históricos de coleta</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
                     </article>
 
                     <!-- CARD 3: INDUSTRIAL -->
@@ -285,14 +277,6 @@
                                 <h3 class="nome-plano">Industrial</h3>
                                 <p class="descricao-plano">Ideal para grandes empresas e grandes áreas.</p>
                             </div>
-                        </div>
-
-                        <input type="radio" id="mensal-industrial" name="periodo-industrial" checked>
-                        <input type="radio" id="anual-industrial" name="periodo-industrial">
-
-                        <div class="chave-alterar-plano">
-                            <label for="mensal-industrial" class="botao-periodo">Mensal</label>
-                            <label for="anual-industrial" class="botao-periodo">Anual</label>
                         </div>
 
                         <div class="preco-container preco-mensal">
@@ -317,12 +301,15 @@
                             <li><span class="check-icone">✓</span> Dashboards e relatórios avançados</li>
                         </ul>
 
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao-plano">
-                            <span>Começar agora</span>
-                            <span class="seta">&rarr;</span>
-                        </a>
                     </article>
                 </div>
+
+                 <div class="acao-planos">
+                     <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-plano">
+                        <span>Começar agora</span>
+                        <span class="seta">&rarr;</span>
+                     </a>
+                 </div>
             </section>
 
             <section class="cooperativa">
