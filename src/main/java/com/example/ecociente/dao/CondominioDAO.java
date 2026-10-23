@@ -2,6 +2,8 @@ package com.example.ecociente.dao;
 
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Condominio;
+import com.example.ecociente.model.Endereco;
+import com.example.ecociente.model.TipoCondominio;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -211,4 +213,196 @@ public class CondominioDAO{
         }
         return retorno;
     } // Metodo que deleta um condomínio por id
+
+    //=======================MÉTODOS DO CRUD DE ADMIN (JOIN e transação)=======================\\
+
+    // Lista para a tela de condomínios: traz o nome do tipo, o nome do síndico e o endereço
+    public ArrayList<Condominio> selecionarTodos(String busca){
+        ArrayList<Condominio> condominios = new ArrayList<>();
+        String sql = """
+                SELECT c.id_condominio, c.nome, c.cnpj, c.status, c.token, c.id_endereco, c.id_tipo_condominio, tc.nome_tipo,
+                       (SELECT u.nome FROM sindico s JOIN usuario u ON u.id_usuario = s.id_usuario
+                        WHERE s.id_condominio = c.id_condominio ORDER BY s.id_sindico LIMIT 1),
+                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento
+                FROM condominio c
+                LEFT JOIN tipo_condominio tc ON tc.id_tipo_condominio = c.id_tipo_condominio
+                JOIN endereco e ON e.id_endereco = c.id_endereco
+                WHERE c.nome ILIKE ?
+                ORDER BY c.nome
+                """;
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, "%" + (busca == null ? "" : busca.trim()) + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while(rs.next()){
+                    Condominio condominio = new Condominio(
+                            rs.getInt(1), rs.getString(2), Condominio.formatarCnpj(rs.getString(3)), rs.getBoolean(4),
+                            rs.getString(5), rs.getInt(6), rs.getInt(7)
+                    );
+                    condominio.setDadosExibicao(rs.getString(8), rs.getString(9), EnderecoDAO.deLinha(rs, rs.getInt(6), 10));
+                    condominios.add(condominio);
+                }
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return condominios;
+    }
+
+    // Tipos de condomínio para o select do formulário
+    public ArrayList<TipoCondominio> selecionarTipos(){
+        ArrayList<TipoCondominio> tipos = new ArrayList<>();
+        String sql = "SELECT id_tipo_condominio, nome_tipo, descricao FROM tipo_condominio ORDER BY id_tipo_condominio";
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ){
+            while(rs.next()){
+                tipos.add(new TipoCondominio(rs.getInt(1), rs.getString(2), rs.getString(3)));
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return tipos;
+    }
+
+    // Verifica se o CNPJ já é de outro condomínio (o exceptoId é o próprio condomínio na edição, 0 no cadastro)
+    public boolean existeCnpj(String cnpj, int exceptoId){
+        String sql = "SELECT 1 FROM condominio WHERE cnpj = ? AND id_condominio <> ?";
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, cnpj);
+            ps.setInt(2, exceptoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Cadastra o endereço e o condomínio na mesma transação
+    public boolean inserir(Condominio condominio, Endereco endereco){
+        try(Connection conexao = ConexaoBD.conectar()){
+            conexao.setAutoCommit(false);
+            try{
+                int idEndereco = EnderecoDAO.inserirNaTransacao(conexao, endereco);
+
+                String sql = """
+                        INSERT INTO condominio (nome, cnpj, status, token, id_endereco, id_tipo_condominio)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """;
+                int linhas;
+                try(PreparedStatement ps = conexao.prepareStatement(sql)){
+                    ps.setString(1, condominio.getNome());
+                    ps.setString(2, condominio.getCnpj());
+                    ps.setBoolean(3, condominio.isStatus());
+                    ps.setString(4, condominio.getToken());
+                    ps.setInt(5, idEndereco);
+                    ps.setInt(6, condominio.getIdTipoCondominio());
+                    linhas = ps.executeUpdate();
+                }
+                conexao.commit();
+                return linhas == 1;
+            }
+            catch(SQLException sqle){
+                conexao.rollback();
+                throw sqle;
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Atualiza o endereço e o condomínio na mesma transação
+    public boolean atualizarCondominio(Condominio condominio, Endereco endereco){
+        try(Connection conexao = ConexaoBD.conectar()){
+            conexao.setAutoCommit(false);
+            try{
+                EnderecoDAO.atualizarNaTransacao(conexao, condominio.idEndereco(), endereco);
+
+                String sql = """
+                        UPDATE condominio
+                        SET nome = ?, cnpj = ?, status = ?, token = ?, id_tipo_condominio = ?
+                        WHERE id_condominio = ?
+                        """;
+                int linhas;
+                try(PreparedStatement ps = conexao.prepareStatement(sql)){
+                    ps.setString(1, condominio.getNome());
+                    ps.setString(2, condominio.getCnpj());
+                    ps.setBoolean(3, condominio.isStatus());
+                    ps.setString(4, condominio.getToken());
+                    ps.setInt(5, condominio.getIdTipoCondominio());
+                    ps.setInt(6, condominio.getIdCondominio());
+                    linhas = ps.executeUpdate();
+                }
+                conexao.commit();
+                return linhas == 1;
+            }
+            catch(SQLException sqle){
+                conexao.rollback();
+                throw sqle;
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Apaga o condomínio e o endereço dele (se ninguém mais usa). Falha se ainda tem torre, síndico ou parceria
+    public boolean deletarComEndereco(int id){
+        try(Connection conexao = ConexaoBD.conectar()){
+            conexao.setAutoCommit(false);
+            try{
+                int idEndereco = 0;
+                try(PreparedStatement ps = conexao.prepareStatement("SELECT id_endereco FROM condominio WHERE id_condominio = ?")){
+                    ps.setInt(1, id);
+                    try(ResultSet rs = ps.executeQuery()){
+                        if(!rs.next()) return false;
+                        idEndereco = rs.getInt(1);
+                    }
+                }
+
+                int linhas;
+                try(PreparedStatement ps = conexao.prepareStatement("DELETE FROM condominio WHERE id_condominio = ?")){
+                    ps.setInt(1, id);
+                    linhas = ps.executeUpdate();
+                }
+                EnderecoDAO.apagarSeSolto(conexao, idEndereco);
+                conexao.commit();
+                return linhas == 1;
+            }
+            catch(SQLException sqle){
+                conexao.rollback();
+                throw sqle;
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    public int contar(){
+        String sql = "SELECT COUNT(*) FROM condominio";
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()
+        ){
+            rs.next();
+            return rs.getInt(1);
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
 }

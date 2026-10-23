@@ -170,4 +170,25 @@ public class TelefoneDAO {
             return false;
         }
     }
+
+    //=======================MÉTODO PARA TRANSAÇÃO (recebe a conexão aberta)=======================\\
+
+    // Atualiza o primeiro telefone do usuário ou cria um se ele ainda não tem nenhum
+    public static void salvarNaTransacao(Connection conexao, int idUsuario, String digitos) throws SQLException {
+        if (digitos == null || digitos.isBlank()) return;
+        String atualizar = """
+                UPDATE telefone SET numero = ?
+                WHERE id_telefone = (SELECT MIN(id_telefone) FROM telefone WHERE id_usuario = ?)
+                """;
+        try (PreparedStatement ps = conexao.prepareStatement(atualizar)) {
+            ps.setString(1, digitos);
+            ps.setInt(2, idUsuario);
+            if (ps.executeUpdate() > 0) return;
+        }
+        try (PreparedStatement ps = conexao.prepareStatement("INSERT INTO telefone (numero, id_usuario) VALUES (?, ?)")) {
+            ps.setString(1, digitos);
+            ps.setInt(2, idUsuario);
+            ps.executeUpdate();
+        }
+    }
 }

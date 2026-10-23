@@ -237,5 +237,83 @@ public class EnderecoDAO {
 
     }
 
+    //=======================MÉTODOS PARA TRANSAÇÃO (recebem a conexão aberta)=======================\\
 
+    public static int inserirNaTransacao(Connection conexao, Endereco endereco) throws SQLException {
+        String sql = """
+                INSERT INTO endereco (cep, cidade, estado, bairro, rua, numero, complemento)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                RETURNING id_endereco
+                """;
+        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+            ps.setString(1, endereco.getCep());
+            ps.setString(2, endereco.getCidade());
+            ps.setString(3, endereco.getEstado());
+            ps.setString(4, endereco.getBairro());
+            ps.setString(5, endereco.getRua());
+            ps.setString(6, String.valueOf(endereco.getNumero()));
+            ps.setString(7, endereco.getComplemento());
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
+        }
+    }
+
+    public static void atualizarNaTransacao(Connection conexao, int idEndereco, Endereco endereco) throws SQLException {
+        String sql = """
+                UPDATE endereco
+                SET cep = ?, cidade = ?, estado = ?, bairro = ?, rua = ?, numero = ?, complemento = ?
+                WHERE id_endereco = ?
+                """;
+        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+            ps.setString(1, endereco.getCep());
+            ps.setString(2, endereco.getCidade());
+            ps.setString(3, endereco.getEstado());
+            ps.setString(4, endereco.getBairro());
+            ps.setString(5, endereco.getRua());
+            ps.setString(6, String.valueOf(endereco.getNumero()));
+            ps.setString(7, endereco.getComplemento());
+            ps.setInt(8, idEndereco);
+            ps.executeUpdate();
+        }
+    }
+
+    // Apaga o endereço só se nenhum usuário nem condomínio usa mais
+    public static void apagarSeSolto(Connection conexao, int idEndereco) throws SQLException {
+        if (idEndereco == 0) return;
+        String sql = """
+                DELETE FROM endereco
+                WHERE id_endereco = ?
+                  AND NOT EXISTS (SELECT 1 FROM usuario WHERE id_endereco = ?)
+                  AND NOT EXISTS (SELECT 1 FROM condominio WHERE id_endereco = ?)
+                """;
+        try (PreparedStatement ps = conexao.prepareStatement(sql)) {
+            ps.setInt(1, idEndereco);
+            ps.setInt(2, idEndereco);
+            ps.setInt(3, idEndereco);
+            ps.executeUpdate();
+        }
+    }
+
+    // Monta o endereço a partir de 7 colunas seguidas do SELECT (cep ... complemento); null se não tem endereço
+    public static Endereco deLinha(ResultSet rs, int idEndereco, int primeiraColuna) throws SQLException {
+        if (idEndereco == 0) return null;
+        int numero = 0;
+        try {
+            numero = Integer.parseInt(rs.getString(primeiraColuna + 5));
+        } catch (NumberFormatException nfe) {
+            System.out.println("Número de endereço não numérico: " + nfe.getMessage());
+        }
+        return new Endereco(
+                idEndereco,
+                rs.getString(primeiraColuna),
+                rs.getString(primeiraColuna + 1),
+                rs.getString(primeiraColuna + 2),
+                rs.getString(primeiraColuna + 3),
+                rs.getString(primeiraColuna + 4),
+                numero,
+                rs.getString(primeiraColuna + 6)
+        );
+    }
 }
