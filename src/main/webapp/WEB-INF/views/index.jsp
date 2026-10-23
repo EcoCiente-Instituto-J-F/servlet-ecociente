@@ -228,7 +228,7 @@
                             <li><span class="check-icone">✓</span> Acompanhe sua contribuição</li>
                             <li><span class="check-icone">✓</span> Teste seu conhecimento</li>
                         </ul>
-                        
+
                     </article>
 
                     <!-- CARD 2: EMPRESARIAL RESIDENCIAL -->
@@ -563,8 +563,7 @@
                         <p>E-mail: ecociente.jef@gmail.com</p>
                     </div>
                     <div class="links-termos">
-                        <a href="#">Termos de uso</a> | <a href="#">Política de privacidade</a>
-                    </div>
+                        <a href="${pageContext.request.contextPath}/documentos/termos-de-uso.pdf" target="_blank" rel="noopener">Termos de uso</a> | <a href="${pageContext.request.contextPath}/documentos/politica-de-privacidade.pdf" target="_blank" rel="noopener">Política de privacidade</a>                    </div>
                 </div>
             </div>
         </footer>
