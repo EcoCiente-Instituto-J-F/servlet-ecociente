@@ -1,6 +1,6 @@
 <%@ page pageEncoding="UTF-8" %>
 <c:set var="ehCooperativa" value="${cad.perfil == 'cooperativa'}" />
-<c:set var="ehSindico" value="${cad.perfil == 'condominio'}" />
+<c:set var="ehSindico" value="${cad.perfil == 'sindico'}" />
 <c:set var="tituloEtapa" value="Dados pessoais" />
 <c:set var="subtituloEtapa"
     value="${ehCooperativa
@@ -14,7 +14,7 @@
     <input type="hidden" name="etapa"
         value="${ehCooperativa
             ? 'cooperativa-dados'
-            : (ehSindico ? 'condominio-dados' : 'morador-dados')}">
+            : (ehSindico ? 'sindico-dados' : 'morador-dados')}">
 
     <div class="form-group" data-erro="Digite o nome completo, com nome e sobrenome.">
         <label for="cad-nome">Nome completo</label>
