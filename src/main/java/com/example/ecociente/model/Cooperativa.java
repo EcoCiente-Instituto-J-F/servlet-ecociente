@@ -7,6 +7,7 @@ public class Cooperativa extends Usuario{
     //================ ATRIBUTOS ================
     private int idCooperativa;
     private String cnpj;
+    private int condominiosVinculados;
 
     //================ METODO CONSTRUTOR ================
 
@@ -32,6 +33,26 @@ public class Cooperativa extends Usuario{
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;
+    }
+
+
+    // ================ EXIBICAO (usado pelas JSPs) ================
+
+    public String getResponsavel() {
+        return getNome();
+    }
+
+    @Override
+    public String getTag() {
+        return isStatus() ? "Ativa" : "Inativa";
+    }
+
+    public int getCondominiosVinculados() {
+        return condominiosVinculados;
+    }
+
+    public void setCondominiosVinculados(int condominiosVinculados) {
+        this.condominiosVinculados = condominiosVinculados;
     }
 
     // ================ TO STRING ================

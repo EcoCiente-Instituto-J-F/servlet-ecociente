@@ -20,11 +20,11 @@ public class TipoUsuario {
 
     //================ METODOS GETTERS ================
 
-    public int getIdTipoUsuario() {
+    public int getId() {
         return idTipoUsuario;
     }
 
-    public String getNomeTipo() {
+    public String getNome() {
         return nome;
     }
 

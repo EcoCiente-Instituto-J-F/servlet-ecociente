@@ -132,6 +132,22 @@ public class Endereco {
     }
 
 
+
+    // ================ EXIBICAO (usado pelas JSPs) ================
+
+    public String getCepFormatado() {
+        if (cep == null || cep.length() != 8) return cep == null ? "" : cep;
+        return cep.substring(0, 5) + "-" + cep.substring(5);
+    }
+
+    public String getLocalidade() {
+        return cidade + ", " + estado;
+    }
+
+    public String getTextoCompleto() {
+        return rua + ", " + numero + " - " + cidade + ", " + estado;
+    }
+
     // ================ TO STRING ================
     @Override
 
