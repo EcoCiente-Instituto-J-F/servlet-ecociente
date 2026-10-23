@@ -47,23 +47,24 @@
         <colgroup><col style="width:47%"><col style="width:48%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col">Número</th><th scope="col">Usuário</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
-          <c:forEach var="t" items="${telefones}">
-            <c:choose>
-              <c:when test="${fn:length(t.numero) == 11}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 7)}-${fn:substring(t.numero, 7, 11)}"/></c:when>
-              <c:when test="${fn:length(t.numero) == 10}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 6)}-${fn:substring(t.numero, 6, 10)}"/></c:when>
-              <c:otherwise><c:set var="numeroBr" value="${t.numero}"/></c:otherwise>
-            </c:choose>
-            <c:set var="nomeUsuario" value="---"/>
-            <c:forEach var="u" items="${usuarios}"><c:if test="${u.id == t.idUsuario}"><c:set var="nomeUsuario" value="${u.nome}"/></c:if></c:forEach>
-            <tr data-id="<c:out value="${t.idTelefone}"/>" data-nome="<c:out value="${numeroBr}"/>" data-numero="<c:out value="${numeroBr}"/>" data-form-numero="<c:out value="${t.numero}"/>" data-id-usuario="<c:out value="${t.idUsuario}"/>" data-usuario="<c:out value="${nomeUsuario}"/>" data-tag="<c:out value="${'Telefone'}"/>">
-              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${t.idTelefone}" aria-label="Selecionar linha"><span><c:out value="${numeroBr}"/></span></div></td>
-              <td><c:out value="${nomeUsuario}"/></td>
-              <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
-            </tr>
-          </c:forEach>
-          <c:forEach begin="${fn:length(telefones)}" end="7">
-            <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td></tr>
-          </c:forEach>
+        <c:forEach var="t" items="${telefones}">
+          <c:choose>
+            <c:when test="${fn:length(t.numero) == 11}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 7)}-${fn:substring(t.numero, 7, 11)}"/></c:when>
+            <c:when test="${fn:length(t.numero) == 10}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 6)}-${fn:substring(t.numero, 6, 10)}"/></c:when>
+            <c:otherwise><c:set var="numeroBr" value="${t.numero}"/></c:otherwise>
+          </c:choose>
+          <c:set var="nomeUsuario" value="---"/>
+          <%-- ALTERADO: u.id -> u.idUsuario --%>
+          <c:forEach var="u" items="${usuarios}"><c:if test="${u.idUsuario == t.idUsuario}"><c:set var="nomeUsuario" value="${u.nome}"/></c:if></c:forEach>
+          <tr data-id="<c:out value="${t.idTelefone}"/>" data-nome="<c:out value="${numeroBr}"/>" data-numero="<c:out value="${numeroBr}"/>" data-form-numero="<c:out value="${t.numero}"/>" data-id-usuario="<c:out value="${t.idUsuario}"/>" data-usuario="<c:out value="${nomeUsuario}"/>" data-tag="<c:out value="${'Telefone'}"/>">
+            <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${t.idTelefone}" aria-label="Selecionar linha"><span><c:out value="${numeroBr}"/></span></div></td>
+            <td><c:out value="${nomeUsuario}"/></td>
+            <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
+          </tr>
+        </c:forEach>
+        <c:forEach begin="${fn:length(telefones)}" end="7">
+          <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td></tr>
+        </c:forEach>
         </tbody>
       </table>
     </section>
@@ -84,7 +85,8 @@
     <div class="modal__corpo">
       <div class="formulario">
         <label class="campo">Número<input type="tel" name="numero" placeholder="(11) 91234-5678" required maxlength="15" inputmode="tel"></label>
-        <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.id}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
+        <%-- ALTERADO: u.id -> u.idUsuario --%>
+        <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -96,26 +98,26 @@
 </dialog>
 
 <dialog class="modal" id="ficha-telefone" data-ficha style="--largura:420px" aria-labelledby="ficha-telefone-titulo">
-    <header class="modal__cabecalho">
-      <p class="modal__etiqueta">Ficha do telefone</p>
-      <h2 id="ficha-telefone-titulo" class="modal__titulo">Detalhes</h2>
-      <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
-    </header>
-    <div class="modal__linha"></div>
-    <div class="modal__corpo">
-      <div class="ficha__perfil">
-        <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
-        <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
-      </div>
-      <ul>
+  <header class="modal__cabecalho">
+    <p class="modal__etiqueta">Ficha do telefone</p>
+    <h2 id="ficha-telefone-titulo" class="modal__titulo">Detalhes</h2>
+    <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
+  </header>
+  <div class="modal__linha"></div>
+  <div class="modal__corpo">
+    <div class="ficha__perfil">
+      <span class="ficha__foto" aria-hidden="true" data-campo="iniciais">—</span>
+      <div><p class="ficha__nome" data-campo="nome">—</p><span class="ficha__tag" data-campo="tag">—</span></div>
+    </div>
+    <ul>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Número</p><p class="ficha__valor" data-campo="numero">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Usuário vinculado</p><p class="ficha__valor" data-campo="usuario">—</p></div></li>
-      </ul>
-    </div>
-    <footer class="modal__rodape">
-      <button class="botao botao--contorno" type="button" data-fechar-modal>Fechar</button>
-      <button class="botao botao--primario" type="button" data-abrir-modal="modal-telefone" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
-    </footer>
+    </ul>
+  </div>
+  <footer class="modal__rodape">
+    <button class="botao botao--contorno" type="button" data-fechar-modal>Fechar</button>
+    <button class="botao botao--primario" type="button" data-abrir-modal="modal-telefone" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
+  </footer>
 </dialog>
 
 </body>
