@@ -40,8 +40,6 @@
 
     <%@ include file="_nascimento.jsp" %>
 
-    <%@ include file="_avisos.jsp" %>
-
     <c:set var="textoLgpd" value="${ehCooperativa ? 'Usamos esses dados apenas para validar a cooperativa, conforme a LGPD.' : 'Usamos telefone e CPF apenas para identificar sua conta, conforme a LGPD.'}" />
     <%@ include file="_aceite.jsp" %>
 
