@@ -1,9 +1,11 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.CooperativaDAO;
 import com.example.ecociente.dao.EnderecoDAO;
 import com.example.ecociente.dao.TelefoneDAO;
 import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.CadastroPendente;
+import com.example.ecociente.model.Cooperativa;
 import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Telefone;
 import com.example.ecociente.model.Usuario;
@@ -24,10 +26,12 @@ import java.time.LocalDate;
 public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
+    private CooperativaDAO cooperativaDAO;
 
     @Override
     public void init() {
         usuarioDAO = new UsuarioDAO();
+        cooperativaDAO = new CooperativaDAO();
     }
 
     @Override
@@ -410,13 +414,13 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         String cnpjLimpo = cnpj.replaceAll("\\D", "");
-        Integer idTipoUsuario = painelDAO.idTipoUsuarioPorNome("cooperativa");
-        if (idTipoUsuario == null) {
+        int idTipoUsuario = usuarioDAO.selecionarIdTipoPorNome("cooperativa");
+        if (idTipoUsuario == 0) {
             request.setAttribute("erroCadastro", "Tipo de usuário cooperativa não encontrado no banco.");
             mostrarCadastro(request, response);
             return;
         }
-        if (painelDAO.cnpjCooperativaEmUso(cnpjLimpo, 0)) {
+        if (cooperativaDAO.existeCnpj(cnpjLimpo, 0)) {
             request.setAttribute("erroCadastro", "Este CNPJ já está cadastrado.");
             mostrarCadastro(request, response);
             return;
@@ -426,8 +430,10 @@ public class UsuarioServlet extends HttpServlet {
                 complemento == null || complemento.isBlank() ? null : complemento.trim());
 
         try {
-            painelDAO.criarCooperativa(cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(), cnpjLimpo, true, idTipoUsuario,
-                    cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), endereco);
+            //Ids 0 porque o banco gera. Endereço, usuário dono, cooperativa e telefone são gravados na mesma transação.
+            Cooperativa cooperativa = new Cooperativa(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(),
+                    LocalDate.now(), true, 0, idTipoUsuario, 0, cnpjLimpo);
+            cooperativaDAO.inserir(cooperativa, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), endereco);
         } catch (RuntimeException e) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
             mostrarCadastro(request, response);
