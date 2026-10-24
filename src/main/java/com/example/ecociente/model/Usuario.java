@@ -15,6 +15,11 @@ public class Usuario {
     private int idEndereco;
     private int idTipoUsuario;
 
+    // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
+    private String nomeTipo;
+    private String telefone;
+    private Endereco enderecoCompleto;
+
 
     //================ METODOS CONSTRUTORES ================
 
@@ -101,7 +106,7 @@ public class Usuario {
         this.status = status;
     }
 
-    public void setEndereco(int idEndereco) {
+    public void setIdEndereco(int idEndereco) {
         this.idEndereco = idEndereco;
     }
 
@@ -109,6 +114,75 @@ public class Usuario {
         this.idTipoUsuario = idTipoUsuario;
     }
 
+    public void setDadosExibicao(String nomeTipo, String telefone, Endereco enderecoCompleto) {
+        this.nomeTipo = nomeTipo;
+        this.telefone = telefone;
+        this.enderecoCompleto = enderecoCompleto;
+    }
+
+
+
+    //================ EXIBICAO (usado pelas JSPs) ================
+
+    public String getTipo() {
+        return nomeTipo == null ? "" : nomeTipo;
+    }
+
+    public String getTag() {
+        return getTipo().split(" ")[0];
+    }
+
+    public String getIniciais() {
+        return iniciaisDe(nome);
+    }
+
+    public String getTelefone() {
+        return Telefone.formatar(telefone);
+    }
+
+    public String getEndereco() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getTextoCompleto();
+    }
+
+    public String getLocalidade() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getLocalidade();
+    }
+
+    public String getCep() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getCepFormatado();
+    }
+
+    public String getCidade() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getCidade();
+    }
+
+    public String getEstado() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getEstado();
+    }
+
+    public String getBairro() {
+        return enderecoCompleto == null || enderecoCompleto.getBairro() == null ? "" : enderecoCompleto.getBairro();
+    }
+
+    public String getRua() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getRua();
+    }
+
+    public String getNumero() {
+        return enderecoCompleto == null ? "" : String.valueOf(enderecoCompleto.getNumero());
+    }
+
+    public String getComplemento() {
+        return enderecoCompleto == null || enderecoCompleto.getComplemento() == null ? "" : enderecoCompleto.getComplemento();
+    }
+
+    // "Maria Souza" vira "MS"
+    public static String iniciaisDe(String nome) {
+        if (nome == null || nome.isBlank()) return "—";
+        String[] partes = nome.trim().split("\\s+");
+        String ultima = partes.length > 1 ? partes[partes.length - 1].substring(0, 1) : "";
+        return (partes[0].substring(0, 1) + ultima).toUpperCase();
+    }
 
     //================ TO STRING ================
     @Override

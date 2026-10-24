@@ -19,11 +19,11 @@ public class TipoCondominio {
 
     //================ METODOS GETTERS ================
 
-    public int getIdTipoCondominio() {
+    public int getId() {
         return idTipoCondominio;
     }
 
-    public String getNomeTipo() {
+    public String getNome() {
         return nome;
     }
 

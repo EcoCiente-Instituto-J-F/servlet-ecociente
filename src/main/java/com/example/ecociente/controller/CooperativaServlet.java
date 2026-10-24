@@ -1,11 +1,11 @@
 package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.CooperativaDAO;
-import com.example.ecociente.dao.PainelDAO;
+import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.Cooperativa;
 import com.example.ecociente.model.Endereco;
 import com.example.ecociente.util.DadoInvalido;
-import com.example.ecociente.util.FormPainel;
+import com.example.ecociente.util.Formulario;
 import com.example.ecociente.util.Senha;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,151 +14,126 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.util.List;
+import java.time.LocalDate;
 
-//Servlet usada para as ações do CRUD de Cooperativas.
-@WebServlet(urlPatterns = {"/cooperativas", "/adicionarCooperativa", "/alterarCooperativa", "/deletarCooperativa"})
+//Servlet usada para as ações do CRUD de Cooperativas. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
+@WebServlet(urlPatterns = {"/cooperativas"})
 public class CooperativaServlet extends HttpServlet {
     CooperativaDAO daoCooperativas = new CooperativaDAO();
-    PainelDAO painelDAO = new PainelDAO();
+    UsuarioDAO daoUsuarios = new UsuarioDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        if (request.getServletPath().equals("/cooperativas")) {
-            mostrarSelects(request, response);
-        }
+        mostrarSelects(request, response);
     }
 
     //Busca as cooperativas (com pesquisa opcional) e envia para a JSP.
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("cooperativas", FormPainel.paginar(request, painelDAO.listarCooperativas(request.getParameter("q"))));
+        request.setAttribute("cooperativas", Formulario.paginar(request, daoCooperativas.listarTodas(request.getParameter("q"))));
         request.getRequestDispatcher("/WEB-INF/views/cooperativas.jsp").forward(request, response);
     }
 
+    //acao=excluir apaga, id vazio cadastra e id preenchido altera.
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
+        String acao = Formulario.texto(request, "acao");
+        String id = Formulario.texto(request, "id");
+        String resultado = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
+        request.setAttribute(resultado, "false");
+
         try {
-            String caminho = request.getServletPath();
-            if (caminho.equals("/cooperativas")) {
-                tratarPainel(request, response);
+            boolean ok;
+            if (acao.equals("excluir")) {
+                ok = daoCooperativas.deletarComUsuario(Formulario.id(id, "cooperativa"));
+            } else if (id.isEmpty()) {
+                ok = adicionarCooperativa(request);
+            } else {
+                ok = alterarCooperativa(request, Formulario.id(id, "cooperativa"));
             }
-            else if (caminho.equals("/adicionarCooperativa")) {
-                adicionarCooperativa(request, response);
-            }
-            else if (caminho.equals("/alterarCooperativa")) {
-                alterarCooperativa(request, response);
-            }
-            else if (caminho.equals("/deletarCooperativa")) {
-                deletarCooperativa(request, response);
-            }
+            request.setAttribute(resultado, ok ? "true" : "false");
         } catch (DadoInvalido e) {
             request.setAttribute("erro", e.getMessage());
-            mostrarSelects(request, response);
         } catch (RuntimeException e) {
-            request.setAttribute("erro", "Operação não concluída. Confira os dados informados e se o registro já existe ou possui vínculos.");
-            mostrarSelects(request, response);
+            request.setAttribute("erro", "Operação não concluída. Confira os dados informados e se o registro possui vínculos.");
         }
-    }
-
-    //POST /cooperativas do painel: acao=excluir apaga, id vazio cadastra, id preenchido altera.
-    private void tratarPainel(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String acao = FormPainel.texto(request, "acao");
-        String id = FormPainel.texto(request, "id");
-        String flag = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
-        request.setAttribute(flag, "false");
-
-        boolean ok;
-        if (acao.equals("excluir")) {
-            ok = painelDAO.excluirCooperativa(FormPainel.id(id, "cooperativa"));
-        } else if (id.isEmpty()) {
-            criarPainel(request);
-            ok = true;
-        } else {
-            ok = alterarPainel(request, FormPainel.id(id, "cooperativa"));
-        }
-        request.setAttribute(flag, ok ? "true" : "false");
         mostrarSelects(request, response);
     }
 
-    //Status do formulario: "Ativa"/"Inativa" (ou true/false).
+    //O formulário envia o nome da cooperativa/responsável como "nome" (ou "responsavel").
+    private String lerNome(HttpServletRequest request) {
+        String nome = Formulario.texto(request, "nome");
+        if (nome.isEmpty()) nome = Formulario.texto(request, "responsavel");
+        return Formulario.exigir(nome, "o nome", 100);
+    }
+
+    //Status do formulário: "true"/"Ativa" ou "false"/"Inativa". Sem valor, fica ativa.
     private boolean lerAtiva(HttpServletRequest request) {
-        String status = FormPainel.texto(request, "status");
-        return status.isEmpty() || status.equalsIgnoreCase("Ativa") || status.equalsIgnoreCase("true");
+        String status = Formulario.texto(request, "status");
+        return status.isEmpty() || status.equalsIgnoreCase("true") || status.equalsIgnoreCase("Ativa");
     }
 
-    private void criarPainel(HttpServletRequest request) {
-        String responsavel = FormPainel.exigir(FormPainel.texto(request, "responsavel"), "o responsável", 100);
-        String cnpj = FormPainel.cnpj(request.getParameter("cnpj"));
-        String email = FormPainel.email(FormPainel.texto(request, "email"));
+    private boolean adicionarCooperativa(HttpServletRequest request) {
+        String nome = lerNome(request);
+        String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
+        String email = Formulario.email(Formulario.texto(request, "email"));
         String senha = request.getParameter("senha");
-        if (senha == null || senha.length() < 6) throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
-        String telefone = FormPainel.telefone(request.getParameter("telefone"));
-        Endereco endereco = FormPainel.endereco(request, false);
+        if (senha == null || senha.length() < 6) {
+            throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
+        }
+        String telefone = Formulario.telefone(request.getParameter("telefone"));
+        Endereco endereco = Formulario.endereco(request, true);
 
-        if (painelDAO.cnpjCooperativaEmUso(cnpj, 0)) throw new DadoInvalido("Este CNPJ já está cadastrado em outra cooperativa.");
-        if (painelDAO.emailEmUso(email, 0)) throw new DadoInvalido("Este e-mail já está cadastrado.");
+        if (daoCooperativas.existeCnpj(cnpj, 0)) {
+            throw new DadoInvalido("Este CNPJ já está cadastrado em outra cooperativa.");
+        }
+        if (daoUsuarios.existeEmail(email, 0)) {
+            throw new DadoInvalido("Este e-mail já está cadastrado.");
+        }
+        int idTipoUsuario = daoUsuarios.selecionarIdTipoPorNome("Cooperativa");
+        if (idTipoUsuario == 0) {
+            throw new DadoInvalido("Tipo de usuário Cooperativa não existe na tabela tipo_usuario.");
+        }
 
-        Integer tipo = painelDAO.idTipoUsuarioPorNome("Cooperativa");
-        if (tipo == null) throw new DadoInvalido("Tipo de usuário Cooperativa não existe na tabela tipo_usuario.");
-
-        painelDAO.criarCooperativa(responsavel, email, Senha.gerarHash(senha), cnpj, lerAtiva(request), tipo, telefone, endereco);
-    }
-
-    private boolean alterarPainel(HttpServletRequest request, int id) {
-        String responsavel = FormPainel.exigir(FormPainel.texto(request, "responsavel"), "o responsável", 100);
-        String cnpj = FormPainel.cnpj(request.getParameter("cnpj"));
-        String emailInformado = FormPainel.texto(request, "email");
-        String email = emailInformado.isEmpty() ? null : FormPainel.email(emailInformado);
-        String senha = request.getParameter("senha");
-        if (senha != null && !senha.isEmpty() && senha.length() < 6) throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
-        String telefone = FormPainel.telefone(request.getParameter("telefone"));
-        Endereco endereco = FormPainel.endereco(request, false);
-
-        if (painelDAO.cnpjCooperativaEmUso(cnpj, id)) throw new DadoInvalido("Este CNPJ já está cadastrado em outra cooperativa.");
-        if (email != null && painelDAO.emailEmUso(email, idUsuarioDaCooperativa(id))) throw new DadoInvalido("Este e-mail já está cadastrado.");
-
-        String senhaHash = (senha == null || senha.isEmpty()) ? null : Senha.gerarHash(senha);
-        return painelDAO.atualizarCooperativa(id, responsavel, cnpj, lerAtiva(request), email, senhaHash, telefone, endereco);
-    }
-
-    private int idUsuarioDaCooperativa(int idCooperativa) {
-        Cooperativa cooperativa = daoCooperativas.buscarPorId(idCooperativa);
-        return cooperativa == null ? 0 : cooperativa.getIdUsuario();
-    }
-
-    private void adicionarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String cnpj = request.getParameter("cnpj").replaceAll("\\D", ""); //banco guarda só os 14 dígitos
-        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-
-        //Dados do usuário vão vazios (a tabela cooperativa não usa). Id 0 porque o banco gera.
-        boolean adicionado = daoCooperativas.inserir(new Cooperativa(
-                idUsuario, null, null, null, null, false, 0, 0,
+        //Ids 0 porque o banco gera. O usuário dono e o endereço são criados junto, na mesma transação.
+        return daoCooperativas.inserir(new Cooperativa(
+                0, nome, email, Senha.gerarHash(senha), LocalDate.now(), lerAtiva(request), 0, idTipoUsuario,
                 0, cnpj
-        ));
-
-        request.setAttribute("adicionado", adicionado ? "true" : "false");
-        mostrarSelects(request, response);
+        ), telefone, endereco);
     }
 
-    private void alterarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("idCooperativa"));
+    private boolean alterarCooperativa(HttpServletRequest request, int id) {
+        String nome = lerNome(request);
+        String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
+        String emailInformado = Formulario.texto(request, "email");
+        String senha = request.getParameter("senha");
+        if (senha != null && !senha.isEmpty() && senha.length() < 6) {
+            throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
+        }
+        String telefone = Formulario.telefone(request.getParameter("telefone"));
+        Endereco endereco = Formulario.endereco(request, true);
 
-        //Busca no banco e troca só o CNPJ que veio do formulário.
+        if (daoCooperativas.existeCnpj(cnpj, id)) {
+            throw new DadoInvalido("Este CNPJ já está cadastrado em outra cooperativa.");
+        }
+
+        //Busca no banco e troca só o que veio do formulário (e-mail e senha vazios mantêm os atuais).
         Cooperativa cooperativa = daoCooperativas.buscarPorId(id);
-        cooperativa.setCnpj(request.getParameter("cnpj").replaceAll("\\D", ""));
+        if (cooperativa == null) return false;
 
-        boolean alterado = daoCooperativas.atualizar(cooperativa);
+        if (!emailInformado.isEmpty()) {
+            String email = Formulario.email(emailInformado);
+            if (daoUsuarios.existeEmail(email, cooperativa.getIdUsuario())) {
+                throw new DadoInvalido("Este e-mail já está cadastrado.");
+            }
+            cooperativa.setEmail(email);
+        }
+        if (senha != null && !senha.isEmpty()) {
+            cooperativa.setSenhaHash(Senha.gerarHash(senha));
+        }
+        cooperativa.setNome(nome);
+        cooperativa.setCnpj(cnpj);
+        cooperativa.setStatus(lerAtiva(request));
 
-        request.setAttribute("alterado", alterado ? "true" : "false");
-        mostrarSelects(request, response);
-    }
-
-    private void deletarCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("idCooperativa"));
-
-        boolean deletado = daoCooperativas.deletar(id);
-
-        request.setAttribute("deletado", deletado ? "true" : "false");
-        mostrarSelects(request, response);
+        return daoCooperativas.atualizar(cooperativa, telefone, endereco);
     }
 }

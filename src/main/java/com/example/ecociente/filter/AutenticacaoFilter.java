@@ -15,9 +15,7 @@ import java.io.IOException;
         "/moradores", "/adicionarMorador", "/alterarMorador", "/deletarMorador",
         "/selectSindico", "/adicionarSindico", "/alterarSindico", "/deletarSindico",
         "/selectEndereco", "/adicionarEndereco", "/alterarEndereco", "/deletarEndereco",
-        "/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone",
-        "/adicionarCondominio", "/alterarCondominio", "/deletarCondominio",
-        "/adicionarCooperativa", "/alterarCooperativa", "/deletarCooperativa"
+        "/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone"
 })
 public class AutenticacaoFilter implements Filter {
 

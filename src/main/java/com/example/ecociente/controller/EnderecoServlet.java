@@ -48,7 +48,7 @@ public class EnderecoServlet extends HttpServlet {
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idDono);
 
         if (usuario == null) return false;
-        usuario.setEndereco(idEndereco);
+        usuario.setIdEndereco(idEndereco);
         return daoUsuarios.atualizar(usuario);
     }
 

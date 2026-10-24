@@ -1,8 +1,11 @@
 package com.example.ecociente.controller;
 
-import com.example.ecociente.dao.PainelDAO;
+import com.example.ecociente.dao.CondominioDAO;
+import com.example.ecociente.dao.CooperativaDAO;
+import com.example.ecociente.dao.ParceriaDAO;
+import com.example.ecociente.model.Parceria;
 import com.example.ecociente.util.DadoInvalido;
-import com.example.ecociente.util.FormPainel;
+import com.example.ecociente.util.Formulario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -11,83 +14,68 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Map;
 
-//Servlet usada para o CRUD de vinculos (parcerias entre condominios e cooperativas) do painel.
+//Servlet usada para o CRUD de vínculos (parcerias entre condomínios e cooperativas). Tudo pela mesma rota.
 @WebServlet(urlPatterns = {"/vinculos", "/coletas-e-vinculos"})
 public class VinculoServlet extends HttpServlet {
-    PainelDAO painelDAO = new PainelDAO();
+    ParceriaDAO daoParcerias = new ParceriaDAO();
+    CondominioDAO daoCondominios = new CondominioDAO();
+    CooperativaDAO daoCooperativas = new CooperativaDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        mostrarVinculos(request, response);
+        mostrarSelects(request, response);
     }
 
-    //Busca os vinculos (com pesquisa opcional) e o resumo dos cards e envia para a JSP.
-    private void mostrarVinculos(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("vinculos", FormPainel.paginar(request, painelDAO.listarVinculos(request.getParameter("q"))));
-        for (Map.Entry<String, Object> dado : painelDAO.resumoVinculos().entrySet()) {
-            request.setAttribute(dado.getKey(), dado.getValue());
-        }
+    //Busca os vínculos (com pesquisa opcional), os condomínios e as cooperativas (para os selects) e os números dos cards.
+    private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.setAttribute("vinculos", Formulario.paginar(request, daoParcerias.selecionarTodos(request.getParameter("q"))));
+        request.setAttribute("condominios", daoCondominios.selecionarTodos());
+        request.setAttribute("cooperativas", daoCooperativas.listarTodas());
+        request.setAttribute("vinculosAtivos", daoParcerias.contarAtivas());
+        request.setAttribute("semCooperativa", daoParcerias.contarCondominiosSemParceria());
+        request.setAttribute("coletasMes", 0);
         request.getRequestDispatcher("/WEB-INF/views/coletas-e-vinculos.jsp").forward(request, response);
     }
 
-    //POST do painel: acao=excluir apaga, id vazio cadastra, id preenchido altera.
+    //acao=excluir apaga, id vazio cadastra e id preenchido altera.
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
-        String acao = FormPainel.texto(request, "acao");
-        String id = FormPainel.texto(request, "id");
-        String flag = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
-        request.setAttribute(flag, "false");
+        String acao = Formulario.texto(request, "acao");
+        String id = Formulario.texto(request, "id");
+        String resultado = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
+        request.setAttribute(resultado, "false");
 
         try {
             boolean ok;
             if (acao.equals("excluir")) {
-                ok = painelDAO.excluirVinculo(FormPainel.id(id, "vínculo"));
+                ok = daoParcerias.deletar(Formulario.id(id, "vínculo"));
             } else {
-                int idCondominio = resolverCondominio(request);
-                int idCooperativa = resolverCooperativa(request);
-                LocalDate inicio = FormPainel.data(request.getParameter("inicio"), "de início");
-                LocalDate fim = FormPainel.data(request.getParameter("fim"), "de fim");
-                if (inicio != null && fim != null && fim.isBefore(inicio)) {
-                    throw new DadoInvalido("A data de fim não pode ser anterior à data de início.");
-                }
-
-                if (id.isEmpty()) {
-                    painelDAO.criarVinculo(idCondominio, idCooperativa, inicio, fim);
-                    ok = true;
-                } else {
-                    ok = painelDAO.atualizarVinculo(FormPainel.id(id, "vínculo"), idCondominio, idCooperativa, inicio, fim);
-                }
+                ok = salvarVinculo(request, id);
             }
-            request.setAttribute(flag, ok ? "true" : "false");
+            request.setAttribute(resultado, ok ? "true" : "false");
         } catch (DadoInvalido e) {
             request.setAttribute("erro", e.getMessage());
         } catch (RuntimeException e) {
             request.setAttribute("erro", "Operação não concluída. Confira os dados informados.");
         }
-        mostrarVinculos(request, response);
+        mostrarSelects(request, response);
     }
 
-    //Aceita idCondominio (select) ou o nome digitado no campo condominio.
-    private int resolverCondominio(HttpServletRequest request) {
-        String id = FormPainel.texto(request, "idCondominio");
-        if (!id.isEmpty()) return FormPainel.id(id, "condomínio");
+    private boolean salvarVinculo(HttpServletRequest request, String id) {
+        int idCondominio = Formulario.id(Formulario.texto(request, "idCondominio"), "condomínio");
+        int idCooperativa = Formulario.id(Formulario.texto(request, "idCooperativa"), "cooperativa");
+        LocalDate inicio = Formulario.data(request.getParameter("inicio"), "de início");
+        LocalDate fim = Formulario.data(request.getParameter("fim"), "de fim");
 
-        String nome = FormPainel.texto(request, "condominio");
-        Integer porNome = nome.isEmpty() ? null : painelDAO.idCondominioPorNome(nome);
-        if (porNome == null) throw new DadoInvalido("Condomínio não encontrado. Informe o nome exatamente como está cadastrado.");
-        return porNome;
-    }
+        if (inicio != null && fim != null && fim.isBefore(inicio)) {
+            throw new DadoInvalido("A data de fim não pode ser anterior à data de início.");
+        }
 
-    //Aceita idCooperativa (select) ou o nome digitado no campo cooperativa.
-    private int resolverCooperativa(HttpServletRequest request) {
-        String id = FormPainel.texto(request, "idCooperativa");
-        if (!id.isEmpty()) return FormPainel.id(id, "cooperativa");
-
-        String nome = FormPainel.texto(request, "cooperativa");
-        Integer porNome = nome.isEmpty() ? null : painelDAO.idCooperativaPorNome(nome);
-        if (porNome == null) throw new DadoInvalido("Cooperativa não encontrada. Informe o nome exatamente como está cadastrado.");
-        return porNome;
+        //Id 0 porque o banco gera. Sem data de início, o banco usa a data de hoje.
+        if (id.isEmpty()) {
+            return daoParcerias.inserir(new Parceria(0, inicio, fim, idCondominio, idCooperativa));
+        }
+        return daoParcerias.atualizar(new Parceria(Formulario.id(id, "vínculo"), inicio, fim, idCondominio, idCooperativa));
     }
 }

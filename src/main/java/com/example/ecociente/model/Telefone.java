@@ -47,6 +47,21 @@ public class Telefone {
         this.idUsuario = idUsuario;
     }
 
+
+    // ================ EXIBICAO ================
+
+    // 11 digitos viram (11) 91234-5678 e 10 viram (11) 1234-5678
+    public static String formatar(String digitos) {
+        if (digitos == null) return "";
+        if (digitos.length() == 11) {
+            return "(" + digitos.substring(0, 2) + ") " + digitos.substring(2, 7) + "-" + digitos.substring(7);
+        }
+        if (digitos.length() == 10) {
+            return "(" + digitos.substring(0, 2) + ") " + digitos.substring(2, 6) + "-" + digitos.substring(6);
+        }
+        return digitos;
+    }
+
     //================ TO STRING ================
     @Override
 

@@ -11,6 +11,10 @@ public class Parceria {
     private int idCondominio;
     private int idCooperativa;
 
+    // Dados so de exibicao, preenchidos pela listagem com JOIN
+    private String nomeCondominio;
+    private String nomeCooperativa;
+
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
@@ -68,6 +72,38 @@ public class Parceria {
 
     public void setIdCooperativa(int idCooperativa) {
         this.idCooperativa = idCooperativa;
+    }
+
+
+    // ================ EXIBICAO (usado pelas JSPs) ================
+
+    public void setDadosExibicao(String nomeCondominio, String nomeCooperativa) {
+        this.nomeCondominio = nomeCondominio;
+        this.nomeCooperativa = nomeCooperativa;
+    }
+
+    public String getCondominio() {
+        return nomeCondominio;
+    }
+
+    public String getCooperativa() {
+        return nomeCooperativa;
+    }
+
+    public String getInicio() {
+        return dataInicio == null ? "" : dataInicio.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getFim() {
+        return dataFim == null ? "" : dataFim.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    public String getInicioIso() {
+        return dataInicio == null ? "" : dataInicio.toString();
+    }
+
+    public String getFimIso() {
+        return dataFim == null ? "" : dataFim.toString();
     }
 
     //================ TO STRING ================

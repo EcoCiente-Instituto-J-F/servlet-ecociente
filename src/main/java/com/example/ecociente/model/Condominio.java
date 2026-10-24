@@ -12,6 +12,11 @@ public class Condominio {
     private int idEndereco;
     private int idTipoCondominio;
 
+    // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
+    private String nomeTipo;
+    private String nomeSindico;
+    private Endereco enderecoCompleto;
+
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
@@ -89,6 +94,65 @@ public class Condominio {
         this.idTipoCondominio = idTipoCondominio;
     }
 
+    public void setDadosExibicao(String nomeTipo, String nomeSindico, Endereco enderecoCompleto) {
+        this.nomeTipo = nomeTipo;
+        this.nomeSindico = nomeSindico;
+        this.enderecoCompleto = enderecoCompleto;
+    }
+
+
+
+    //================ EXIBICAO (usado pelas JSPs) ================
+
+    public String getTipo() {
+        return nomeTipo == null ? "" : nomeTipo;
+    }
+
+    // 14 dígitos viram 12.345.678/0001-90
+    public static String formatarCnpj(String cnpj) {
+        if (cnpj == null || cnpj.length() != 14) return cnpj == null ? "" : cnpj;
+        return cnpj.substring(0, 2) + "." + cnpj.substring(2, 5) + "." + cnpj.substring(5, 8) + "/" + cnpj.substring(8, 12) + "-" + cnpj.substring(12);
+    }
+
+    public String getIniciais() {
+        return Usuario.iniciaisDe(nome);
+    }
+
+    public String getSindico() {
+        return nomeSindico == null ? "" : nomeSindico;
+    }
+
+    public String getEndereco() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getTextoCompleto();
+    }
+
+    public String getCep() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getCepFormatado();
+    }
+
+    public String getCidade() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getCidade();
+    }
+
+    public String getEstado() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getEstado();
+    }
+
+    public String getBairro() {
+        return enderecoCompleto == null || enderecoCompleto.getBairro() == null ? "" : enderecoCompleto.getBairro();
+    }
+
+    public String getRua() {
+        return enderecoCompleto == null ? "" : enderecoCompleto.getRua();
+    }
+
+    public String getNumero() {
+        return enderecoCompleto == null ? "" : String.valueOf(enderecoCompleto.getNumero());
+    }
+
+    public String getComplemento() {
+        return enderecoCompleto == null || enderecoCompleto.getComplemento() == null ? "" : enderecoCompleto.getComplemento();
+    }
 
     //================ TO STRING ================
     @Override
