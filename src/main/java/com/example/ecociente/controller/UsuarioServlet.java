@@ -1,7 +1,6 @@
 package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.EnderecoDAO;
-import com.example.ecociente.dao.PainelDAO;
 import com.example.ecociente.dao.TelefoneDAO;
 import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.CadastroPendente;
@@ -9,7 +8,7 @@ import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Telefone;
 import com.example.ecociente.model.Usuario;
 import com.example.ecociente.util.DadoInvalido;
-import com.example.ecociente.util.FormPainel;
+import com.example.ecociente.util.Formulario;
 import com.example.ecociente.util.Senha;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,7 +24,6 @@ import java.time.LocalDate;
 public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
-    private final PainelDAO painelDAO = new PainelDAO();
 
     @Override
     public void init() {
@@ -70,29 +68,28 @@ public class UsuarioServlet extends HttpServlet {
         String busca = request.getParameter("q");
         if (busca == null) busca = request.getParameter("search");
 
-        request.setAttribute("usuarios", FormPainel.paginar(request, painelDAO.listarUsuarios(busca)));
-        request.setAttribute("tiposUsuario", painelDAO.listarTiposUsuario());
+        request.setAttribute("usuarios", Formulario.paginar(request, usuarioDAO.selecionarTodos(busca)));
+        request.setAttribute("tiposUsuario", usuarioDAO.selecionarTipos());
         request.getRequestDispatcher("/WEB-INF/views/usuarios.jsp").forward(request, response);
     }
 
-    //POST /usuarios do painel: acao=excluir apaga, id vazio cadastra, id preenchido altera.
+    //POST /usuarios do painel: acao=excluir apaga, id vazio cadastra e id preenchido altera.
     private void tratarPainel(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String acao = FormPainel.texto(request, "acao");
-        String id = FormPainel.texto(request, "id");
-        String flag = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
-        request.setAttribute(flag, "false");
+        String acao = Formulario.texto(request, "acao");
+        String id = Formulario.texto(request, "id");
+        String resultado = acao.equals("excluir") ? "deletado" : id.isEmpty() ? "adicionado" : "alterado";
+        request.setAttribute(resultado, "false");
 
         try {
             boolean ok;
             if (acao.equals("excluir")) {
-                ok = excluirUsuarioPainel(request, FormPainel.id(id, "usuário"));
+                ok = deletarUsuarioPainel(request, Formulario.id(id, "usuário"));
             } else if (id.isEmpty()) {
-                criarUsuarioPainel(request);
-                ok = true;
+                ok = adicionarUsuarioPainel(request);
             } else {
-                ok = alterarUsuarioPainel(request, FormPainel.id(id, "usuário"));
+                ok = alterarUsuarioPainel(request, Formulario.id(id, "usuário"));
             }
-            request.setAttribute(flag, ok ? "true" : "false");
+            request.setAttribute(resultado, ok ? "true" : "false");
         } catch (DadoInvalido e) {
             request.setAttribute("erro", e.getMessage());
         } catch (RuntimeException e) {
@@ -101,49 +98,59 @@ public class UsuarioServlet extends HttpServlet {
         mostrarUsuarios(request, response);
     }
 
-    //Tipo vem como id (idTipoUsuario) ou como nome (tipo), igual ao que esta em tipo_usuario.
-    private int lerTipoUsuario(HttpServletRequest request) {
-        String idTipo = FormPainel.texto(request, "idTipoUsuario");
-        if (!idTipo.isEmpty()) return FormPainel.id(idTipo, "tipo de usuário");
-
-        String nome = FormPainel.texto(request, "tipo");
-        Integer porNome = nome.isEmpty() ? null : painelDAO.idTipoUsuarioPorNome(nome);
-        if (porNome == null) throw new DadoInvalido("Tipo de usuário inválido.");
-        return porNome;
-    }
-
-    private void criarUsuarioPainel(HttpServletRequest request) {
-        String nome = FormPainel.exigir(FormPainel.texto(request, "nome"), "o nome", 100);
-        String email = FormPainel.email(FormPainel.texto(request, "email"));
+    private boolean adicionarUsuarioPainel(HttpServletRequest request) {
+        String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
+        String email = Formulario.email(Formulario.texto(request, "email"));
         String senha = request.getParameter("senha");
-        if (senha == null || senha.length() < 6) throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
-        int tipo = lerTipoUsuario(request);
-        String telefone = FormPainel.telefone(request.getParameter("telefone"));
-        Endereco endereco = FormPainel.endereco(request, false);
+        if (senha == null || senha.length() < 6) {
+            throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
+        }
+        int idTipoUsuario = Formulario.id(Formulario.texto(request, "idTipoUsuario"), "tipo de usuário");
+        String telefone = Formulario.telefone(request.getParameter("telefone"));
+        Endereco endereco = Formulario.endereco(request, false);
 
-        if (painelDAO.emailEmUso(email, 0)) throw new DadoInvalido("Este e-mail já está cadastrado.");
+        if (usuarioDAO.existeEmail(email, 0)) {
+            throw new DadoInvalido("Este e-mail já está cadastrado.");
+        }
 
-        painelDAO.criarUsuario(nome, email, Senha.gerarHash(senha), tipo, telefone, endereco);
+        //Id 0 porque o banco gera. Endereço e telefone são criados junto, na mesma transação.
+        Usuario usuario = new Usuario(0, nome, email, Senha.gerarHash(senha), LocalDate.now(), true, 0, idTipoUsuario);
+        return usuarioDAO.inserir(usuario, telefone, endereco);
     }
 
     private boolean alterarUsuarioPainel(HttpServletRequest request, int id) {
-        String nome = FormPainel.exigir(FormPainel.texto(request, "nome"), "o nome", 100);
-        String email = FormPainel.email(FormPainel.texto(request, "email"));
+        String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
+        String email = Formulario.email(Formulario.texto(request, "email"));
         String senha = request.getParameter("senha");
-        if (senha != null && !senha.isEmpty() && senha.length() < 6) throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
-        int tipo = lerTipoUsuario(request);
-        String telefone = FormPainel.telefone(request.getParameter("telefone"));
-        Endereco endereco = FormPainel.endereco(request, false);
+        if (senha != null && !senha.isEmpty() && senha.length() < 6) {
+            throw new DadoInvalido("A senha precisa ter pelo menos 6 caracteres.");
+        }
+        int idTipoUsuario = Formulario.id(Formulario.texto(request, "idTipoUsuario"), "tipo de usuário");
+        String telefone = Formulario.telefone(request.getParameter("telefone"));
+        Endereco endereco = Formulario.endereco(request, false);
 
-        if (painelDAO.emailEmUso(email, id)) throw new DadoInvalido("Este e-mail já está cadastrado.");
+        if (usuarioDAO.existeEmail(email, id)) {
+            throw new DadoInvalido("Este e-mail já está cadastrado.");
+        }
 
-        String senhaHash = (senha == null || senha.isEmpty()) ? null : Senha.gerarHash(senha);
-        return painelDAO.atualizarUsuario(id, nome, email, senhaHash, tipo, telefone, endereco);
+        //Busca no banco e troca só o que veio do formulário (senha vazia mantém a atual).
+        Usuario usuario = usuarioDAO.selecionarUsuarioPorId(id);
+        if (usuario == null) return false;
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setTipoUsuario(idTipoUsuario);
+        if (senha != null && !senha.isEmpty()) {
+            usuario.setSenhaHash(Senha.gerarHash(senha));
+        }
+
+        return usuarioDAO.atualizar(usuario, telefone, endereco);
     }
 
-    private boolean excluirUsuarioPainel(HttpServletRequest request, int id) {
+    private boolean deletarUsuarioPainel(HttpServletRequest request, int id) {
         Object logado = request.getSession().getAttribute("idUsuarioLogado");
-        if (logado != null && (Integer) logado == id) throw new DadoInvalido("Você não pode excluir o próprio usuário.");
+        if (logado != null && (Integer) logado == id) {
+            throw new DadoInvalido("Você não pode excluir o próprio usuário.");
+        }
 
         Usuario usuario = usuarioDAO.selecionarUsuarioPorId(id);
         if (usuario == null) return false;

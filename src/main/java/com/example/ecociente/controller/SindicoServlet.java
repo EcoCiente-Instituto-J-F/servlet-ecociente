@@ -79,6 +79,16 @@ public class SindicoServlet extends HttpServlet {
         int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
+        String problema = validarMandato(dataInicio, dataFim);
+        if (problema == null && daoSindicos.buscarCPF(cpf)) problema = "Este CPF já está cadastrado em outro síndico.";
+        if (problema == null && daoSindicos.buscarIdUsuario(idUsuario)) problema = "Este usuário já é síndico.";
+        if (problema != null) {
+            request.setAttribute("erro", problema);
+            request.setAttribute("adicionado", "false");
+            mostrarSelects(request, response);
+            return;
+        }
+
         //Dados do usuário vão vazios (a tabela sindico não usa). Id 0 porque o banco gera.
         boolean adicionado = daoSindicos.inserir(new Sindico(
                 idUsuario, null, null, null, null, false, 0, 0,
@@ -101,9 +111,31 @@ public class SindicoServlet extends HttpServlet {
 
         //Busca no banco e troca só o que veio do formulário.
         Sindico sindico = daoSindicos.buscarPorId(id);
-        sindico.setCpf(cpf.replaceAll("\\D", ""));
-        sindico.setDataInicioMandato(LocalDate.parse(request.getParameter("dataInicioMandato")));
-        sindico.setDataFimMandato(lerDataFim(request));
+        if (sindico == null) {
+            request.setAttribute("erro", "Síndico não encontrado.");
+            request.setAttribute("alterado", "false");
+            mostrarSelects(request, response);
+            return;
+        }
+
+        String cpfDigitos = cpf.replaceAll("\\D", "");
+        LocalDate dataInicio = LocalDate.parse(request.getParameter("dataInicioMandato"));
+        LocalDate dataFim = lerDataFim(request);
+
+        String problema = validarMandato(dataInicio, dataFim);
+        if (problema == null && !cpfDigitos.equals(sindico.getCpf()) && daoSindicos.buscarCPF(cpfDigitos)) {
+            problema = "Este CPF já está cadastrado em outro síndico.";
+        }
+        if (problema != null) {
+            request.setAttribute("erro", problema);
+            request.setAttribute("alterado", "false");
+            mostrarSelects(request, response);
+            return;
+        }
+
+        sindico.setCpf(cpfDigitos);
+        sindico.setDataInicioMandato(dataInicio);
+        sindico.setDataFimMandato(dataFim);
         sindico.setCondominio(Integer.parseInt(request.getParameter("idCondominio")));
 
         boolean alterado = daoSindicos.atualizar(sindico);
@@ -119,6 +151,11 @@ public class SindicoServlet extends HttpServlet {
 
         request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
+    }
+
+    private String validarMandato(LocalDate inicio, LocalDate fim) {
+        if (fim != null && fim.isBefore(inicio)) return "O fim do mandato não pode ser anterior ao início.";
+        return null;
     }
 
     //Data de fim do mandato é opcional: vazia vira null.
