@@ -53,8 +53,12 @@ public class UsuarioServlet extends HttpServlet {
                 processarEtapaPerfil(request, response);
             } else if ("moradia".equals(etapa)) {
                 processarEtapaMoradia(request, response);
-            } else if ("morador-dados".equals(etapa)) {
-                processarEtapaMoradorDados(request, response);
+            } else if ("cooperativa-dados".equals(etapa) || "sindico-dados".equals(etapa) || "morador-dados".equals(etapa)) {
+                processarEtapaDados(request, response);
+            } else if ("cooperativa-endereco".equals(etapa)) {
+                processarEtapaEnderecoCooperativa(request, response);
+            } else if ("tipo".equals(etapa) || "token".equals(etapa)) {
+                processarEtapaEmConstrucao(request, response, etapa);
             } else if ("morador-endereco".equals(etapa)) {
                 processarEtapaMoradorEndereco(request, response);
             } else {
@@ -222,17 +226,17 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        cad.setPerfil(perfil);
-        sessao.setAttribute("cadastroPendente", cad);
-
-        if ("morador".equals(perfil)) {
-            sessao.setAttribute("etapaCadastro", "moradia");
+        if (!"cooperativa".equals(perfil) && !"sindico".equals(perfil) && !"morador".equals(perfil)) {
+            request.setAttribute("erroCadastro", "Selecione um perfil válido.");
             mostrarCadastro(request, response);
             return;
         }
 
-        // TODO: cooperativa e condominio ainda nao estao conectados.
-        request.setAttribute("erroCadastro", "Perfil \"" + perfil + "\" selecionado. A próxima etapa ainda está em construção.");
+        cad.setPerfil(perfil);
+        sessao.setAttribute("cadastroPendente", cad);
+
+        // Morador escolhe a moradia primeiro; cooperativa e síndico vão direto para os dados pessoais.
+        sessao.setAttribute("etapaCadastro", "morador".equals(perfil) ? "moradia" : perfil + "-dados");
         mostrarCadastro(request, response);
     }
 
@@ -264,24 +268,19 @@ public class UsuarioServlet extends HttpServlet {
         cad.setMoradia(moradia);
         sessao.setAttribute("cadastroPendente", cad);
 
-        if ("casa".equals(moradia)) {
-            sessao.setAttribute("etapaCadastro", "morador-dados");
-            mostrarCadastro(request, response);
-            return;
-        }
-
-        // TODO: moradia="condominio" precisa do token do sindico, ainda nao implementado.
-        request.setAttribute("erroCadastro", "O cadastro vinculado a um condomínio ainda está em construção. Tente a opção \"Moro em casa\" por enquanto.");
+        sessao.setAttribute("etapaCadastro", "morador-dados");
         mostrarCadastro(request, response);
     }
 
-    //================ ETAPA 4: DADOS PESSOAIS (nome, telefone, cpf, nascimento) ================
+    //================ ETAPA 4: DADOS PESSOAIS (nome, telefone, cpf, nascimento) - todos os perfis ================
 
-    private void processarEtapaMoradorDados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    private void processarEtapaDados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
         if ("voltar".equals(request.getParameter("acao"))) {
-            sessao.setAttribute("etapaCadastro", "moradia");
+            CadastroPendente atual = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+            boolean ehMorador = atual != null && "morador".equals(atual.getPerfil());
+            sessao.setAttribute("etapaCadastro", ehMorador ? "moradia" : "perfil");
             mostrarCadastro(request, response);
             return;
         }
@@ -334,7 +333,141 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        sessao.setAttribute("etapaCadastro", "morador-endereco");
+        // Próxima tela depende do perfil.
+        String proxima;
+        if ("cooperativa".equals(cad.getPerfil())) {
+            proxima = "cooperativa-endereco";
+        } else if ("sindico".equals(cad.getPerfil())) {
+            proxima = "tipo";
+        } else {
+            proxima = "condominio".equals(cad.getMoradia()) ? "token" : "morador-endereco";
+        }
+        sessao.setAttribute("etapaCadastro", proxima);
+        mostrarCadastro(request, response);
+    }
+
+    //================ COOPERATIVA: ENDERECO (finaliza o cadastro) ================
+
+    private void processarEtapaEnderecoCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "cooperativa-dados");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String cnpj = request.getParameter("cnpj");
+        String cep = request.getParameter("cep");
+        String uf = request.getParameter("uf");
+        String cidade = request.getParameter("cidade");
+        String bairro = request.getParameter("bairro");
+        String rua = request.getParameter("rua");
+        String numeroTexto = request.getParameter("numero");
+        String complemento = request.getParameter("complemento");
+
+        cad.setCnpj(cnpj);
+        cad.setCep(cep);
+        cad.setUf(uf);
+        cad.setCidade(cidade);
+        cad.setBairro(bairro);
+        cad.setRua(rua);
+        cad.setNumero(numeroTexto);
+        cad.setComplemento(complemento);
+        sessao.setAttribute("cadastroPendente", cad);
+
+        if (cnpj == null || cnpj.replaceAll("\\D", "").length() != 14) {
+            request.setAttribute("erroCadastro", "CNPJ inválido, precisa ter 14 dígitos.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (cep == null || cep.replaceAll("\\D", "").length() != 8) {
+            request.setAttribute("erroCadastro", "CEP inválido, precisa ter 8 dígitos.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (uf == null || uf.isBlank() || cidade == null || cidade.isBlank() || bairro == null || bairro.isBlank()
+                || rua == null || rua.isBlank() || numeroTexto == null || numeroTexto.isBlank()) {
+            request.setAttribute("erroCadastro", "Preencha todos os campos obrigatórios do endereço.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        int numero;
+        try {
+            numero = Integer.parseInt(numeroTexto.replaceAll("\\D", ""));
+        } catch (NumberFormatException nfe) {
+            request.setAttribute("erroCadastro", "Número do endereço inválido.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String cnpjLimpo = cnpj.replaceAll("\\D", "");
+        Integer idTipoUsuario = painelDAO.idTipoUsuarioPorNome("cooperativa");
+        if (idTipoUsuario == null) {
+            request.setAttribute("erroCadastro", "Tipo de usuário cooperativa não encontrado no banco.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (painelDAO.cnpjCooperativaEmUso(cnpjLimpo, 0)) {
+            request.setAttribute("erroCadastro", "Este CNPJ já está cadastrado.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        Endereco endereco = new Endereco(0, cep.replaceAll("\\D", ""), cidade.trim(), uf.trim(), bairro.trim(), rua.trim(), numero,
+                complemento == null || complemento.isBlank() ? null : complemento.trim());
+
+        try {
+            painelDAO.criarCooperativa(cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(), cnpjLimpo, true, idTipoUsuario,
+                    cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), endereco);
+        } catch (RuntimeException e) {
+            request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        concluirCadastro(request, response, sessao, "cooperativa");
+    }
+
+    //Limpa o cadastro da sessao e mostra a tela de cadastro concluido.
+    private void concluirCadastro(HttpServletRequest request, HttpServletResponse response, HttpSession sessao, String perfilCriado) throws ServletException, IOException {
+        sessao.removeAttribute("cadastroPendente");
+        sessao.removeAttribute("etapaCadastro");
+        sessao.removeAttribute("abaAtiva");
+
+        request.setAttribute("perfilCriado", perfilCriado);
+        request.getRequestDispatcher("/WEB-INF/views/cadastro/cadastro_sucesso.jsp").forward(request, response);
+    }
+
+    // TODO: telas que ainda não gravam no banco (endereço da cooperativa, tipo do condomínio, token do morador).
+    // Por enquanto só deixam voltar ou avisam que a etapa está em construção.
+    private void processarEtapaEmConstrucao(HttpServletRequest request, HttpServletResponse response, String etapa) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+        } else if ("voltar".equals(request.getParameter("acao"))) {
+            String anterior;
+            if ("cooperativa-endereco".equals(etapa)) {
+                anterior = "cooperativa-dados";
+            } else if ("tipo".equals(etapa)) {
+                anterior = "sindico-dados";
+            } else {
+                anterior = "morador-dados";
+            }
+            sessao.setAttribute("etapaCadastro", anterior);
+        } else {
+            request.setAttribute("erroCadastro", "Esta etapa do cadastro ainda está em construção.");
+        }
         mostrarCadastro(request, response);
     }
 
@@ -429,10 +562,6 @@ public class UsuarioServlet extends HttpServlet {
             }
         }
 
-        sessao.removeAttribute("cadastroPendente");
-        sessao.removeAttribute("etapaCadastro");
-        sessao.removeAttribute("abaAtiva");
-
-        response.sendRedirect(request.getContextPath() + "/inicio");
+        concluirCadastro(request, response, sessao, "morador");
     }
 }

@@ -22,6 +22,22 @@ public class CadastroPendente {
     private String apto;
     private String avisos;
     private String termos;
+    private String token;
+    private String tipoCondominio;
+    private String cnpj;
+    private String complemento;
+
+    public String getToken() { return token; }
+    public void setToken(String token) { this.token = token; }
+
+    public String getTipoCondominio() { return tipoCondominio; }
+    public void setTipoCondominio(String tipoCondominio) { this.tipoCondominio = tipoCondominio; }
+
+    public String getCnpj() { return cnpj; }
+    public void setCnpj(String cnpj) { this.cnpj = cnpj; }
+
+    public String getComplemento() { return complemento; }
+    public void setComplemento(String complemento) { this.complemento = complemento; }
 
     public String getTermos() { return termos; }
     public void setTermos(String termos) { this.termos = termos; }

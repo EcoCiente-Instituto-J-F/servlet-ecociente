@@ -7,5 +7,5 @@
 
 <div class="aceite-termos">
     <input type="checkbox" id="cad-termos" name="termos" value="aceito" class="checkbox-termos" required ${cad.termos == 'aceito' ? 'checked' : ''}>
-    <label for="cad-termos">Li e aceito os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.</label>
+    <label for="cad-termos">Li e aceito os <a href="${ctx}/documentos/termos-de-uso.pdf" target="_blank" rel="noopener">Termos de uso</a> e a <a href="${ctx}/documentos/politica-de-privacidade.pdf" target="_blank" rel="noopener">Política de privacidade</a>.</label>
 </div>
