@@ -520,6 +520,17 @@
                             <p>O plano gratuito oferece acesso ao mapa de pontos de coleta, ao guia de separação de resíduos e aos quizzes educativos. É uma opção completa para utilização individual e para quem deseja conhecer melhor as práticas de descarte e reciclagem.</p>
                         </div>
                     </div>
+
+                     <div class="item-duvida">
+                        <input type="checkbox" id="faq-5" class="entrada-faq">
+                        <label for="faq-5" class="pergunta-faq">
+                            <span>Como funciona o painel do síndico e do gestor?</span>
+                            <span class="icone-plus"></span>
+                        </label>
+                        <div class="resposta-faq">
+                            <p>É o dashboard onde o síndico monitora os indicadores de reciclagem do prédio, baixa relatórios de impacto ambiental para prestar contas e acompanha a rotina de coletas com as cooperativas, tudo de forma automática e digital.</p>
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
