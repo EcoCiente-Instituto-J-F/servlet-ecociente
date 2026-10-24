@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.time.format.DateTimeParseException;
 
-// Leitura e validação dos campos que vêm dos formulários do painel administrativo
-public class FormPainel {
+// Leitura e validação dos campos que vêm dos formulários (usado pelos servlets do CRUD de admin)
+public class Formulario {
 
     private static final String REGEX_EMAIL = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$";
 
