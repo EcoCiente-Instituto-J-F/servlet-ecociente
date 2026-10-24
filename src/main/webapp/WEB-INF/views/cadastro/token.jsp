@@ -1,14 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
 <c:set var="tituloEtapa" value="Token e moradia" />
-<c:set var="subtituloEtapa" value="Insira o token enviado pelo síndico e diga onde você mora no condomínio." />
+<c:set var="subtituloEtapa" value="Se você tem o token enviado pelo síndico, informe-o e diga onde você mora no condomínio." />
 <%@ include file="_cabecalho.jsp" %>
 
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="token">
 
     <div class="form-group" data-erro="Faltam caracteres: o token tem 6 letras ou números, sem espaços ou símbolos.">
-        <label for="cad-token">Código de acesso</label>
-        <input class="campo-token" type="text" id="cad-token" name="token" value="<c:out value='${cad.token}' />" required minlength="6" maxlength="6" pattern="[A-Za-z0-9]{6}" title="6 letras ou números" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" aria-describedby="token-dica">
+        <label for="cad-token">Código de acesso <span class="opcional">(opcional)</span></label>
+        <input class="campo-token" type="text" id="cad-token" name="token" value="<c:out value='${cad.token}' />" minlength="6" maxlength="6" pattern="[A-Za-z0-9]{6}" title="6 letras ou números" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" aria-describedby="token-dica">
     </div>
 
     <div class="token-ajuda">
