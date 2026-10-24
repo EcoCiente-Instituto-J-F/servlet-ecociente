@@ -54,8 +54,8 @@
         <thead><tr><th scope="col">Condomínio</th><th scope="col">Cooperativa</th><th scope="col">Início</th><th scope="col">Fim</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="v" items="${vinculos}">
-            <tr data-id="<c:out value="${v.id}"/>" data-nome="<c:out value="${v.condominio}"/>" data-condominio="<c:out value="${v.condominio}"/>" data-cooperativa="<c:out value="${v.cooperativa}"/>" data-form-inicio="<c:out value="${v.inicioIso}"/>" data-form-fim="<c:out value="${v.fimIso}"/>" data-id-condominio="<c:out value="${v.idCondominio}"/>" data-id-cooperativa="<c:out value="${v.idCooperativa}"/>">
-              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${v.id}" aria-label="Selecionar linha"><span><c:out value="${v.condominio}"/></span></div></td>
+            <tr data-id="<c:out value="${v.idParceria}"/>" data-nome="<c:out value="${v.condominio}"/>" data-condominio="<c:out value="${v.condominio}"/>" data-cooperativa="<c:out value="${v.cooperativa}"/>" data-form-inicio="<c:out value="${v.inicioIso}"/>" data-form-fim="<c:out value="${v.fimIso}"/>" data-id-condominio="<c:out value="${v.idCondominio}"/>" data-id-cooperativa="<c:out value="${v.idCooperativa}"/>">
+              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${v.idParceria}" aria-label="Selecionar linha"><span><c:out value="${v.condominio}"/></span></div></td>
               <td><c:out value="${v.cooperativa}"/></td>
               <td><c:out value="${v.inicio}"/></td>
               <td>${empty v.fim ? '---' : v.fim}</td>
@@ -86,8 +86,8 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.id}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
-        <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.id}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.idCooperativa}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
         <label class="campo">Data de início<input type="date" name="inicio" required></label>
         <label class="campo">Data de fim (opcional)<input type="date" name="fim"></label>
       </div>

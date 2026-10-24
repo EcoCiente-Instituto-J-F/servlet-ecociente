@@ -48,11 +48,11 @@
         <thead><tr><th scope="col">Responsável</th><th scope="col">CNPJ</th><th scope="col">Condomínios vinculados</th><th scope="col">Status</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${cooperativas}">
-            <tr data-id="<c:out value="${c.id}"/>" data-nome="<c:out value="${c.responsavel}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.ativa}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
-              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.id}" aria-label="Selecionar linha"><span><c:out value="${c.responsavel}"/></span></div></td>
+            <tr data-id="<c:out value="${c.idCooperativa}"/>" data-nome="<c:out value="${c.responsavel}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.status}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
+              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCooperativa}" aria-label="Selecionar linha"><span><c:out value="${c.responsavel}"/></span></div></td>
               <td><c:out value="${c.cnpj}"/></td>
               <td><c:out value="${c.condominiosVinculados}"/></td>
-              <td><span class="selo ${c.ativa ? 'selo--ativa' : 'selo--inativa'}">${c.ativa ? 'Ativa' : 'Inativa'}</span></td>
+              <td><span class="selo ${c.status ? 'selo--ativa' : 'selo--inativa'}">${c.status ? 'Ativa' : 'Inativa'}</span></td>
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
