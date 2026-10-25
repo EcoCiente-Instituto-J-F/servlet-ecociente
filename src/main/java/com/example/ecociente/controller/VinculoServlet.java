@@ -33,7 +33,6 @@ public class VinculoServlet extends HttpServlet {
         request.setAttribute("cooperativas", daoCooperativas.listarTodas());
         request.setAttribute("vinculosAtivos", daoParcerias.contarAtivas());
         request.setAttribute("semCooperativa", daoParcerias.contarCondominiosSemParceria());
-        request.setAttribute("coletasMes", 0);
         request.getRequestDispatcher("/WEB-INF/views/coletas-e-vinculos.jsp").forward(request, response);
     }
 
