@@ -27,9 +27,25 @@ public class CadastroPendente {
     private String cnpj;
     private String complemento;
     private String nomeCooperativa;
+    private String nomeCondominio;
+    private String razaoSocial;
+    private String responsavel;
+    private String referencia;
 
     public String getNomeCooperativa() { return nomeCooperativa; }
     public void setNomeCooperativa(String nomeCooperativa) { this.nomeCooperativa = nomeCooperativa; }
+
+    public String getNomeCondominio() { return nomeCondominio; }
+    public void setNomeCondominio(String nomeCondominio) { this.nomeCondominio = nomeCondominio; }
+
+    public String getRazaoSocial() { return razaoSocial; }
+    public void setRazaoSocial(String razaoSocial) { this.razaoSocial = razaoSocial; }
+
+    public String getResponsavel() { return responsavel; }
+    public void setResponsavel(String responsavel) { this.responsavel = responsavel; }
+
+    public String getReferencia() { return referencia; }
+    public void setReferencia(String referencia) { this.referencia = referencia; }
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
