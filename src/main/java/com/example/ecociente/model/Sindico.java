@@ -7,7 +7,6 @@ public class Sindico extends Usuario{
     //================ ATRIBUTOS ================
 
     private int idSindico;
-    private String cpf;
     private LocalDate dataInicioMandato;
     private LocalDate dataFimMandato;
     private int idCondominio;
@@ -15,39 +14,35 @@ public class Sindico extends Usuario{
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
-    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, String cpf, LocalDate dataInicioMandato, LocalDate dataFimMandato, int idCondominio) {
+    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, LocalDate dataInicioMandato, LocalDate dataFimMandato, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idSindico = idSindico;
-        this.cpf = cpf;
         this.dataInicioMandato = dataInicioMandato;
         this.dataFimMandato = dataFimMandato;
         this.idCondominio = idCondominio;
     }
 
     // Construtor sem endereço
-    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idTipoUsuario, int idSindico, String cpf, LocalDate dataInicioMandato, LocalDate dataFimMandato, int idCondominio) {
+    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idTipoUsuario, int idSindico, LocalDate dataInicioMandato, LocalDate dataFimMandato, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idTipoUsuario);
         this.idSindico = idSindico;
-        this.cpf = cpf;
         this.dataInicioMandato = dataInicioMandato;
         this.dataFimMandato = dataFimMandato;
         this.idCondominio = idCondominio;
     }
 
     // Construtor sem data de fim do mandato
-    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, String cpf, LocalDate dataInicioMandato, int idCondominio) {
+    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, LocalDate dataInicioMandato, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idSindico = idSindico;
-        this.cpf = cpf;
         this.dataInicioMandato = dataInicioMandato;
         this.idCondominio = idCondominio;
     }
 
     // Construtor sem data de inicio e de fim do mandato
-    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, String cpf, int idCondominio) {
+    public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idSindico = idSindico;
-        this.cpf = cpf;
         this.idCondominio = idCondominio;
     }
 
@@ -56,10 +51,6 @@ public class Sindico extends Usuario{
 
     public int getIdSindico() {
         return idSindico;
-    }
-
-    public String getCpf() {
-        return cpf;
     }
 
     public LocalDate getDataInicioMandato() {
@@ -76,10 +67,6 @@ public class Sindico extends Usuario{
 
 
     //================ METODOS SETTERS ================
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
 
     public void setDataInicioMandato(LocalDate dataInicioMandato) {
         this.dataInicioMandato = dataInicioMandato;
@@ -99,6 +86,6 @@ public class Sindico extends Usuario{
     public String toString(){
         return """
                 Sindico { id: %d | cpf: %s | inicio de mandato: %s | fim de mandato: %s | id condominio: %d}
-                """.formatted(this.idSindico, this.cpf, this.dataInicioMandato, this.dataFimMandato, this.idCondominio);
+                """.formatted(this.idSindico, getCpf(), this.dataInicioMandato, this.dataFimMandato, this.idCondominio);
     }
 }

@@ -6,6 +6,7 @@ public class Cooperativa extends Usuario{
 
     //================ ATRIBUTOS ================
     private int idCooperativa;
+    private String nomeCooperativa;
     private String cnpj;
     private int condominiosVinculados;
 
@@ -24,12 +25,19 @@ public class Cooperativa extends Usuario{
         return idCooperativa;
     }
 
+    public String getNomeCooperativa() {
+        return nomeCooperativa;
+    }
+
     public String getCnpj() {
         return cnpj;
     }
 
     // ================ METODOS SETTERS ================
 
+    public void setNomeCooperativa(String nomeCooperativa) {
+        this.nomeCooperativa = nomeCooperativa;
+    }
 
     public void setCnpj(String cnpj) {
         this.cnpj = cnpj;

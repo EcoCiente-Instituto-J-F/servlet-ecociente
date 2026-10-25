@@ -80,7 +80,7 @@ public class SindicoServlet extends HttpServlet {
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
         String problema = validarMandato(dataInicio, dataFim);
-        if (problema == null && daoSindicos.buscarCPF(cpf)) problema = "Este CPF já está cadastrado em outro síndico.";
+        if (problema == null && daoUsuarios.existeCpf(cpf, idUsuario)) problema = "Este CPF já está cadastrado em outro usuário.";
         if (problema == null && daoSindicos.buscarIdUsuario(idUsuario)) problema = "Este usuário já é síndico.";
         if (problema != null) {
             request.setAttribute("erro", problema);
@@ -89,10 +89,15 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
+        //O CPF fica no cadastro do usuário.
+        Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
+        usuario.setCpf(cpf);
+        daoUsuarios.atualizar(usuario, null, null);
+
         //Dados do usuário vão vazios (a tabela sindico não usa). Id 0 porque o banco gera.
         boolean adicionado = daoSindicos.inserir(new Sindico(
                 idUsuario, null, null, null, null, false, 0, 0,
-                0, cpf, dataInicio, dataFim, idCondominio
+                0, dataInicio, dataFim, idCondominio
         ));
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
@@ -123,8 +128,8 @@ public class SindicoServlet extends HttpServlet {
         LocalDate dataFim = lerDataFim(request);
 
         String problema = validarMandato(dataInicio, dataFim);
-        if (problema == null && !cpfDigitos.equals(sindico.getCpf()) && daoSindicos.buscarCPF(cpfDigitos)) {
-            problema = "Este CPF já está cadastrado em outro síndico.";
+        if (problema == null && daoUsuarios.existeCpf(cpfDigitos, sindico.getIdUsuario())) {
+            problema = "Este CPF já está cadastrado em outro usuário.";
         }
         if (problema != null) {
             request.setAttribute("erro", problema);
@@ -133,7 +138,11 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        sindico.setCpf(cpfDigitos);
+        //O CPF fica no cadastro do usuário.
+        Usuario usuario = daoUsuarios.selecionarUsuarioPorId(sindico.getIdUsuario());
+        usuario.setCpf(cpfDigitos);
+        daoUsuarios.atualizar(usuario, null, null);
+
         sindico.setDataInicioMandato(dataInicio);
         sindico.setDataFimMandato(dataFim);
         sindico.setCondominio(Integer.parseInt(request.getParameter("idCondominio")));

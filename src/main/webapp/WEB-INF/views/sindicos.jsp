@@ -90,7 +90,7 @@
     <div class="modal__corpo">
       <div class="formulario">
         <label class="campo">Usuário<select name="idUsuario" required data-por-rotulo="nome"><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
-        <label class="campo">CPF<input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric"></label>
+        <label class="campo">CPF (do usuário)<input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric"></label>
         <label class="campo">Início do mandato<input type="date" name="dataInicioMandato" placeholder="" required></label>
         <label class="campo">Fim do mandato (opcional)<input type="date" name="dataFimMandato" placeholder=""></label>
         <label class="campo">Condomínio<select name="idCondominio" required><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>

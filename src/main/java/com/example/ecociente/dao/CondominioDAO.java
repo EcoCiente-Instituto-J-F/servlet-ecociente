@@ -65,8 +65,9 @@ public class CondominioDAO{
     public ArrayList<Condominio> selecionarTodos(){
         ArrayList<Condominio> condominios = new ArrayList<>();
         String sql = """
-                SELECT * FROM condominio
-                         ORDER BY nome
+                SELECT id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio
+                FROM condominio
+                ORDER BY nome
                 """;
         try(Connection conexao = ConexaoBD.conectar();
             PreparedStatement ps = conexao.prepareStatement(sql);
@@ -124,8 +125,9 @@ public class CondominioDAO{
     public Condominio selecionarPorId(int id_condominio){
         Condominio condominioEncontrado = null;
         String sql = """
-                SELECT * FROM condominio
-                         WHERE id_condominio = ?
+                SELECT id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio, numero_unidades, area_m2
+                FROM condominio
+                WHERE id_condominio = ?
                 """;
         try(Connection conexao = ConexaoBD.conectar()){
             PreparedStatement ps = conexao.prepareStatement(sql);
@@ -142,6 +144,8 @@ public class CondominioDAO{
                         condominio.getInt(6),
                         condominio.getInt(7)
                 );
+                condominioEncontrado.setNumeroUnidades(condominio.getObject(8, Integer.class));
+                condominioEncontrado.setAreaM2(condominio.getBigDecimal(9));
             }
         }
         catch(SQLException sqle){
@@ -223,7 +227,8 @@ public class CondominioDAO{
                 SELECT c.id_condominio, c.nome, c.cnpj, c.status, c.token, c.id_endereco, c.id_tipo_condominio, tc.nome_tipo,
                        (SELECT u.nome FROM sindico s JOIN usuario u ON u.id_usuario = s.id_usuario
                         WHERE s.id_condominio = c.id_condominio ORDER BY s.id_sindico LIMIT 1),
-                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento
+                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento,
+                       c.numero_unidades, c.area_m2
                 FROM condominio c
                 LEFT JOIN tipo_condominio tc ON tc.id_tipo_condominio = c.id_tipo_condominio
                 JOIN endereco e ON e.id_endereco = c.id_endereco
@@ -242,6 +247,8 @@ public class CondominioDAO{
                             rs.getString(5), rs.getInt(6), rs.getInt(7)
                     );
                     condominio.setDadosExibicao(rs.getString(8), rs.getString(9), EnderecoDAO.deLinha(rs, rs.getInt(6), 10));
+                    condominio.setNumeroUnidades(rs.getObject(17, Integer.class));
+                    condominio.setAreaM2(rs.getBigDecimal(18));
                     condominios.add(condominio);
                 }
             }
@@ -297,8 +304,8 @@ public class CondominioDAO{
                 int idEndereco = EnderecoDAO.inserirNaTransacao(conexao, endereco);
 
                 String sql = """
-                        INSERT INTO condominio (nome, cnpj, status, token, id_endereco, id_tipo_condominio)
-                        VALUES (?, ?, ?, ?, ?, ?)
+                        INSERT INTO condominio (nome, cnpj, status, token, id_endereco, id_tipo_condominio, numero_unidades, area_m2)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         """;
                 int linhas;
                 try(PreparedStatement ps = conexao.prepareStatement(sql)){
@@ -308,6 +315,8 @@ public class CondominioDAO{
                     ps.setString(4, condominio.getToken());
                     ps.setInt(5, idEndereco);
                     ps.setInt(6, condominio.getIdTipoCondominio());
+                    ps.setObject(7, condominio.getNumeroUnidades(), Types.INTEGER);
+                    ps.setBigDecimal(8, condominio.getAreaM2());
                     linhas = ps.executeUpdate();
                 }
                 conexao.commit();
@@ -332,7 +341,7 @@ public class CondominioDAO{
 
                 String sql = """
                         UPDATE condominio
-                        SET nome = ?, cnpj = ?, status = ?, token = ?, id_tipo_condominio = ?
+                        SET nome = ?, cnpj = ?, status = ?, token = ?, id_tipo_condominio = ?, numero_unidades = ?, area_m2 = ?
                         WHERE id_condominio = ?
                         """;
                 int linhas;
@@ -342,7 +351,9 @@ public class CondominioDAO{
                     ps.setBoolean(3, condominio.isStatus());
                     ps.setString(4, condominio.getToken());
                     ps.setInt(5, condominio.getIdTipoCondominio());
-                    ps.setInt(6, condominio.getIdCondominio());
+                    ps.setObject(6, condominio.getNumeroUnidades(), Types.INTEGER);
+                    ps.setBigDecimal(7, condominio.getAreaM2());
+                    ps.setInt(8, condominio.getIdCondominio());
                     linhas = ps.executeUpdate();
                 }
                 conexao.commit();
@@ -358,7 +369,7 @@ public class CondominioDAO{
         }
     }
 
-    // Apaga o condomínio e o endereço dele (se ninguém mais usa). Falha se ainda tem torre, síndico ou parceria
+    // Apaga o condomínio e o endereço dele (se ninguém mais usa). Falha se ainda tem morador, síndico ou parceria
     public boolean deletarComEndereco(int id){
         try(Connection conexao = ConexaoBD.conectar()){
             conexao.setAutoCommit(false);

@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 //Servlet usada para as ações do CRUD de Condomínios. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
 @WebServlet(urlPatterns = {"/condominios"})
@@ -64,13 +65,27 @@ public class CondominioServlet extends HttpServlet {
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
         int idTipoCondominio = Formulario.id(Formulario.texto(request, "idTipoCondominio"), "tipo de condomínio");
         Endereco endereco = Formulario.endereco(request, true);
+        Integer unidades = Formulario.inteiroPositivoOpcional(request.getParameter("numeroUnidades"), "o número de unidades");
+        BigDecimal area = Formulario.decimalPositivoOpcional(request.getParameter("areaM2"), "a área");
+
+        //Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
+        boolean industrial = daoCondominios.selecionarTipos().stream()
+                .anyMatch(t -> t.getId() == idTipoCondominio && t.getNome().equalsIgnoreCase("Industrial"));
+        if (industrial ? (area == null || unidades != null) : (unidades == null || area != null)) {
+            throw new DadoInvalido(industrial
+                    ? "Condomínio industrial exige a área em m² e não tem número de unidades."
+                    : "Informe o número de unidades; a área em m² é só para condomínio industrial.");
+        }
 
         if (daoCondominios.existeCnpj(cnpj, 0)) {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outro condomínio.");
         }
 
         //Id 0 porque o banco gera. O endereço é criado junto, na mesma transação.
-        return daoCondominios.inserir(new Condominio(0, nome, cnpj, true, null, 0, idTipoCondominio), endereco);
+        Condominio condominio = new Condominio(0, nome, cnpj, true, null, 0, idTipoCondominio);
+        condominio.setNumeroUnidades(unidades);
+        condominio.setAreaM2(area);
+        return daoCondominios.inserir(condominio, endereco);
     }
 
     private boolean alterarCondominio(HttpServletRequest request, int id) {
@@ -78,6 +93,17 @@ public class CondominioServlet extends HttpServlet {
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
         int idTipoCondominio = Formulario.id(Formulario.texto(request, "idTipoCondominio"), "tipo de condomínio");
         Endereco endereco = Formulario.endereco(request, true);
+        Integer unidades = Formulario.inteiroPositivoOpcional(request.getParameter("numeroUnidades"), "o número de unidades");
+        BigDecimal area = Formulario.decimalPositivoOpcional(request.getParameter("areaM2"), "a área");
+
+        //Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
+        boolean industrial = daoCondominios.selecionarTipos().stream()
+                .anyMatch(t -> t.getId() == idTipoCondominio && t.getNome().equalsIgnoreCase("Industrial"));
+        if (industrial ? (area == null || unidades != null) : (unidades == null || area != null)) {
+            throw new DadoInvalido(industrial
+                    ? "Condomínio industrial exige a área em m² e não tem número de unidades."
+                    : "Informe o número de unidades; a área em m² é só para condomínio industrial.");
+        }
 
         if (daoCondominios.existeCnpj(cnpj, id)) {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outro condomínio.");
@@ -89,6 +115,8 @@ public class CondominioServlet extends HttpServlet {
         condominio.setNome(nome);
         condominio.setCnpj(cnpj);
         condominio.setIdTipoCondominio(idTipoCondominio);
+        condominio.setNumeroUnidades(unidades);
+        condominio.setAreaM2(area);
 
         return daoCondominios.atualizarCondominio(condominio, endereco);
     }
@@ -97,7 +125,7 @@ public class CondominioServlet extends HttpServlet {
         try {
             return daoCondominios.deletarComEndereco(id);
         } catch (RuntimeException e) {
-            throw new DadoInvalido("Não foi possível excluir: o condomínio ainda tem torres, síndico ou parcerias vinculados.");
+            throw new DadoInvalido("Não foi possível excluir: o condomínio ainda tem moradores, síndico ou parcerias vinculados.");
         }
     }
 }

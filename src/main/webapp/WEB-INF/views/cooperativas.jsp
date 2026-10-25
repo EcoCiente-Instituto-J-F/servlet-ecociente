@@ -49,8 +49,8 @@
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="responsavel">Responsável</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cnpj">CNPJ</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="condominiosVinculados">Condomínios vinculados</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="status">Status</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${cooperativas}">
-            <tr data-id="<c:out value="${c.idCooperativa}"/>" data-nome="<c:out value="${c.responsavel}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.status}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
-              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCooperativa}" aria-label="Selecionar linha"><span><c:out value="${c.responsavel}"/></span></div></td>
+            <tr data-id="<c:out value="${c.idCooperativa}"/>" data-nome="<c:out value="${c.nomeCooperativa}"/>" data-nome-cooperativa="<c:out value="${c.nomeCooperativa}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.status}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-cpf="<c:out value="${c.cpf}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
+              <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCooperativa}" aria-label="Selecionar linha"><span><c:out value="${c.nomeCooperativa}"/></span></div></td>
               <td><c:out value="${c.cnpj}"/></td>
               <td><c:out value="${c.condominiosVinculados}"/></td>
               <td><span class="selo ${c.status ? 'selo--ativa' : 'selo--inativa'}">${c.status ? 'Ativa' : 'Inativa'}</span></td>
@@ -80,7 +80,10 @@
     <div class="modal__linha"></div>
     <div class="modal__corpo">
       <div class="formulario">
-        <label class="campo">Nome / responsável<input type="text" name="nome" placeholder="Carlos Mendes" required maxlength="100"></label>
+        <label class="campo">Nome da cooperativa<input type="text" name="nomeCooperativa" placeholder="Verde Viva" required maxlength="100"></label>
+        <label class="campo">Nome do responsável<input type="text" name="responsavel" placeholder="Carlos Mendes" required maxlength="100"></label>
+        <label class="campo">CPF do responsável<input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric"></label>
+        <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="contato@cooperativa.com" data-obrigatorio-novo maxlength="150"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
         <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-obrigatorio-novo minlength="6" autocomplete="new-password"></label>
@@ -89,9 +92,9 @@
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
         <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
-        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
+        <label class="campo campo--largo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
         <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
-        <label class="campo campo--largo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -118,6 +121,7 @@
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor" data-campo="cnpj">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor" data-campo="telefone">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CPF do responsável</p><p class="ficha__valor" data-campo="cpf">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Responsável</p><p class="ficha__valor" data-campo="responsavel">—</p></div></li>
       </ul>
     </div>

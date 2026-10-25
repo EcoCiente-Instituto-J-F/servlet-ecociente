@@ -3,6 +3,7 @@ package com.example.ecociente.util;
 import com.example.ecociente.model.Endereco;
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.time.format.DateTimeParseException;
@@ -64,6 +65,43 @@ public class Formulario {
         String digitos = digitos(valor);
         if (digitos.length() != 14) throw new DadoInvalido("CNPJ inválido. Informe os 14 dígitos.");
         return digitos;
+    }
+
+    // Vazio vira null (se não obrigatório); preenchido precisa ter 11 dígitos
+    public static String cpf(String valor, boolean obrigatorio) {
+        String digitos = digitos(valor);
+        if (digitos.isEmpty()) {
+            if (obrigatorio) throw new DadoInvalido("Informe o CPF.");
+            return null;
+        }
+        if (digitos.length() != 11) throw new DadoInvalido("CPF inválido. Informe os 11 dígitos.");
+        return digitos;
+    }
+
+    // Opcional: vazio vira null; preenchido precisa ser um inteiro maior que zero
+    public static Integer inteiroPositivoOpcional(String valor, String rotulo) {
+        String texto = valor == null ? "" : valor.trim();
+        if (texto.isEmpty()) return null;
+        try {
+            int numero = Integer.parseInt(texto);
+            if (numero <= 0) throw new NumberFormatException();
+            return numero;
+        } catch (NumberFormatException e) {
+            throw new DadoInvalido("Informe " + rotulo + " maior que zero.");
+        }
+    }
+
+    // Opcional: vazio vira null; preenchido precisa ser um número maior que zero (aceita vírgula ou ponto)
+    public static BigDecimal decimalPositivoOpcional(String valor, String rotulo) {
+        String texto = valor == null ? "" : valor.trim().replace(",", ".");
+        if (texto.isEmpty()) return null;
+        try {
+            BigDecimal numero = new BigDecimal(texto);
+            if (numero.signum() <= 0) throw new NumberFormatException();
+            return numero;
+        } catch (NumberFormatException e) {
+            throw new DadoInvalido("Informe " + rotulo + " maior que zero.");
+        }
     }
 
     // Opcional: vazio vira null; preenchido precisa ter DDD + 8 ou 9 dígitos

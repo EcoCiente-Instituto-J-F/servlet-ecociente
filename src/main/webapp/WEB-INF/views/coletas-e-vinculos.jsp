@@ -88,7 +88,7 @@
     <div class="modal__corpo">
       <div class="formulario">
         <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
-        <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.idCooperativa}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.idCooperativa}"><c:out value="${o.nomeCooperativa}"/></option></c:forEach></select></label>
         <label class="campo">Data de início<input type="date" name="inicio" required></label>
         <label class="campo">Data de fim (opcional)<input type="date" name="fim"></label>
       </div>

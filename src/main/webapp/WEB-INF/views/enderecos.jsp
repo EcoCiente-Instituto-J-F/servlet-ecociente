@@ -85,9 +85,9 @@
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
         <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
-        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
+        <label class="campo campo--largo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
         <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
-        <label class="campo campo--largo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>

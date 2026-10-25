@@ -32,7 +32,7 @@
       <div>
         <p class="cabecalho-pagina__etiqueta">Tabela: Morador</p>
         <h1 class="cabecalho-pagina__titulo">Moradores</h1>
-        <p class="cabecalho-pagina__descricao">Moradores, apartamentos e nível de engajamento</p>
+        <p class="cabecalho-pagina__descricao">Moradores, apartamentos, torres e condomínios</p>
       </div>
       <div class="cabecalho-pagina__acoes">
         <a class="botao botao--contorno" href="#" data-acao="editar" data-abrir-modal="modal-morador" data-modo="editar" aria-disabled="true"><img src="${ctx}/assets/icones/editar.svg" alt="">Editar</a>
@@ -48,13 +48,13 @@
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Nome do morador</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Apartamento</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Torre</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">Engajamento</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
         <c:forEach var="m" items="${moradores}">
-          <c:set var="nomeTorre" value="---"/>
-          <c:forEach var="t" items="${torres}"><c:if test="${t.idTorre == m.idTorre}"><c:set var="nomeTorre" value="${t.nome}"/></c:if></c:forEach>
-          <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${nomeTorre}"/>" data-id-torre="<c:out value="${m.idTorre}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-nivel-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-engajamento="<c:out value="${m.nivelEngajamento}"/>" data-tag="<c:out value="${'Morador'}"/>">
+          <c:set var="nomeCondominio" value="---"/>
+          <c:forEach var="o" items="${condominios}"><c:if test="${o.idCondominio == m.idCondominio}"><c:set var="nomeCondominio" value="${o.nome}"/></c:if></c:forEach>
+          <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${m.torre}"/>" data-id-condominio="<c:out value="${m.idCondominio}"/>" data-condominio="<c:out value="${nomeCondominio}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-tag="<c:out value="Morador"/>">">
             <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${m.idMorador}" aria-label="Selecionar linha"><span><c:out value="${m.nome}"/></span></div></td>
             <td><c:out value="${m.numeroApartamento}"/></td>
-            <td><c:out value="${nomeTorre}"/></td>
-            <td><c:out value="${m.nivelEngajamento}"/></td>
+            <td><c:out value="${m.torre}"/></td>
+            <td><c:out value="${nomeCondominio}"/></td>
             <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
           </tr>
         </c:forEach>
@@ -83,8 +83,8 @@
         <%-- ALTERADO: u.id -> u.idUsuario --%>
         <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
         <label class="campo">Número do apartamento<input type="text" name="numeroApartamento" placeholder="101" required maxlength="10"></label>
-        <label class="campo">Torre<select name="idTorre"><option value="">Sem torre</option><c:forEach var="t" items="${torres}"><option value="${t.idTorre}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
-        <label class="campo">Nível de engajamento<select name="nivelEngajamento" required><option value="Baixo">Baixo</option><option value="Médio">Médio</option><option value="Alto">Alto</option></select></label>
+        <label class="campo">Torre (opcional)<input type="text" name="torre" placeholder="A" maxlength="30"></label>
+        <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -110,7 +110,7 @@
     <ul>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Apartamento</p><p class="ficha__valor" data-campo="apartamento">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/condominios.svg" alt=""></span><div><p class="ficha__rotulo">Torre</p><p class="ficha__valor" data-campo="torre">—</p></div></li>
-      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Engajamento</p><p class="ficha__valor" data-campo="engajamento">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Condomínio</p><p class="ficha__valor" data-campo="condominio">—</p></div></li>
     </ul>
   </div>
   <footer class="modal__rodape">

@@ -8,19 +8,19 @@ public class Morador extends Usuario{
 
     private int idMorador;
     private String numeroApartamento;
-    private String nivelEngajamento;
-    private int idTorre;
+    private String torre;
+    private int idCondominio;
 
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
 
-    public Morador(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idMorador, String numeroApartamento, String nivelEngajamento, int idTorre) {
+    public Morador(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idMorador, String numeroApartamento, String torre, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idMorador = idMorador;
         this.numeroApartamento = numeroApartamento;
-        this.nivelEngajamento = nivelEngajamento;
-        this.idTorre = idTorre;
+        this.torre = torre;
+        this.idCondominio = idCondominio;
     }
 
     //================ METODOS GETTERS ================
@@ -33,12 +33,12 @@ public class Morador extends Usuario{
         return numeroApartamento;
     }
 
-    public String getNivelEngajamento() {
-        return nivelEngajamento;
+    public String getTorre() {
+        return torre;
     }
 
-    public int getIdTorre() {
-        return idTorre;
+    public int getIdCondominio() {
+        return idCondominio;
     }
 
     //================ METODOS SETTERS ================
@@ -47,12 +47,12 @@ public class Morador extends Usuario{
         this.numeroApartamento = numeroApartamento;
     }
 
-    public void setNivelEngajamento(String nivelEngajamento) {
-        this.nivelEngajamento = nivelEngajamento;
+    public void setTorre(String torre) {
+        this.torre = torre;
     }
 
-    public void setIdTorre(int idTorre) {
-        this.idTorre = idTorre;
+    public void setIdCondominio(int idCondominio) {
+        this.idCondominio = idCondominio;
     }
 
     //================ TO STRING ================
@@ -60,8 +60,8 @@ public class Morador extends Usuario{
 
     public String toString(){
         return """
-                Morador {id: %d | numero do ap: %s | nivel de engajamento: %s | id da torre: %d }
-                """.formatted(this.idMorador, this.numeroApartamento, this.nivelEngajamento, this.idTorre);
+                Morador {id: %d | numero do ap: %s | torre: %s | id do condominio: %d }
+                """.formatted(this.idMorador, this.numeroApartamento, this.torre, this.idCondominio);
     }
 
 
