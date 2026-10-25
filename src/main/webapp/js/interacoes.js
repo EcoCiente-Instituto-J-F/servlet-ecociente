@@ -1,4 +1,4 @@
-/* INTERAÇÕES — menu lateral, seleção de linha, modais, formulários e exclusão */
+/* INTERAÇÕES — menu lateral, seleção de linha, modais, formulários, ordenação e exclusão */
 
 (() => {
   'use strict';
@@ -66,7 +66,7 @@
 
   function preencherFormulario(modal, modo) {
     const form = modal.querySelector('form');
-    if (!form || modal.id === 'modal-excluir') return;
+    if (!form || !form.querySelector('[data-chave-id]') || modal.id === 'modal-excluir') return;
     const editando = modo === 'editar';
     const dados = editando ? dadosDaLinha() : null;
     form.reset();
@@ -81,6 +81,12 @@
     form.querySelectorAll('[name]').forEach((campo) => {
       if (campo === campoId) return;
       if (campo.hasAttribute('data-obrigatorio-novo')) campo.required = !editando;
+      if (campo.dataset.placeholderEditar) {
+        campo.dataset.placeholderNovo ??= campo.placeholder;
+        campo.placeholder = editando ? campo.dataset.placeholderEditar : campo.dataset.placeholderNovo;
+      }
+      if (campo.type === 'password') campo.type = 'password';
+      campo.setCustomValidity('');
       if (!dados || campo.type === 'password' || campo.type === 'checkbox') return;
       // data-form-xxx tem prioridade (ex.: data ISO para <input type="date">)
       let valor = dados['form' + maiuscula(campo.name)] ?? dados[campo.name];
@@ -109,12 +115,164 @@
     return true;
   }
 
+  /* ---------- MENU DE TRÊS PONTOS DA LINHA: Detalhes, Editar e Excluir ---------- */
+  let menuDaLinha = null;
+
+  function fecharMenuDaLinha() {
+    if (menuDaLinha) menuDaLinha.remove();
+    menuDaLinha = null;
+  }
+
+  function abrirMenuDaLinha(botaoPontos) {
+    fecharMenuDaLinha();
+    const radio = botaoPontos.closest('tr').querySelector('input[name="linha"]');
+    if (!radio) return;
+    radio.checked = true;                 // a linha do menu vira a linha selecionada
+    bolinhaSelecionada = radio;
+    atualizarBotaoEditar();
+
+    const acoes = [
+      ['Detalhes', document.querySelector('[data-abrir-modal^="ficha-"]')],
+      ['Editar', document.querySelector('[data-acao="editar"]')],
+      ['Excluir', document.querySelector('[data-abrir-modal="modal-excluir"]')]
+    ].filter(([, gatilho]) => gatilho);
+
+    menuDaLinha = document.createElement('div');
+    menuDaLinha.className = 'menu-linha';
+    menuDaLinha.setAttribute('role', 'menu');
+    acoes.forEach(([rotulo, gatilho]) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'menu-linha__item';
+      item.setAttribute('role', 'menuitem');
+      item.textContent = rotulo;
+      item.addEventListener('click', () => { fecharMenuDaLinha(); gatilho.click(); });
+      menuDaLinha.append(item);
+    });
+    document.body.append(menuDaLinha);
+
+    const caixa = botaoPontos.getBoundingClientRect();
+    const largura = menuDaLinha.offsetWidth;
+    menuDaLinha.style.top = Math.min(caixa.bottom + 4, window.innerHeight - menuDaLinha.offsetHeight - 8) + 'px';
+    menuDaLinha.style.left = Math.max(8, caixa.right - largura) + 'px';
+    menuDaLinha.querySelector('button')?.focus();
+  }
+
+  document.addEventListener('click', (evento) => {
+    const botaoPontos = evento.target.closest('.acoes-linha');
+    if (botaoPontos) {
+      evento.stopPropagation();
+      const jaAberto = menuDaLinha && menuDaLinha.dataset.dono === botaoPontos.closest('tr').rowIndex + '';
+      if (jaAberto) { fecharMenuDaLinha(); return; }
+      abrirMenuDaLinha(botaoPontos);
+      if (menuDaLinha) menuDaLinha.dataset.dono = botaoPontos.closest('tr').rowIndex;
+    } else if (!evento.target.closest('.menu-linha')) {
+      fecharMenuDaLinha();
+    }
+  });
+  document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape') fecharMenuDaLinha(); });
+  window.addEventListener('scroll', fecharMenuDaLinha, true);
+
+  /* ---------- ORDENAR: clique no título da coluna ---------- */
+  // Tabelas paginadas (data-ordem-servidor) pedem a ordem ao servidor; as outras ordenam as linhas da própria tela.
+  function marcarOrdenacao(tabela, titulo, direcao) {
+    tabela.querySelectorAll('th[aria-sort]').forEach((th) => th.removeAttribute('aria-sort'));
+    if (titulo) titulo.setAttribute('aria-sort', direcao === 'desc' ? 'descending' : 'ascending');
+  }
+
+  function chaveDeOrdenacao(celula) {
+    const texto = celula.textContent.trim();
+    const data = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    return data ? data[3] + data[2] + data[1] : texto;
+  }
+
+  function ordenarColuna(botao) {
+    const titulo = botao.closest('th');
+    const tabela = botao.closest('table');
+    const direcao = titulo.getAttribute('aria-sort') === 'ascending' ? 'desc' : 'asc';
+
+    if (tabela.hasAttribute('data-ordem-servidor')) {
+      const endereco = new URL(window.location.href);
+      endereco.searchParams.set('ordem', botao.dataset.ordem);
+      endereco.searchParams.set('dir', direcao);
+      endereco.searchParams.delete('pagina');
+      window.location.href = endereco.toString();
+      return;
+    }
+
+    const corpo = tabela.tBodies[0];
+    const linhas = Array.from(corpo.rows).filter((linha) => !linha.hasAttribute('aria-hidden'));
+    const vazias = Array.from(corpo.rows).filter((linha) => linha.hasAttribute('aria-hidden'));
+    const indice = titulo.cellIndex;
+    linhas.sort((a, b) => chaveDeOrdenacao(a.cells[indice]).localeCompare(
+      chaveDeOrdenacao(b.cells[indice]), 'pt-BR', { numeric: true, sensitivity: 'base' }) * (direcao === 'asc' ? 1 : -1));
+    linhas.concat(vazias).forEach((linha) => corpo.append(linha));
+    marcarOrdenacao(tabela, titulo, direcao);
+  }
+
+  document.addEventListener('click', (evento) => {
+    const botao = evento.target.closest('.tabela__ordem');
+    if (botao) ordenarColuna(botao);
+  });
+
+  const tabelaDoServidor = document.querySelector('table[data-ordem-servidor]');
+  if (tabelaDoServidor) {
+    const parametros = new URLSearchParams(window.location.search);
+    const coluna = tabelaDoServidor.querySelector('.tabela__ordem[data-ordem="' + parametros.get('ordem') + '"]');
+    if (coluna) marcarOrdenacao(tabelaDoServidor, coluna.closest('th'), parametros.get('dir'));
+  }
+
+  /* ---------- SENHA: mostrar/ocultar, confirmação e endereço opcional ---------- */
+  document.addEventListener('click', (evento) => {
+    const olho = evento.target.closest('[data-mostrar-senha]');
+    if (!olho) return;
+    const campo = olho.parentElement.querySelector('input');
+    const vaiMostrar = campo.type === 'password';
+    campo.type = vaiMostrar ? 'text' : 'password';
+    olho.setAttribute('aria-pressed', String(vaiMostrar));
+    olho.setAttribute('aria-label', vaiMostrar ? 'Ocultar senha' : 'Mostrar senha');
+  });
+
+  function conferirSenhas(form) {
+    const senha = form.querySelector('[name="senha"]');
+    const confirmacao = form.querySelector('[name="confirma_senha"]');
+    if (!senha || !confirmacao) return;
+    confirmacao.required = senha.required || senha.value !== '';
+    confirmacao.setCustomValidity(senha.value !== confirmacao.value ? 'As senhas não conferem.' : '');
+  }
+
+  // Endereço opcional: ou fica todo vazio ou vem completo (cep, cidade, estado, rua e número)
+  function conferirEndereco(form) {
+    const campos = ['cep', 'cidade', 'estado', 'rua', 'numero'].map((nome) => form.querySelector('[name="' + nome + '"]'));
+    campos.forEach((campo) => campo.setCustomValidity(''));
+    const preenchidos = campos.filter((campo) => campo.value.trim() !== '');
+    if (preenchidos.length === 0 || preenchidos.length === campos.length) return;
+    campos.find((campo) => campo.value.trim() === '')
+      .setCustomValidity('Preencha o endereço completo ou deixe todos os campos de endereço vazios.');
+  }
+
+  document.addEventListener('input', (evento) => {
+    const form = evento.target.closest('form');
+    if (!form) return;
+    if (evento.target.name === 'senha' || evento.target.name === 'confirma_senha') conferirSenhas(form);
+    if (form.hasAttribute('data-endereco-opcional')) conferirEndereco(form);
+  });
+  document.addEventListener('submit', (evento) => {
+    conferirSenhas(evento.target);
+    if (evento.target.hasAttribute('data-endereco-opcional')) conferirEndereco(evento.target);
+    if (!evento.target.checkValidity()) {
+      evento.preventDefault();
+      evento.target.reportValidity();
+    }
+  }, true);
+
   /* ---------- 3. MODAIS: abrir e fechar ---------- */
   function abrirModal(idDoModal, modo, gatilho) {
     const modal = document.getElementById(idDoModal);
     if (!modal) return;
 
     if (idDoModal === 'modal-excluir' && !(gatilho && prepararExclusao(modal, gatilho))) return;
+    if (idDoModal === 'modal-configuracoes') marcarTema(document.documentElement.dataset.tema);
 
     // Textos que mudam no modo "editar"
     modal.querySelectorAll('[data-texto-editar]').forEach((elemento) => {
@@ -161,14 +319,29 @@
   /* ---------- 4. TEMA CLARO/ESCURO ---------- */
   const CHAVE_DO_TEMA = 'tema-ecociente';   // nome com que o tema fica salvo no navegador
 
-  function aplicarTema(tema) {
-    document.documentElement.dataset.tema = tema;
-    localStorage.setItem(CHAVE_DO_TEMA, tema);
+  function marcarTema(tema) {
     const opcao = document.querySelector(`input[name="tema"][value="${tema}"]`);
     if (opcao) opcao.checked = true;                        // marca Claro/Escuro nas configurações
   }
-  document.querySelectorAll('input[name="tema"]').forEach((opcao) => {
-    opcao.addEventListener('change', () => aplicarTema(opcao.value));
-  });
-  aplicarTema(localStorage.getItem(CHAVE_DO_TEMA) || 'claro');
+
+  function aplicarTema(tema) {
+    document.documentElement.dataset.tema = tema;
+    try { localStorage.setItem(CHAVE_DO_TEMA, tema); } catch (erro) { /* navegador sem armazenamento */ }
+    marcarTema(tema);
+  }
+
+  // O tema só muda e só é salvo ao clicar em "Salvar alterações".
+  // Cancelar, X, clique fora ou Esc fecham o modal e voltam a seleção para o tema que está valendo.
+  const modalConfiguracoes = document.getElementById('modal-configuracoes');
+  if (modalConfiguracoes) {
+    modalConfiguracoes.querySelector('form').addEventListener('submit', () => {
+      const escolhido = modalConfiguracoes.querySelector('input[name="tema"]:checked');
+      if (escolhido) aplicarTema(escolhido.value);
+    });
+    modalConfiguracoes.addEventListener('close', () => marcarTema(document.documentElement.dataset.tema));
+  }
+
+  let temaSalvo = 'claro';
+  try { temaSalvo = localStorage.getItem(CHAVE_DO_TEMA) || 'claro'; } catch (erro) { /* usa o tema claro */ }
+  aplicarTema(temaSalvo);
 })();
