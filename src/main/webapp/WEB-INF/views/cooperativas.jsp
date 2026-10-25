@@ -43,9 +43,10 @@
     </header>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-cooperativa"/></jsp:include>
     <section class="tabela-cartao">
-      <table class="tabela">
+      <c:if test="${empty cooperativas and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:33%"><col style="width:23%"><col style="width:25%"><col style="width:14%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Responsável</th><th scope="col">CNPJ</th><th scope="col">Condomínios vinculados</th><th scope="col">Status</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="responsavel">Responsável</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cnpj">CNPJ</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="condominiosVinculados">Condomínios vinculados</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="status">Status</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${cooperativas}">
             <tr data-id="<c:out value="${c.idCooperativa}"/>" data-nome="<c:out value="${c.responsavel}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.status}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">

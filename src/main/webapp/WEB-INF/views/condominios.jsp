@@ -43,9 +43,10 @@
     </header>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-condominio"/></jsp:include>
     <section class="tabela-cartao">
-      <table class="tabela">
+      <c:if test="${empty condominios and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:33%"><col style="width:26%"><col style="width:22%"><col style="width:14%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Nome do condomínio</th><th scope="col">CNPJ</th><th scope="col">Tipo</th><th scope="col">Síndico</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="nome">Nome do condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cnpj">CNPJ</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="tipo">Tipo</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="sindico">Síndico</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${condominios}">
             <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">

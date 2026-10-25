@@ -49,9 +49,10 @@
     </section>
     <div style="margin-top:39px"></div>
     <section class="tabela-cartao">
-      <table class="tabela tabela--alta">
+      <c:if test="${empty vinculos and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <table class="tabela tabela--alta"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:30%"><col style="width:26%"><col style="width:23%"><col style="width:16%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Condomínio</th><th scope="col">Cooperativa</th><th scope="col">Início</th><th scope="col">Fim</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="condominio">Condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cooperativa">Cooperativa</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="inicioIso">Início</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="fimIso">Fim</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="v" items="${vinculos}">
             <tr data-id="<c:out value="${v.idParceria}"/>" data-nome="<c:out value="${v.condominio}"/>" data-condominio="<c:out value="${v.condominio}"/>" data-cooperativa="<c:out value="${v.cooperativa}"/>" data-form-inicio="<c:out value="${v.inicioIso}"/>" data-form-fim="<c:out value="${v.fimIso}"/>" data-id-condominio="<c:out value="${v.idCondominio}"/>" data-id-cooperativa="<c:out value="${v.idCooperativa}"/>">
