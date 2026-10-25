@@ -99,3 +99,27 @@
 .aviso { margin: 0 0 16px; padding: 10px 16px; border-radius: 8px; font: 600 12px var(--fonte-texto); }
 .aviso--sucesso { background: var(--cor-selo-ativo); color: var(--cor-primaria); }
 .aviso--erro { background: var(--cor-selo-inativo); color: var(--cor-destaque); }
+
+.aviso--vazio { margin: 14px 18px; background: var(--cor-fundo-menu); color: var(--cor-primaria); }
+
+/* ---------- Ordenar pelo título da coluna ---------- */
+.tabela__ordem { font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.tabela__ordem:hover { color: var(--cor-primaria); }
+.tabela__ordem::after { content: " \2195"; font-size: 10px; opacity: .45; }
+th[aria-sort="ascending"] .tabela__ordem::after { content: " \25B2"; opacity: 1; color: var(--cor-primaria); }
+th[aria-sort="descending"] .tabela__ordem::after { content: " \25BC"; opacity: 1; color: var(--cor-primaria); }
+th[aria-sort] .tabela__ordem { color: var(--cor-primaria); }
+
+/* ---------- Menu de três pontos da linha ---------- */
+.acoes-linha { cursor: pointer; }
+.menu-linha { position: fixed; z-index: 20; display: grid; min-width: 130px; padding: 6px; border: 1px solid var(--cor-borda);
+  border-radius: 8px; background: var(--cor-fundo-cartao); box-shadow: 0 6px 20px rgb(0 0 0 / 18%); }
+.menu-linha__item { padding: 8px 12px; border-radius: 6px; font: 600 12px var(--fonte-texto); color: var(--cor-texto); text-align: left; cursor: pointer; }
+.menu-linha__item:hover, .menu-linha__item:focus-visible { background: var(--cor-fundo-menu); color: var(--cor-primaria); outline: none; }
+
+/* ---------- Campo de senha com olho (mostrar/ocultar) ---------- */
+.campo__senha { position: relative; display: block; }
+.campo__senha input { padding-right: 38px; }
+.campo__olho { position: absolute; top: 0; right: 10px; display: grid; place-items: center; height: 36px; color: var(--cor-texto-suave); cursor: pointer; }
+.campo__olho .risco { display: none; }
+.campo__olho[aria-pressed="true"] .risco { display: inline; }

@@ -43,9 +43,10 @@
     </header>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-usuario"/></jsp:include>
     <section class="tabela-cartao">
-      <table class="tabela">
+      <c:if test="${empty usuarios and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:30%"><col style="width:30%"><col style="width:23%"><col style="width:12%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Nome do usuário</th><th scope="col">E-mail</th><th scope="col">Localidade</th><th scope="col">Tipo</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="nome">Nome do usuário</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="email">E-mail</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="localidade">Localidade</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="tipo">Tipo</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="u" items="${usuarios}">
             <tr data-id="<c:out value="${u.idUsuario}"/>" data-nome="<c:out value="${u.nome}"/>" data-email="<c:out value="${u.email}"/>" data-tipo="<c:out value="${u.tipo}"/>" data-telefone="<c:out value="${u.telefone}"/>" data-endereco="<c:out value="${u.endereco}"/>" data-id-tipo-usuario="<c:out value="${u.idTipoUsuario}"/>" data-iniciais="<c:out value="${u.iniciais}"/>" data-cpf="<c:out value="${u.cpf}"/>" data-tag="<c:out value="${u.tag}"/>" data-cep="<c:out value="${u.cep}"/>" data-cidade="<c:out value="${u.cidade}"/>" data-estado="<c:out value="${u.estado}"/>" data-bairro="<c:out value="${u.bairro}"/>" data-rua="<c:out value="${u.rua}"/>" data-numero="<c:out value="${u.numero}"/>" data-complemento="<c:out value="${u.complemento}"/>">
@@ -69,7 +70,7 @@
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
 <dialog class="modal" id="modal-usuario" style="--largura:640px" aria-labelledby="modal-usuario-titulo">
-  <form action="${ctx}/usuarios" method="post">
+  <form action="${ctx}/usuarios" method="post" data-endereco-opcional>
     <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
       <p class="modal__etiqueta" data-texto-editar="Editar registro">Novo registro</p>
@@ -81,17 +82,18 @@
       <div class="formulario">
         <label class="campo">Nome completo<input type="text" name="nome" placeholder="Nome do usuário" required maxlength="100"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="email@exemplo.com" required maxlength="150"></label>
-        <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-obrigatorio-novo minlength="6" autocomplete="new-password"></label>
+        <label class="campo">Senha<span class="campo__senha"><input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-placeholder-editar="Deixe em branco para manter" data-obrigatorio-novo minlength="6" autocomplete="new-password"><button class="campo__olho" type="button" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line class="risco" x1="2" y1="2" x2="22" y2="22"></line></svg></button></span></label>
+        <label class="campo">Confirmar senha<span class="campo__senha"><input type="password" name="confirma_senha" placeholder="Repita a senha" data-placeholder-editar="Repita só se trocar a senha" data-obrigatorio-novo autocomplete="new-password"><button class="campo__olho" type="button" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line class="risco" x1="2" y1="2" x2="22" y2="22"></line></svg></button></span></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
         <label class="campo">CPF<input type="text" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"></label>
         <label class="campo">Tipo de usuário<select name="idTipoUsuario" required><option value="">Selecione</option><c:forEach var="t" items="${tiposUsuario}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
-        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
-        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo"></label>
-        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
-        <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
-        <label class="campo campo--largo">Rua<input type="text" name="rua" placeholder="Nome da rua"></label>
-        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0"></label>
-        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">CEP (opcional)<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
+        <label class="campo">Cidade (opcional)<input type="text" name="cidade" placeholder="São Paulo"></label>
+        <label class="campo">Estado (opcional)<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
+        <label class="campo">Bairro (opcional)<input type="text" name="bairro" placeholder="Nome do bairro"></label>
+        <label class="campo">Rua (opcional)<input type="text" name="rua" placeholder="Nome da rua"></label>
+        <label class="campo">Número (opcional)<input type="number" name="numero" placeholder="123" min="0"></label>
+        <label class="campo campo--largo">Complemento (opcional)<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>

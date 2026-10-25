@@ -23,10 +23,6 @@
           </div>
         </div>
       </div>
-      <p class="config__secao">Notificações</p>
-      <label class="config__linha">Novo usuário cadastrado<input class="interruptor" type="checkbox" name="notificar-novo-usuario" checked></label>
-      <label class="config__linha">Cancelamento de condomínio<input class="interruptor" type="checkbox" name="notificar-cancelamento" checked></label>
-      <label class="config__linha">Coleta agendada<input class="interruptor" type="checkbox" name="notificar-coleta"></label>
     </div>
     <footer class="modal__rodape">
       <button class="botao botao--contorno" type="button" data-fechar-modal>Cancelar</button>
