@@ -42,3 +42,4 @@ build/
 src/main/resources/.env
 .env
 *.zip
+!.gitkeep
