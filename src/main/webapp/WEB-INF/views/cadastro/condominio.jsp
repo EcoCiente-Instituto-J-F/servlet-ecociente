@@ -3,6 +3,8 @@
 <c:set var="tituloEtapa" value="Dados do condomínio" />
 <c:set var="subtituloEtapa" value="Conte um pouco sobre o seu condomínio ${tipo}." />
 <%@ include file="_cabecalho.jsp" %>
+<c:catch var="semUnidades"><c:set var="valorUnidades" value="${cad.numeroUnidades}" /></c:catch>
+<c:catch var="semArea"><c:set var="valorArea" value="${cad.areaM2}" /></c:catch>
 
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="condominio">
@@ -71,6 +73,25 @@
                 </div>
             </div>
         </c:when>
+    </c:choose>
+
+    <c:choose>
+        <c:when test="${tipo == 'industrial'}">
+            <div class="form-group">
+                <label for="cad-area">Área do empreendimento (m²)</label>
+                <div class="input-wrapper">
+                    <input class="input-field" type="number" id="cad-area" name="areaM2" value="<c:out value='${valorArea}' />" placeholder="Ex.: 1500.00" inputmode="decimal" step="0.01" min="0.01" required>
+                </div>
+            </div>
+        </c:when>
+        <c:otherwise>
+            <div class="form-group">
+                <label for="cad-unidades">Número de unidades</label>
+                <div class="input-wrapper">
+                    <input class="input-field" type="number" id="cad-unidades" name="numeroUnidades" value="<c:out value='${valorUnidades}' />" placeholder="Ex.: 120" inputmode="numeric" min="1" required>
+                </div>
+            </div>
+        </c:otherwise>
     </c:choose>
 
     <c:set var="textoAvancar" value="Próximo" />

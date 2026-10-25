@@ -48,7 +48,7 @@
         <thead><tr><th scope="col">Nome do usuário</th><th scope="col">E-mail</th><th scope="col">Localidade</th><th scope="col">Tipo</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="u" items="${usuarios}">
-            <tr data-id="<c:out value="${u.idUsuario}"/>" data-nome="<c:out value="${u.nome}"/>" data-email="<c:out value="${u.email}"/>" data-tipo="<c:out value="${u.tipo}"/>" data-telefone="<c:out value="${u.telefone}"/>" data-endereco="<c:out value="${u.endereco}"/>" data-id-tipo-usuario="<c:out value="${u.idTipoUsuario}"/>" data-iniciais="<c:out value="${u.iniciais}"/>" data-tag="<c:out value="${u.tag}"/>" data-cep="<c:out value="${u.cep}"/>" data-cidade="<c:out value="${u.cidade}"/>" data-estado="<c:out value="${u.estado}"/>" data-bairro="<c:out value="${u.bairro}"/>" data-rua="<c:out value="${u.rua}"/>" data-numero="<c:out value="${u.numero}"/>" data-complemento="<c:out value="${u.complemento}"/>">
+            <tr data-id="<c:out value="${u.idUsuario}"/>" data-nome="<c:out value="${u.nome}"/>" data-email="<c:out value="${u.email}"/>" data-tipo="<c:out value="${u.tipo}"/>" data-telefone="<c:out value="${u.telefone}"/>" data-endereco="<c:out value="${u.endereco}"/>" data-id-tipo-usuario="<c:out value="${u.idTipoUsuario}"/>" data-iniciais="<c:out value="${u.iniciais}"/>" data-cpf="<c:out value="${u.cpf}"/>" data-tag="<c:out value="${u.tag}"/>" data-cep="<c:out value="${u.cep}"/>" data-cidade="<c:out value="${u.cidade}"/>" data-estado="<c:out value="${u.estado}"/>" data-bairro="<c:out value="${u.bairro}"/>" data-rua="<c:out value="${u.rua}"/>" data-numero="<c:out value="${u.numero}"/>" data-complemento="<c:out value="${u.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${u.idUsuario}" aria-label="Selecionar linha"><span><c:out value="${u.nome}"/></span></div></td>
               <td><c:out value="${u.email}"/></td>
               <td><span class="celula-quebra celula-quebra--localidade"><c:out value="${u.localidade}"/></span></td>
@@ -83,14 +83,15 @@
         <label class="campo">E-mail<input type="email" name="email" placeholder="email@exemplo.com" required maxlength="150"></label>
         <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-obrigatorio-novo minlength="6" autocomplete="new-password"></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
+        <label class="campo">CPF<input type="text" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"></label>
         <label class="campo">Tipo de usuário<select name="idTipoUsuario" required><option value="">Selecione</option><c:forEach var="t" items="${tiposUsuario}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
-        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
-        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
-        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
+        <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
+        <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo"></label>
+        <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
         <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
-        <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
-        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
-        <label class="campo campo--largo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo campo--largo">Rua<input type="text" name="rua" placeholder="Nome da rua"></label>
+        <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0"></label>
+        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -115,6 +116,7 @@
       </div>
       <ul>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/email.svg" alt=""></span><div><p class="ficha__rotulo">E-mail</p><p class="ficha__valor" data-campo="email">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CPF</p><p class="ficha__valor" data-campo="cpf">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/telefone.svg" alt=""></span><div><p class="ficha__rotulo">Telefone</p><p class="ficha__valor" data-campo="telefone">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Tipo de usuário</p><p class="ficha__valor" data-campo="tipo">—</p></div></li>

@@ -2,9 +2,17 @@
 <c:set var="tituloEtapa" value="Endereço" />
 <c:set var="subtituloEtapa" value="Torne sua cooperativa parceira. Informe o CNPJ e o endereço da sede." />
 <%@ include file="_cabecalho.jsp" %>
+<c:catch var="semNomeCooperativa"><c:set var="valorNomeCooperativa" value="${cad.nomeCooperativa}" /></c:catch>
 
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="cooperativa-endereco">
+
+    <div class="form-group">
+        <label for="cad-nome-cooperativa">Nome da cooperativa</label>
+        <div class="input-wrapper">
+            <input class="input-field" type="text" id="cad-nome-cooperativa" name="nomeCooperativa" value="<c:out value='${valorNomeCooperativa}' />" placeholder="Digite o nome da cooperativa" autocomplete="organization" required maxlength="100">
+        </div>
+    </div>
 
     <div class="form-row tres">
         <div class="form-group" data-erro="CNPJ incompleto: digite os 14 números, ex.: 00.000.000/0000-00.">
