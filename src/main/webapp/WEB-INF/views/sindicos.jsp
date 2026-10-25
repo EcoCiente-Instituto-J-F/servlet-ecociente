@@ -45,7 +45,7 @@
     <section class="tabela-cartao">
       <table class="tabela">
         <colgroup><col style="width:26%"><col style="width:19%"><col style="width:25%"><col style="width:17%"><col style="width:8%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Nome do síndico</th><th scope="col">CPF</th><th scope="col">Condomínio</th><th scope="col">Início do mandato</th><th scope="col">Status</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Nome do síndico</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">CPF</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">Início do mandato</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c5">Status</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
         <jsp:useBean id="agora" class="java.util.Date"/>
         <fmt:formatDate value="${agora}" pattern="yyyy-MM-dd" var="hojeIso"/>

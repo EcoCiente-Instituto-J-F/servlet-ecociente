@@ -45,7 +45,7 @@
     <section class="tabela-cartao">
       <table class="tabela">
         <colgroup><col style="width:47%"><col style="width:48%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Número</th><th scope="col">Usuário</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Número</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Usuário</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
         <c:forEach var="t" items="${telefones}">
           <c:choose>

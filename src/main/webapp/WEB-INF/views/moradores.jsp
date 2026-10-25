@@ -45,7 +45,7 @@
     <section class="tabela-cartao">
       <table class="tabela">
         <colgroup><col style="width:30%"><col style="width:20%"><col style="width:25%"><col style="width:20%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Nome do morador</th><th scope="col">Apartamento</th><th scope="col">Torre</th><th scope="col">Engajamento</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Nome do morador</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Apartamento</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Torre</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">Engajamento</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
         <c:forEach var="m" items="${moradores}">
           <c:set var="nomeTorre" value="---"/>

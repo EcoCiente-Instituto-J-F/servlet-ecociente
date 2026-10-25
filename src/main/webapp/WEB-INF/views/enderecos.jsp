@@ -45,7 +45,7 @@
     <section class="tabela-cartao">
       <table class="tabela">
         <colgroup><col style="width:34%"><col style="width:22%"><col style="width:22%"><col style="width:17%"><col style="width:5%"></colgroup>
-        <thead><tr><th scope="col">Rua e número</th><th scope="col">Bairro</th><th scope="col">Cidade / UF</th><th scope="col">CEP</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
+        <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Rua e número</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Bairro</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Cidade / UF</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">CEP</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
           <c:forEach var="e" items="${enderecos}">
             <c:set var="cepBr" value="${fn:length(e.cep) == 8 ? fn:substring(e.cep, 0, 5).concat('-').concat(fn:substring(e.cep, 5, 8)) : e.cep}"/>
