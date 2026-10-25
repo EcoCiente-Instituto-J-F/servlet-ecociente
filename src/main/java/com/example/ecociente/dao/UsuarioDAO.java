@@ -8,8 +8,9 @@ import com.example.ecociente.model.Usuario;
 import java.sql.*;
 import java.util.ArrayList;
 import java.sql.Types;
-import java.time.YearMonth;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.List;
 
 public class UsuarioDAO {
 
@@ -502,33 +503,64 @@ public class UsuarioDAO {
     }
 
     // Metodo utilizado no grafico do painel servlet
-    // Cadastros dos últimos 7 meses (posição 6 = mês atual). papel: "sindico", "cooperativa" ou qualquer outro valor para os demais
-    public int[] contarCadastrosPorMes(String papel){
+    // Cadastros de cada mês de um ano (posição 0 = janeiro). Mês que ainda não chegou fica null; mês sem cadastro fica 0.
+    // papel: "sindico", "cooperativa" ou qualquer outro valor para os demais
+    public Integer[] contarCadastrosPorMes(String papel, int ano){
         String filtro = switch (papel) {
             case "sindico" -> "AND EXISTS (SELECT 1 FROM sindico s WHERE s.id_usuario = u.id_usuario)";
             case "cooperativa" -> "AND EXISTS (SELECT 1 FROM cooperativa c WHERE c.id_usuario = u.id_usuario)";
             default -> "AND NOT EXISTS (SELECT 1 FROM sindico s WHERE s.id_usuario = u.id_usuario) "
                     + "AND NOT EXISTS (SELECT 1 FROM cooperativa c WHERE c.id_usuario = u.id_usuario)";
         };
-        String sql = "SELECT to_char(u.data_cadastro, 'YYYY-MM'), COUNT(*) FROM usuario u "
-                + "WHERE u.data_cadastro >= date_trunc('month', CURRENT_DATE) - INTERVAL '6 months' " + filtro
+        String sql = "SELECT EXTRACT(MONTH FROM u.data_cadastro)::int, COUNT(*) FROM usuario u "
+                + "WHERE EXTRACT(YEAR FROM u.data_cadastro) = ? " + filtro
                 + " GROUP BY 1";
-        int[] valores = new int[7];
-        YearMonth atual = YearMonth.now();
+
+        Integer[] valores = new Integer[12];
+        LocalDate hoje = LocalDate.now();
+        for (int mes = 1; mes <= 12; mes++) {
+            boolean jaChegou = ano < hoje.getYear() || (ano == hoje.getYear() && mes <= hoje.getMonthValue());
+            valores[mes - 1] = jaChegou ? 0 : null;
+        }
+
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setInt(1, ano);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()){
+                    valores[rs.getInt(1) - 1] = rs.getInt(2);
+                }
+            }
+        } catch (SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return valores;
+    }
+
+    // Anos que têm cadastro, do mais novo ao mais antigo. O ano atual sempre entra na lista.
+    public List<Integer> listarAnosComCadastro(){
+        List<Integer> anos = new ArrayList<>();
+        String sql = "SELECT DISTINCT EXTRACT(YEAR FROM data_cadastro)::int FROM usuario ORDER BY 1 DESC";
         try (
                 Connection conexao = ConexaoBD.conectar();
                 PreparedStatement ps = conexao.prepareStatement(sql);
                 ResultSet rs = ps.executeQuery()
         ){
             while (rs.next()){
-                YearMonth mes = YearMonth.parse(rs.getString(1));
-                int indice = 6 - (int) ChronoUnit.MONTHS.between(mes, atual);
-                if (indice >= 0 && indice < 7) valores[indice] = rs.getInt(2);
+                anos.add(rs.getInt(1));
             }
         } catch (SQLException sqle){
             throw new RuntimeException(sqle.getMessage());
         }
-        return valores;
+
+        int atual = LocalDate.now().getYear();
+        if (!anos.contains(atual)) {
+            anos.add(atual);
+            anos.sort(Comparator.reverseOrder());
+        }
+        return anos;
     }
 
     private int contarLinhas(String sql){
