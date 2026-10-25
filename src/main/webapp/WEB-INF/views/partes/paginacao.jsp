@@ -7,6 +7,10 @@
   <c:url var="qCodificado" value="/"><c:param name="q" value="${param.q}"/></c:url>
   <c:set var="sufixoBusca" value="&amp;q=${fn:substringAfter(qCodificado, '?q=')}"/>
 </c:if>
+<c:if test="${not empty param.ordem}">
+  <c:url var="ordemCodificada" value="/"><c:param name="ordem" value="${param.ordem}"/></c:url>
+  <c:set var="sufixoBusca" value="${sufixoBusca}&amp;ordem=${fn:substringAfter(ordemCodificada, '?ordem=')}&amp;dir=${param.dir == 'desc' ? 'desc' : 'asc'}"/>
+</c:if>
 <nav class="paginacao" aria-label="Paginação">
   <a href="?pagina=${paginaAtual > 1 ? paginaAtual - 1 : 1}${sufixoBusca}" aria-label="Página anterior"><img src="${ctx}/assets/icones/seta-esquerda.svg" alt=""></a>
   <c:forEach var="n" begin="1" end="${totalPaginas < 4 ? totalPaginas : 4}">
