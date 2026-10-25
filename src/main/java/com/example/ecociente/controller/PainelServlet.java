@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -26,10 +26,10 @@ public class PainelServlet extends HttpServlet {
     CooperativaDAO daoCooperativas = new CooperativaDAO();
     ParceriaDAO daoParcerias = new ParceriaDAO();
 
-    //Posições horizontais dos 7 meses do gráfico e limites verticais do desenho (coordenadas do SVG da JSP).
-    private static final double[] X_MESES = {211.6, 308.6, 405.9, 502.9, 600.1, 694.7, 790.3};
-    private static final double Y_TOPO = 442.5;
-    private static final double Y_BASE = 613.4;
+    //Limites do desenho do gráfico (coordenadas do SVG da JSP, viewBox 0 0 1163 328): x de janeiro e de dezembro, y do topo e da base.
+    private static final double X_INICIO = 70, X_FIM = 1093;
+    private static final double Y_TOPO = 110, Y_BASE = 255;
+    private static final String[] NOMES_MESES = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"};
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarCards(request);
@@ -70,54 +70,111 @@ public class PainelServlet extends HttpServlet {
         return kpi;
     }
 
-    //Cadastros por mês (últimos 7) de cada tipo de conta, já em coordenadas do SVG.
+    //Cadastros de cada mês do ano escolhido (?ano=) de cada tipo de conta, já em coordenadas do SVG.
     private void mostrarGrafico(HttpServletRequest request) {
-        int[] usuarios = daoUsuarios.contarCadastrosPorMes("usuario");
-        int[] sindicos = daoUsuarios.contarCadastrosPorMes("sindico");
-        int[] cooperativas = daoUsuarios.contarCadastrosPorMes("cooperativa");
+        List<Integer> anos = daoUsuarios.listarAnosComCadastro();
 
+        //Ano ausente, inválido ou sem cadastro volta para o ano atual.
+        int ano = LocalDate.now().getYear();
+        try {
+            int pedido = Integer.parseInt(request.getParameter("ano"));
+            if (anos.contains(pedido)) ano = pedido;
+        } catch (NumberFormatException nfe) {
+            //sem ano válido fica no ano atual
+        }
+
+        Integer[] usuarios = daoUsuarios.contarCadastrosPorMes("usuario", ano);
+        Integer[] sindicos = daoUsuarios.contarCadastrosPorMes("sindico", ano);
+        Integer[] cooperativas = daoUsuarios.contarCadastrosPorMes("cooperativa", ano);
+
+        //Meses que ainda não chegaram vêm null e ficam de fora da escala e do total.
         int maximo = 1;
         int total = 0;
-        for (int i = 0; i < 7; i++) {
-            maximo = Math.max(maximo, Math.max(usuarios[i], Math.max(sindicos[i], cooperativas[i])));
-            total += usuarios[i] + sindicos[i] + cooperativas[i];
+        for (Integer[] serie : new Integer[][]{usuarios, sindicos, cooperativas}) {
+            for (Integer valor : serie) {
+                if (valor == null) continue;
+                maximo = Math.max(maximo, valor);
+                total += valor;
+            }
         }
 
         String linhaUsuarios = montarPontos(usuarios, maximo);
+        request.setAttribute("anosDisponiveis", anos);
+        request.setAttribute("anoSelecionado", ano);
         request.setAttribute("totalCadastros", total);
         request.setAttribute("pontosUsuarios", linhaUsuarios);
         request.setAttribute("pontosSindicos", montarPontos(sindicos, maximo));
         request.setAttribute("pontosCooperativas", montarPontos(cooperativas, maximo));
-        request.setAttribute("areaUsuarios", X_MESES[0] + "," + Y_BASE + " " + linhaUsuarios + " " + X_MESES[6] + "," + Y_BASE);
-        request.setAttribute("ultimoUsuarios", X_MESES[6] + "," + posicaoVertical(usuarios[6], maximo));
-        request.setAttribute("ultimoSindicos", X_MESES[6] + "," + posicaoVertical(sindicos[6], maximo));
-        request.setAttribute("ultimoCooperativas", X_MESES[6] + "," + posicaoVertical(cooperativas[6], maximo));
+        request.setAttribute("areaUsuarios", montarArea(usuarios, linhaUsuarios));
+        request.setAttribute("marcasUsuarios", montarMarcas(usuarios, maximo));
+        request.setAttribute("marcasSindicos", montarMarcas(sindicos, maximo));
+        request.setAttribute("marcasCooperativas", montarMarcas(cooperativas, maximo));
         request.setAttribute("mesesGrafico", nomesDosMeses());
-        request.setAttribute("categorias", new ArrayList<>());
     }
 
-    private String montarPontos(int[] valores, int maximo) {
+    //Pontos "x,y x,y ..." da linha, só dos meses que já chegaram.
+    private String montarPontos(Integer[] valores, int maximo) {
         StringBuilder pontos = new StringBuilder();
         for (int i = 0; i < valores.length; i++) {
-            if (i > 0) pontos.append(' ');
-            pontos.append(X_MESES[i]).append(',').append(posicaoVertical(valores[i], maximo));
+            if (valores[i] == null) continue;
+            if (pontos.length() > 0) pontos.append(' ');
+            pontos.append(formatar(posicaoHorizontal(i))).append(',').append(posicaoVertical(valores[i], maximo));
         }
         return pontos.toString();
     }
 
-    //No SVG o y cresce para baixo: o maior valor fica no topo e o zero na base.
-    private String posicaoVertical(int valor, int maximo) {
-        return String.format(Locale.ROOT, "%.1f", Y_BASE - (Y_BASE - Y_TOPO) * valor / maximo);
+    //Área sob a linha: desce até a base no primeiro e no último mês com dado. Vazia se não houver pontos.
+    private String montarArea(Integer[] valores, String pontos) {
+        int primeiro = -1;
+        int ultimo = -1;
+        for (int i = 0; i < valores.length; i++) {
+            if (valores[i] == null) continue;
+            if (primeiro < 0) primeiro = i;
+            ultimo = i;
+        }
+        if (primeiro < 0) return "";
+        return formatar(posicaoHorizontal(primeiro)) + "," + formatar(Y_BASE) + " " + pontos + " "
+                + formatar(posicaoHorizontal(ultimo)) + "," + formatar(Y_BASE);
     }
 
-    //Nomes dos 7 meses do gráfico, do mais antigo ao atual (ex.: Abr, Mai ... Out).
-    private List<String> nomesDosMeses() {
-        String[] nomes = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"};
-        List<String> meses = new ArrayList<>();
-        YearMonth atual = YearMonth.now();
-        for (int i = 6; i >= 0; i--) {
-            meses.add(nomes[atual.minusMonths(i).getMonthValue() - 1]);
+    //Um círculo com o número em cada mês que já chegou.
+    private List<Map<String, Object>> montarMarcas(Integer[] valores, int maximo) {
+        List<Map<String, Object>> marcas = new ArrayList<>();
+        for (int i = 0; i < valores.length; i++) {
+            if (valores[i] == null) continue;
+            Map<String, Object> marca = new LinkedHashMap<>();
+            marca.put("x", formatar(posicaoHorizontal(i)));
+            marca.put("y", posicaoVertical(valores[i], maximo));
+            marca.put("valor", valores[i]);
+            marcas.add(marca);
+        }
+        return marcas;
+    }
+
+    //Os 12 meses (Jan a Dez) com o x de cada rótulo.
+    private List<Map<String, Object>> nomesDosMeses() {
+        List<Map<String, Object>> meses = new ArrayList<>();
+        for (int i = 0; i < NOMES_MESES.length; i++) {
+            Map<String, Object> mes = new LinkedHashMap<>();
+            mes.put("nome", NOMES_MESES[i]);
+            mes.put("x", formatar(posicaoHorizontal(i)));
+            meses.add(mes);
         }
         return meses;
+    }
+
+    //O mês 0 (janeiro) fica em X_INICIO e o mês 11 (dezembro) em X_FIM.
+    private double posicaoHorizontal(int mes) {
+        return X_INICIO + mes * (X_FIM - X_INICIO) / 11;
+    }
+
+    //No SVG o y cresce para baixo: o maior valor fica no topo e o zero na base.
+    private String posicaoVertical(int valor, int maximo) {
+        return formatar(Y_BASE - (Y_BASE - Y_TOPO) * valor / maximo);
+    }
+
+    //Uma casa decimal e ponto (não vírgula), como o SVG exige.
+    private String formatar(double numero) {
+        return String.format(Locale.ROOT, "%.1f", numero);
     }
 }
