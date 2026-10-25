@@ -5,6 +5,7 @@ import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.TipoCondominio;
 
+import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -289,6 +290,31 @@ public class CondominioDAO{
             ps.setInt(2, exceptoId);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next();
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Gera o token do condomínio: 6 dígitos aleatórios que ainda não são de nenhum outro condomínio
+    public String gerarTokenUnico(){
+        String caracteres = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+        SecureRandom sorteio = new SecureRandom();
+        String sql = "SELECT 1 FROM condominio WHERE token = ?";
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            while(true){
+                StringBuilder token = new StringBuilder();
+                for(int i = 0; i < 6; i++){
+                    token.append(caracteres.charAt(sorteio.nextInt(caracteres.length())));
+                }
+                ps.setString(1, token.toString());
+                try(ResultSet rs = ps.executeQuery()){
+                    if(!rs.next()) return token.toString();
+                }
             }
         }
         catch(SQLException sqle){
