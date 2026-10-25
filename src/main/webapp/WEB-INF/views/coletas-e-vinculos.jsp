@@ -44,7 +44,6 @@
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-vinculo"/></jsp:include>
     <section class="indicadores indicadores--tres" aria-label="Resumo">
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Vínculos ativos</h2><p class="indicador__valor">${vinculosAtivos}</p></article>
-        <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Coletas este mês</h2><p class="indicador__valor">${coletasMes}</p></article>
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Sem cooperativa vinculada</h2><p class="indicador__valor">${semCooperativa} condomínios</p></article>
     </section>
     <div style="margin-top:39px"></div>
