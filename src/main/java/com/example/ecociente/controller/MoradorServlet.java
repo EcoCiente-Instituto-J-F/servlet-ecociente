@@ -1,10 +1,10 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.CondominioDAO;
 import com.example.ecociente.dao.MoradorDAO;
-import com.example.ecociente.dao.TorreDAO;
 import com.example.ecociente.dao.UsuarioDAO;
+import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Morador;
-import com.example.ecociente.model.Torre;
 import com.example.ecociente.model.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -20,7 +20,7 @@ import java.util.List;
 public class MoradorServlet extends HttpServlet {
     MoradorDAO daoMoradores = new MoradorDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
-    TorreDAO daoTorres = new TorreDAO();
+    CondominioDAO daoCondominios = new CondominioDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/moradores")) {
@@ -28,15 +28,15 @@ public class MoradorServlet extends HttpServlet {
         }
     }
 
-    //Busca os moradores, usuários e torres (para os selects) e envia para a JSP.
+    //Busca os moradores, usuários e condomínios (para os selects) e envia para a JSP.
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Morador> moradores = daoMoradores.listarTodos();
         List<Usuario> usuarios = daoUsuarios.selecionarTodos();
-        List<Torre> torres = daoTorres.listarTodas();
+        List<Condominio> condominios = daoCondominios.selecionarTodos();
 
         request.setAttribute("moradores", moradores);
         request.setAttribute("usuarios", usuarios);
-        request.setAttribute("torres", torres);
+        request.setAttribute("condominios", condominios);
         request.getRequestDispatcher("/WEB-INF/views/moradores.jsp").forward(request, response);
     }
 
@@ -62,9 +62,10 @@ public class MoradorServlet extends HttpServlet {
 
     private void adicionarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String numeroApartamento = request.getParameter("numeroApartamento");
-        String nivelEngajamento = request.getParameter("nivelEngajamento");
+        String torre = request.getParameter("torre");
+        torre = (torre == null || torre.isBlank()) ? null : torre.trim(); //torre é opcional: vazia vira null
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-        int idTorre = Integer.parseInt(request.getParameter("idTorre"));
+        int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
 
         if (daoMoradores.buscarIdUsuario(idUsuario)) {
             request.setAttribute("erro", "Este usuário já está cadastrado como morador.");
@@ -76,7 +77,7 @@ public class MoradorServlet extends HttpServlet {
         //Dados do usuário vão vazios (a tabela morador não usa). Id 0 porque o banco gera.
         boolean adicionado = daoMoradores.inserir(new Morador(
                 idUsuario, null, null, null, null, false, 0, 0,
-                0, numeroApartamento, nivelEngajamento, idTorre
+                0, numeroApartamento, torre, idCondominio
         ));
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
@@ -95,8 +96,9 @@ public class MoradorServlet extends HttpServlet {
             return;
         }
         morador.setNumeroApartamento(request.getParameter("numeroApartamento"));
-        morador.setNivelEngajamento(request.getParameter("nivelEngajamento"));
-        morador.setIdTorre(Integer.parseInt(request.getParameter("idTorre")));
+        String torre = request.getParameter("torre");
+        morador.setTorre((torre == null || torre.isBlank()) ? null : torre.trim());
+        morador.setIdCondominio(Integer.parseInt(request.getParameter("idCondominio")));
 
         boolean alterado = daoMoradores.atualizar(morador);
 

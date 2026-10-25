@@ -16,7 +16,7 @@ public class MoradorDAO {
     public boolean inserir(Morador m) {
         String sql = """
                 INSERT INTO morador
-                    (numero_apartamento, nivel_engajamento, id_usuario, id_torre)
+                    (numero_apartamento, torre, id_usuario, id_condominio)
                 VALUES
                     (?, ?, ?, ?)
                 """;
@@ -25,9 +25,9 @@ public class MoradorDAO {
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
             ps.setString(1, m.getNumeroApartamento());
-            ps.setString(2, m.getNivelEngajamento());
+            ps.setString(2, m.getTorre());
             ps.setInt(3, m.getIdUsuario());
-            ps.setInt(4, m.getIdTorre());
+            ps.setInt(4, m.getIdCondominio());
 
             ps.executeUpdate();
             return true;
@@ -53,8 +53,8 @@ public class MoradorDAO {
                        u.id_tipo_usuario,
                        m.id_morador,
                        m.numero_apartamento,
-                       m.nivel_engajamento,
-                       m.id_torre
+                       m.torre,
+                       m.id_condominio
                 FROM morador m
                 JOIN usuario u ON u.id_usuario = m.id_usuario
                 WHERE m.id_morador = ?
@@ -131,8 +131,8 @@ public class MoradorDAO {
                        u.id_tipo_usuario,
                        m.id_morador,
                        m.numero_apartamento,
-                       m.nivel_engajamento,
-                       m.id_torre
+                       m.torre,
+                       m.id_condominio
                 FROM morador m
                 JOIN usuario u ON u.id_usuario = m.id_usuario
                 ORDER BY m.id_morador
@@ -174,9 +174,9 @@ public class MoradorDAO {
         String sql = """
                 UPDATE morador
                 SET numero_apartamento = ?,
-                    nivel_engajamento = ?,
+                    torre = ?,
                     id_usuario = ?,
-                    id_torre = ?
+                    id_condominio = ?
                 WHERE id_morador = ?
                 """;
 
@@ -184,9 +184,9 @@ public class MoradorDAO {
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
             ps.setString(1, m.getNumeroApartamento());
-            ps.setString(2, m.getNivelEngajamento());
+            ps.setString(2, m.getTorre());
             ps.setInt(3, m.getIdUsuario());
-            ps.setInt(4, m.getIdTorre());
+            ps.setInt(4, m.getIdCondominio());
             ps.setInt(5, m.getIdMorador());
 
             return ps.executeUpdate() == 1;
