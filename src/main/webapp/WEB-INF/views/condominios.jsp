@@ -48,7 +48,7 @@
         <thead><tr><th scope="col">Nome do condomínio</th><th scope="col">CNPJ</th><th scope="col">Tipo</th><th scope="col">Síndico</th><th scope="col"><span class="tabela__ordenar"><img src="${ctx}/assets/icones/ordenar.svg" alt="Ordenar"></span></th></tr></thead>
         <tbody>
           <c:forEach var="c" items="${condominios}">
-            <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
+            <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-numero-unidades="<c:out value="${c.numeroUnidades}"/>" data-area-m2="<c:out value="${c.areaM2}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCondominio}" aria-label="Selecionar linha"><span><c:out value="${c.nome}"/></span></div></td>
               <td><c:out value="${c.cnpj}"/></td>
               <td><c:out value="${c.tipo}"/></td>
@@ -82,13 +82,15 @@
         <label class="campo">Nome<input type="text" name="nome" placeholder="Nome do condomínio" required maxlength="100"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
         <label class="campo">Tipo<select name="idTipoCondominio" required><option value="">Selecione</option><c:forEach var="t" items="${tiposCondominio}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Nº de unidades (exceto industrial)<input type="number" name="numeroUnidades" placeholder="120" min="1"></label>
+        <label class="campo">Área em m² (só industrial)<input type="number" name="areaM2" placeholder="1500.00" step="0.01" min="0.01"></label>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
         <label class="campo">Bairro<input type="text" name="bairro" placeholder="Nome do bairro"></label>
         <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
         <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
-        <label class="campo campo--largo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -114,6 +116,8 @@
       <ul>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/maleta.svg" alt=""></span><div><p class="ficha__rotulo">CNPJ</p><p class="ficha__valor" data-campo="cnpj">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/condominios.svg" alt=""></span><div><p class="ficha__rotulo">Nº de unidades</p><p class="ficha__valor" data-campo="numeroUnidades">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Área em m²</p><p class="ficha__valor" data-campo="areaM2">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Síndico responsável</p><p class="ficha__valor" data-campo="sindico">—</p></div></li>
       </ul>
     </div>
