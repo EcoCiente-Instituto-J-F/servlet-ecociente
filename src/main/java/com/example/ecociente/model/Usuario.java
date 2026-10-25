@@ -14,6 +14,7 @@ public class Usuario {
     private boolean status;
     private int idEndereco;
     private int idTipoUsuario;
+    private String cpf;
 
     // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
     private String nomeTipo;
@@ -83,6 +84,10 @@ public class Usuario {
         return idTipoUsuario;
     }
 
+    public String getCpf() {
+        return cpf;
+    }
+
 
     //================ METODOS SETTERS ================
 
@@ -112,6 +117,10 @@ public class Usuario {
 
     public void setTipoUsuario(int idTipoUsuario) {
         this.idTipoUsuario = idTipoUsuario;
+    }
+
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public void setDadosExibicao(String nomeTipo, String telefone, Endereco enderecoCompleto) {

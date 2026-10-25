@@ -19,9 +19,9 @@ public class UsuarioDAO {
     public boolean inserir(Usuario usuario){
         String sql = """
         INSERT INTO usuario
-            (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario)
+            (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario, cpf)
         VALUES
-            (?, ?, ?, ?, ?, ?, ?)
+            (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (
@@ -41,6 +41,7 @@ public class UsuarioDAO {
             }
 
             ps.setInt(7, usuario.getIdTipoUsuario());
+            ps.setString(8, usuario.getCpf());
 
             int linhasAfetadas = ps.executeUpdate();
             return linhasAfetadas > 0;
@@ -56,8 +57,8 @@ public class UsuarioDAO {
     // Metodo para selecionar um usuário por ID
     public Usuario selecionarUsuarioPorId(int id){
         String sql = """
-                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario
-                FROM usuario  
+                SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario, cpf
+                FROM usuario
                 WHERE id_usuario = ?
                 """;
         Usuario retorno = null;
@@ -79,6 +80,7 @@ public class UsuarioDAO {
                         rs.getInt(7),
                         rs.getInt(8)
                 );
+                retorno.setCpf(rs.getString(9));
             }
 
 
@@ -306,7 +308,8 @@ public class UsuarioDAO {
         String sql = """
                 SELECT u.id_usuario, u.nome, u.email, u.data_cadastro, u.status, u.id_endereco, u.id_tipo_usuario, t.nome_tipo,
                        (SELECT numero FROM telefone WHERE id_usuario = u.id_usuario ORDER BY id_telefone LIMIT 1),
-                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento
+                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento,
+                       u.cpf
                 FROM usuario u
                 JOIN tipo_usuario t ON t.id_tipo_usuario = u.id_tipo_usuario
                 LEFT JOIN endereco e ON e.id_endereco = u.id_endereco
@@ -328,6 +331,7 @@ public class UsuarioDAO {
                             rs.getDate(4).toLocalDate(), rs.getBoolean(5), rs.getInt(6), rs.getInt(7)
                     );
                     usuario.setDadosExibicao(rs.getString(8), rs.getString(9), EnderecoDAO.deLinha(rs, rs.getInt(6), 10));
+                    usuario.setCpf(rs.getString(17));
                     usuarios.add(usuario);
                 }
             }
@@ -388,6 +392,23 @@ public class UsuarioDAO {
         }
     }
 
+    // Verifica se o CPF já é de outro usuário (o exceptoId é o próprio usuário na edição, 0 no cadastro)
+    public boolean existeCpf(String cpf, int exceptoId){
+        String sql = "SELECT 1 FROM usuario WHERE cpf = ? AND id_usuario <> ?";
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, cpf);
+            ps.setInt(2, exceptoId);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
     // Cadastra endereço (se veio), usuário e telefone (se veio) na mesma transação
     public boolean inserir(Usuario usuario, String telefone, Endereco endereco){
         try (Connection conexao = ConexaoBD.conectar()) {
@@ -396,8 +417,8 @@ public class UsuarioDAO {
                 int idEndereco = endereco == null ? 0 : EnderecoDAO.inserirNaTransacao(conexao, endereco);
 
                 String sql = """
-                        INSERT INTO usuario (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario)
-                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        INSERT INTO usuario (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario, cpf)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                         RETURNING id_usuario
                         """;
                 int idUsuario;
@@ -409,6 +430,7 @@ public class UsuarioDAO {
                     ps.setBoolean(5, usuario.isStatus());
                     if (idEndereco == 0) ps.setNull(6, Types.INTEGER); else ps.setInt(6, idEndereco);
                     ps.setInt(7, usuario.getIdTipoUsuario());
+                    ps.setString(8, usuario.getCpf());
                     try (ResultSet rs = ps.executeQuery()) {
                         rs.next();
                         idUsuario = rs.getInt(1);
@@ -442,7 +464,7 @@ public class UsuarioDAO {
 
                 String sql = """
                         UPDATE usuario
-                        SET nome = ?, email = ?, senha_hash = ?, id_tipo_usuario = ?, id_endereco = ?
+                        SET nome = ?, email = ?, senha_hash = ?, id_tipo_usuario = ?, id_endereco = ?, cpf = ?
                         WHERE id_usuario = ?
                         """;
                 int linhas;
@@ -452,7 +474,8 @@ public class UsuarioDAO {
                     ps.setString(3, usuario.getSenhaHash());
                     ps.setInt(4, usuario.getIdTipoUsuario());
                     if (idEndereco == 0) ps.setNull(5, Types.INTEGER); else ps.setInt(5, idEndereco);
-                    ps.setInt(6, usuario.getIdUsuario());
+                    ps.setString(6, usuario.getCpf());
+                    ps.setInt(7, usuario.getIdUsuario());
                     linhas = ps.executeUpdate();
                 }
                 TelefoneDAO.salvarNaTransacao(conexao, usuario.getIdUsuario(), telefone);
