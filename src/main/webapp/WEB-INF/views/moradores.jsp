@@ -50,7 +50,7 @@
         <c:forEach var="m" items="${moradores}">
           <c:set var="nomeCondominio" value="---"/>
           <c:forEach var="o" items="${condominios}"><c:if test="${o.idCondominio == m.idCondominio}"><c:set var="nomeCondominio" value="${o.nome}"/></c:if></c:forEach>
-          <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${m.torre}"/>" data-id-condominio="<c:out value="${m.idCondominio}"/>" data-condominio="<c:out value="${nomeCondominio}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-tag="<c:out value="Morador"/>">">
+          <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${m.torre}"/>" data-id-condominio="<c:out value="${m.idCondominio}"/>" data-condominio="<c:out value="${nomeCondominio}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-tag="<c:out value="Morador"/>">
             <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${m.idMorador}" aria-label="Selecionar linha"><span><c:out value="${m.nome}"/></span></div></td>
             <td><c:out value="${m.numeroApartamento}"/></td>
             <td><c:out value="${m.torre}"/></td>
