@@ -10,7 +10,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import com.example.ecociente.conexao.ConexaoBD;
+import com.example.ecociente.model.Condominio;
+import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Sindico;
+import com.example.ecociente.model.Usuario;
 
 public class SindicoDAO {
 
@@ -50,6 +53,78 @@ public class SindicoDAO {
             ps.executeUpdate();
             return true;
 
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Cadastro do síndico que assina: grava o usuário (sem endereço próprio), o telefone, o endereço e o condomínio
+    // (já com o token) e o vínculo de síndico, tudo na mesma transação. O mandato começa hoje, sem data de fim.
+    public boolean cadastrarComCondominio(Usuario usuario, String telefone, Condominio condominio, Endereco endereco) {
+
+        try (Connection conexao = ConexaoBD.conectar()) {
+            conexao.setAutoCommit(false);
+            try {
+                int idUsuario;
+                String sqlUsuario = """
+                        INSERT INTO usuario (nome, email, senha_hash, data_cadastro, status, id_tipo_usuario, cpf)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                        RETURNING id_usuario
+                        """;
+                try (PreparedStatement ps = conexao.prepareStatement(sqlUsuario)) {
+                    ps.setString(1, usuario.getNome());
+                    ps.setString(2, usuario.getEmail());
+                    ps.setString(3, usuario.getSenhaHash());
+                    ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+                    ps.setBoolean(5, usuario.isStatus());
+                    ps.setInt(6, usuario.getIdTipoUsuario());
+                    ps.setString(7, usuario.getCpf());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        idUsuario = rs.getInt(1);
+                    }
+                }
+                TelefoneDAO.salvarNaTransacao(conexao, idUsuario, telefone);
+
+                int idEndereco = EnderecoDAO.inserirNaTransacao(conexao, endereco);
+
+                int idCondominio;
+                String sqlCondominio = """
+                        INSERT INTO condominio (nome, cnpj, status, token, id_endereco, id_tipo_condominio, numero_unidades, area_m2)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        RETURNING id_condominio
+                        """;
+                try (PreparedStatement ps = conexao.prepareStatement(sqlCondominio)) {
+                    ps.setString(1, condominio.getNome());
+                    ps.setString(2, condominio.getCnpj());
+                    ps.setBoolean(3, condominio.isStatus());
+                    ps.setString(4, condominio.getToken());
+                    ps.setInt(5, idEndereco);
+                    ps.setInt(6, condominio.getIdTipoCondominio());
+                    ps.setObject(7, condominio.getNumeroUnidades(), Types.INTEGER);
+                    ps.setBigDecimal(8, condominio.getAreaM2());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        idCondominio = rs.getInt(1);
+                    }
+                }
+
+                String sqlSindico = """
+                        INSERT INTO sindico (data_inicio_mandato, id_usuario, id_condominio)
+                        VALUES (CURRENT_DATE, ?, ?)
+                        """;
+                try (PreparedStatement ps = conexao.prepareStatement(sqlSindico)) {
+                    ps.setInt(1, idUsuario);
+                    ps.setInt(2, idCondominio);
+                    ps.executeUpdate();
+                }
+
+                conexao.commit();
+                return true;
+            } catch (SQLException sqle) {
+                conexao.rollback();
+                throw sqle;
+            }
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }

@@ -1,12 +1,16 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.CondominioDAO;
 import com.example.ecociente.dao.CooperativaDAO;
 import com.example.ecociente.dao.EnderecoDAO;
+import com.example.ecociente.dao.SindicoDAO;
 import com.example.ecociente.dao.TelefoneDAO;
 import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.CadastroPendente;
+import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Cooperativa;
 import com.example.ecociente.model.Endereco;
+import com.example.ecociente.model.TipoCondominio;
 import com.example.ecociente.model.Telefone;
 import com.example.ecociente.model.Usuario;
 import com.example.ecociente.util.DadoInvalido;
@@ -20,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @WebServlet(urlPatterns = {"/cadastro", "/usuarios"})
@@ -27,11 +32,15 @@ public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
     private CooperativaDAO cooperativaDAO;
+    private CondominioDAO condominioDAO;
+    private SindicoDAO sindicoDAO;
 
     @Override
     public void init() {
         usuarioDAO = new UsuarioDAO();
         cooperativaDAO = new CooperativaDAO();
+        condominioDAO = new CondominioDAO();
+        sindicoDAO = new SindicoDAO();
     }
 
     @Override
@@ -61,7 +70,13 @@ public class UsuarioServlet extends HttpServlet {
                 processarEtapaDados(request, response);
             } else if ("cooperativa-endereco".equals(etapa)) {
                 processarEtapaEnderecoCooperativa(request, response);
-            } else if ("tipo".equals(etapa) || "token".equals(etapa)) {
+            } else if ("tipo".equals(etapa)) {
+                processarEtapaTipo(request, response);
+            } else if ("condominio".equals(etapa)) {
+                processarEtapaCondominio(request, response);
+            } else if ("endereco".equals(etapa)) {
+                processarEtapaEnderecoCondominio(request, response);
+            } else if ("token".equals(etapa)) {
                 processarEtapaEmConstrucao(request, response, etapa);
             } else if ("morador-endereco".equals(etapa)) {
                 processarEtapaMoradorEndereco(request, response);
@@ -465,6 +480,209 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         concluirCadastro(request, response, sessao, "cooperativa");
+    }
+
+    //================ SINDICO: TIPO DO CONDOMINIO ================
+
+    private void processarEtapaTipo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "sindico-dados");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String tipoCondominio = request.getParameter("tipoCondominio");
+        if (!"residencial".equals(tipoCondominio) && !"comercial".equals(tipoCondominio) && !"industrial".equals(tipoCondominio)) {
+            request.setAttribute("erroCadastro", "Selecione o tipo do condomínio.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        cad.setTipoCondominio(tipoCondominio);
+        sessao.setAttribute("cadastroPendente", cad);
+        sessao.setAttribute("etapaCadastro", "condominio");
+        mostrarCadastro(request, response);
+    }
+
+    //================ SINDICO: DADOS DO CONDOMINIO ================
+
+    private void processarEtapaCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "tipo");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        boolean industrial = "industrial".equals(cad.getTipoCondominio());
+        String nomeCondominio = request.getParameter("nomeCondominio");
+        String razaoSocial = request.getParameter("razaoSocial");
+        String cnpj = request.getParameter("cnpj");
+        String telefone = request.getParameter("telefone");
+        String responsavel = request.getParameter("responsavel");
+        String numeroUnidades = request.getParameter("numeroUnidades");
+        String areaM2 = request.getParameter("areaM2");
+
+        cad.setNomeCondominio(nomeCondominio);
+        cad.setRazaoSocial(razaoSocial);
+        cad.setCnpj(cnpj);
+        if (telefone != null && !telefone.isBlank()) cad.setTelefone(telefone); //industrial não pede telefone: fica o da etapa de dados
+        cad.setResponsavel(responsavel);
+        cad.setNumeroUnidades(numeroUnidades);
+        cad.setAreaM2(areaM2);
+        sessao.setAttribute("cadastroPendente", cad);
+
+        //Residencial usa o nome do condomínio; comercial e industrial usam a razão social.
+        String nome = "residencial".equals(cad.getTipoCondominio()) ? nomeCondominio : razaoSocial;
+        if (nome == null || nome.isBlank() || nome.trim().length() > 100) {
+            request.setAttribute("erroCadastro", "Informe o nome do condomínio, com até 100 caracteres.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (cnpj == null || cnpj.replaceAll("\\D", "").length() != 14) {
+            request.setAttribute("erroCadastro", "CNPJ inválido, precisa ter 14 dígitos.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (condominioDAO.existeCnpj(cnpj.replaceAll("\\D", ""), 0)) {
+            request.setAttribute("erroCadastro", "Este CNPJ já está cadastrado.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        //Industrial informa a área em m²; os outros tipos informam o número de unidades.
+        try {
+            Integer unidades = Formulario.inteiroPositivoOpcional(numeroUnidades, "o número de unidades");
+            BigDecimal area = Formulario.decimalPositivoOpcional(areaM2, "a área");
+            if (industrial ? area == null : unidades == null) {
+                throw new DadoInvalido(industrial ? "Informe a área do empreendimento em m²." : "Informe o número de unidades.");
+            }
+        } catch (DadoInvalido e) {
+            request.setAttribute("erroCadastro", e.getMessage());
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        sessao.setAttribute("etapaCadastro", "endereco");
+        mostrarCadastro(request, response);
+    }
+
+    //================ SINDICO: ENDERECO DO CONDOMINIO (finaliza o cadastro e gera o token) ================
+
+    private void processarEtapaEnderecoCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "condominio");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String cep = request.getParameter("cep");
+        String uf = request.getParameter("uf");
+        String cidade = request.getParameter("cidade");
+        String bairro = request.getParameter("bairro");
+        String rua = request.getParameter("rua");
+        String numeroTexto = request.getParameter("numero");
+        String complemento = request.getParameter("complemento");
+        String referencia = request.getParameter("referencia");
+
+        cad.setCep(cep);
+        cad.setUf(uf);
+        cad.setCidade(cidade);
+        cad.setBairro(bairro);
+        cad.setRua(rua);
+        cad.setNumero(numeroTexto);
+        cad.setComplemento(complemento);
+        cad.setReferencia(referencia);
+        sessao.setAttribute("cadastroPendente", cad);
+
+        if (cep == null || cep.replaceAll("\\D", "").length() != 8) {
+            request.setAttribute("erroCadastro", "CEP inválido, precisa ter 8 dígitos.");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if (uf == null || uf.isBlank() || cidade == null || cidade.isBlank() || bairro == null || bairro.isBlank()
+                || rua == null || rua.isBlank() || numeroTexto == null || numeroTexto.isBlank()) {
+            request.setAttribute("erroCadastro", "Preencha todos os campos obrigatórios do endereço.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        int numero;
+        try {
+            numero = Integer.parseInt(numeroTexto.replaceAll("\\D", ""));
+        } catch (NumberFormatException nfe) {
+            request.setAttribute("erroCadastro", "Número do endereço inválido.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        int idTipoUsuario = usuarioDAO.selecionarIdTipoPorNome("Sindico");
+        int idTipoCondominio = 0;
+        for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
+            if (tipo.getNome().equalsIgnoreCase(cad.getTipoCondominio())) idTipoCondominio = tipo.getId();
+        }
+        if (idTipoUsuario == 0 || idTipoCondominio == 0) {
+            request.setAttribute("erroCadastro", "Tipo de usuário ou de condomínio não encontrado no banco.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        Endereco endereco = new Endereco(0, cep.replaceAll("\\D", ""), cidade.trim(), uf.trim(), bairro.trim(), rua.trim(), numero,
+                complemento == null || complemento.isBlank() ? null : complemento.trim());
+
+        try {
+            boolean industrial = "industrial".equals(cad.getTipoCondominio());
+            String nome = "residencial".equals(cad.getTipoCondominio()) ? cad.getNomeCondominio() : cad.getRazaoSocial();
+
+            //O token é gerado na assinatura, junto com a gravação do condomínio.
+            String token = condominioDAO.gerarTokenUnico();
+
+            //Ids 0 porque o banco gera. Usuário, telefone, endereço, condomínio e síndico são gravados na mesma transação.
+            Usuario usuario = new Usuario(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(), LocalDate.now(), true, 0, idTipoUsuario);
+            usuario.setCpf(Formulario.cpf(cad.getCpf(), true));
+
+            Condominio condominio = new Condominio(0, nome.trim(), cad.getCnpj().replaceAll("\\D", ""), true, token, 0, idTipoCondominio);
+            if (industrial) {
+                condominio.setAreaM2(Formulario.decimalPositivoOpcional(cad.getAreaM2(), "a área"));
+            } else {
+                condominio.setNumeroUnidades(Formulario.inteiroPositivoOpcional(cad.getNumeroUnidades(), "o número de unidades"));
+            }
+
+            sindicoDAO.cadastrarComCondominio(usuario, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), condominio, endereco);
+            request.setAttribute("tokenCondominio", token);
+        } catch (RuntimeException e) {
+            request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        concluirCadastro(request, response, sessao, cad.getTipoCondominio());
     }
 
     //Limpa o cadastro da sessao e mostra a tela de cadastro concluido.
