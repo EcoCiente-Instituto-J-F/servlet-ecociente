@@ -29,24 +29,23 @@ public class SindicoDAO {
 
     // ======================= MÉTODOS CREATE =======================
 
-    // Inserir novo síndico
+    // Inserir novo síndico (o CPF fica na tabela usuario)
     public boolean inserir(Sindico s) {
 
         String sql = """
                 INSERT INTO sindico
-                    (cpf, data_inicio_mandato, data_fim_mandato, id_condominio, id_usuario)
+                    (data_inicio_mandato, data_fim_mandato, id_condominio, id_usuario)
                 VALUES
-                    (?, ?, ?, ?, ?)
+                    (?, ?, ?, ?)
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            ps.setString(1, s.getCpf());
-            setDataOuNulo(ps, 2, s.getDataInicioMandato());
-            setDataOuNulo(ps, 3, s.getDataFimMandato());
-            ps.setInt(4, s.getIdCondominio());
-            ps.setInt(5, s.getIdUsuario());
+            setDataOuNulo(ps, 1, s.getDataInicioMandato());
+            setDataOuNulo(ps, 2, s.getDataFimMandato());
+            ps.setInt(3, s.getIdCondominio());
+            ps.setInt(4, s.getIdUsuario());
 
             ps.executeUpdate();
             return true;
@@ -71,10 +70,10 @@ public class SindicoDAO {
                        u.id_endereco,
                        u.id_tipo_usuario,
                        s.id_sindico,
-                       s.cpf,
                        s.data_inicio_mandato,
                        s.data_fim_mandato,
-                       s.id_condominio
+                       s.id_condominio,
+                       u.cpf
                 FROM sindico s
                 JOIN usuario u ON u.id_usuario = s.id_usuario
                 WHERE s.id_sindico = ?
@@ -88,7 +87,7 @@ public class SindicoDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
-                    return new Sindico(
+                    Sindico sindico = new Sindico(
                             rs.getInt(1),
                             rs.getString(2),
                             rs.getString(3),
@@ -98,11 +97,12 @@ public class SindicoDAO {
                             rs.getInt(7),
                             rs.getInt(8),
                             rs.getInt(9),
-                            rs.getString(10),
+                            dataOuNulo(rs.getDate(10)),
                             dataOuNulo(rs.getDate(11)),
-                            dataOuNulo(rs.getDate(12)),
-                            rs.getInt(13)
+                            rs.getInt(12)
                     );
+                    sindico.setCpf(rs.getString(13));
+                    return sindico;
                 }
             }
 
@@ -111,29 +111,6 @@ public class SindicoDAO {
         }
 
         return null;
-    }
-
-    // Verificar se o CPF já está cadastrado
-    public boolean buscarCPF(String cpf) {
-
-        String sql = """
-                SELECT id_sindico
-                FROM sindico
-                WHERE cpf = ?
-                """;
-
-        try (Connection conexao = ConexaoBD.conectar();
-             PreparedStatement ps = conexao.prepareStatement(sql)) {
-
-            ps.setString(1, cpf);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                return rs.next();
-            }
-
-        } catch (SQLException sqle) {
-            throw new RuntimeException(sqle.getMessage());
-        }
     }
 
     // Verificar se o usuário já está vinculado a um síndico
@@ -172,10 +149,10 @@ public class SindicoDAO {
                        u.id_endereco,
                        u.id_tipo_usuario,
                        s.id_sindico,
-                       s.cpf,
                        s.data_inicio_mandato,
                        s.data_fim_mandato,
-                       s.id_condominio
+                       s.id_condominio,
+                       u.cpf
                 FROM sindico s
                 JOIN usuario u ON u.id_usuario = s.id_usuario
                 WHERE s.id_condominio = ?
@@ -189,7 +166,7 @@ public class SindicoDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
-                    return new Sindico(
+                    Sindico sindico = new Sindico(
                             rs.getInt(1),
                             rs.getString(2),
                             rs.getString(3),
@@ -199,11 +176,12 @@ public class SindicoDAO {
                             rs.getInt(7),
                             rs.getInt(8),
                             rs.getInt(9),
-                            rs.getString(10),
+                            dataOuNulo(rs.getDate(10)),
                             dataOuNulo(rs.getDate(11)),
-                            dataOuNulo(rs.getDate(12)),
-                            rs.getInt(13)
+                            rs.getInt(12)
                     );
+                    sindico.setCpf(rs.getString(13));
+                    return sindico;
                 }
             }
 
@@ -229,10 +207,10 @@ public class SindicoDAO {
                        u.id_endereco,
                        u.id_tipo_usuario,
                        s.id_sindico,
-                       s.cpf,
                        s.data_inicio_mandato,
                        s.data_fim_mandato,
-                       s.id_condominio
+                       s.id_condominio,
+                       u.cpf
                 FROM sindico s
                 JOIN usuario u ON u.id_usuario = s.id_usuario
                 ORDER BY s.id_sindico
@@ -244,7 +222,7 @@ public class SindicoDAO {
 
             while (rs.next()) {
 
-                sindicos.add(new Sindico(
+                Sindico sindico = new Sindico(
                         rs.getInt(1),
                         rs.getString(2),
                         rs.getString(3),
@@ -254,11 +232,12 @@ public class SindicoDAO {
                         rs.getInt(7),
                         rs.getInt(8),
                         rs.getInt(9),
-                        rs.getString(10),
+                        dataOuNulo(rs.getDate(10)),
                         dataOuNulo(rs.getDate(11)),
-                        dataOuNulo(rs.getDate(12)),
-                        rs.getInt(13)
-                ));
+                        rs.getInt(12)
+                );
+                sindico.setCpf(rs.getString(13));
+                sindicos.add(sindico);
             }
 
         } catch (SQLException sqle) {
@@ -270,13 +249,12 @@ public class SindicoDAO {
 
     // ======================= MÉTODOS UPDATE =======================
 
-    // Atualizar dados do síndico
+    // Atualizar dados do síndico (o CPF fica na tabela usuario)
     public boolean atualizar(Sindico s) {
 
         String sql = """
                 UPDATE sindico
-                SET cpf = ?,
-                    data_inicio_mandato = ?,
+                SET data_inicio_mandato = ?,
                     data_fim_mandato = ?,
                     id_condominio = ?,
                     id_usuario = ?
@@ -286,12 +264,11 @@ public class SindicoDAO {
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            ps.setString(1, s.getCpf());
-            setDataOuNulo(ps, 2, s.getDataInicioMandato());
-            setDataOuNulo(ps, 3, s.getDataFimMandato());
-            ps.setInt(4, s.getIdCondominio());
-            ps.setInt(5, s.getIdUsuario());
-            ps.setInt(6, s.getIdSindico());
+            setDataOuNulo(ps, 1, s.getDataInicioMandato());
+            setDataOuNulo(ps, 2, s.getDataFimMandato());
+            ps.setInt(3, s.getIdCondominio());
+            ps.setInt(4, s.getIdUsuario());
+            ps.setInt(5, s.getIdSindico());
 
             ps.executeUpdate();
             return true;
