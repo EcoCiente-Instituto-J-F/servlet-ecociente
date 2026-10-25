@@ -26,6 +26,10 @@ public class CadastroPendente {
     private String tipoCondominio;
     private String cnpj;
     private String complemento;
+    private String nomeCooperativa;
+
+    public String getNomeCooperativa() { return nomeCooperativa; }
+    public void setNomeCooperativa(String nomeCooperativa) { this.nomeCooperativa = nomeCooperativa; }
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }

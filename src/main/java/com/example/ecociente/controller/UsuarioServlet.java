@@ -116,13 +116,18 @@ public class UsuarioServlet extends HttpServlet {
         int idTipoUsuario = Formulario.id(Formulario.texto(request, "idTipoUsuario"), "tipo de usuário");
         String telefone = Formulario.telefone(request.getParameter("telefone"));
         Endereco endereco = Formulario.endereco(request, false);
+        String cpf = Formulario.cpf(request.getParameter("cpf"), false);
 
         if (usuarioDAO.existeEmail(email, 0)) {
             throw new DadoInvalido("Este e-mail já está cadastrado.");
         }
+        if (cpf != null && usuarioDAO.existeCpf(cpf, 0)) {
+            throw new DadoInvalido("Este CPF já está cadastrado.");
+        }
 
         //Id 0 porque o banco gera. Endereço e telefone são criados junto, na mesma transação.
         Usuario usuario = new Usuario(0, nome, email, Senha.gerarHash(senha), LocalDate.now(), true, 0, idTipoUsuario);
+        usuario.setCpf(cpf);
         return usuarioDAO.inserir(usuario, telefone, endereco);
     }
 
@@ -136,9 +141,13 @@ public class UsuarioServlet extends HttpServlet {
         int idTipoUsuario = Formulario.id(Formulario.texto(request, "idTipoUsuario"), "tipo de usuário");
         String telefone = Formulario.telefone(request.getParameter("telefone"));
         Endereco endereco = Formulario.endereco(request, false);
+        String cpf = Formulario.cpf(request.getParameter("cpf"), false);
 
         if (usuarioDAO.existeEmail(email, id)) {
             throw new DadoInvalido("Este e-mail já está cadastrado.");
+        }
+        if (cpf != null && usuarioDAO.existeCpf(cpf, id)) {
+            throw new DadoInvalido("Este CPF já está cadastrado.");
         }
 
         //Busca no banco e troca só o que veio do formulário (senha vazia mantém a atual).
@@ -147,6 +156,7 @@ public class UsuarioServlet extends HttpServlet {
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setTipoUsuario(idTipoUsuario);
+        usuario.setCpf(cpf);
         if (senha != null && !senha.isEmpty()) {
             usuario.setSenhaHash(Senha.gerarHash(senha));
         }
@@ -326,6 +336,11 @@ public class UsuarioServlet extends HttpServlet {
             mostrarCadastro(request, response);
             return;
         }
+        if (usuarioDAO.existeCpf(cpf.replaceAll("\\D", ""), 0)) {
+            request.setAttribute("erroCadastro", "Este CPF já está cadastrado.");
+            mostrarCadastro(request, response);
+            return;
+        }
         if (nascimento == null || nascimento.isBlank()) {
             request.setAttribute("erroCadastro", "Informe a data de nascimento.");
             mostrarCadastro(request, response);
@@ -368,6 +383,7 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
+        String nomeCooperativa = request.getParameter("nomeCooperativa");
         String cnpj = request.getParameter("cnpj");
         String cep = request.getParameter("cep");
         String uf = request.getParameter("uf");
@@ -377,6 +393,7 @@ public class UsuarioServlet extends HttpServlet {
         String numeroTexto = request.getParameter("numero");
         String complemento = request.getParameter("complemento");
 
+        cad.setNomeCooperativa(nomeCooperativa);
         cad.setCnpj(cnpj);
         cad.setCep(cep);
         cad.setUf(uf);
@@ -387,6 +404,11 @@ public class UsuarioServlet extends HttpServlet {
         cad.setComplemento(complemento);
         sessao.setAttribute("cadastroPendente", cad);
 
+        if (nomeCooperativa == null || nomeCooperativa.isBlank() || nomeCooperativa.trim().length() > 100) {
+            request.setAttribute("erroCadastro", "Informe o nome da cooperativa, com até 100 caracteres.");
+            mostrarCadastro(request, response);
+            return;
+        }
         if (cnpj == null || cnpj.replaceAll("\\D", "").length() != 14) {
             request.setAttribute("erroCadastro", "CNPJ inválido, precisa ter 14 dígitos.");
             mostrarCadastro(request, response);
@@ -433,6 +455,8 @@ public class UsuarioServlet extends HttpServlet {
             //Ids 0 porque o banco gera. Endereço, usuário dono, cooperativa e telefone são gravados na mesma transação.
             Cooperativa cooperativa = new Cooperativa(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(),
                     LocalDate.now(), true, 0, idTipoUsuario, 0, cnpjLimpo);
+            cooperativa.setNomeCooperativa(nomeCooperativa.trim());
+            cooperativa.setCpf(Formulario.cpf(cad.getCpf(), true));
             cooperativaDAO.inserir(cooperativa, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), endereco);
         } catch (RuntimeException e) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
@@ -554,6 +578,7 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         Usuario usuario = new Usuario(0, cad.getNome(), cad.getEmail(), cad.getSenhaHash(), LocalDate.now(), true, idEndereco, 1);
+        usuario.setCpf(Formulario.cpf(cad.getCpf(), false));
 
         if (!usuarioDAO.inserir(usuario)) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");

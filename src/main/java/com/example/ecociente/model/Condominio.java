@@ -1,5 +1,7 @@
 package com.example.ecociente.model;
 
+import java.math.BigDecimal;
+
 public class Condominio {
 
     //================ ATRIBUTOS ================
@@ -11,6 +13,8 @@ public class Condominio {
     private String token;
     private int idEndereco;
     private int idTipoCondominio;
+    private Integer numeroUnidades;
+    private BigDecimal areaM2;
 
     // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
     private String nomeTipo;
@@ -71,6 +75,14 @@ public class Condominio {
         return idTipoCondominio;
     }
 
+    public Integer getNumeroUnidades() {
+        return numeroUnidades;
+    }
+
+    public BigDecimal getAreaM2() {
+        return areaM2;
+    }
+
 
     //================ METODOS SETTERS ================
 
@@ -92,6 +104,14 @@ public class Condominio {
 
     public void setIdTipoCondominio(int idTipoCondominio) {
         this.idTipoCondominio = idTipoCondominio;
+    }
+
+    public void setNumeroUnidades(Integer numeroUnidades) {
+        this.numeroUnidades = numeroUnidades;
+    }
+
+    public void setAreaM2(BigDecimal areaM2) {
+        this.areaM2 = areaM2;
     }
 
     public void setDadosExibicao(String nomeTipo, String nomeSindico, Endereco enderecoCompleto) {
