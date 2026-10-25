@@ -61,7 +61,11 @@ public class UsuarioServlet extends HttpServlet {
                 processarEtapaDados(request, response);
             } else if ("cooperativa-endereco".equals(etapa)) {
                 processarEtapaEnderecoCooperativa(request, response);
-            } else if ("tipo".equals(etapa) || "token".equals(etapa)) {
+            } else if ("tipo".equals(etapa)) {
+                processarEtapaTipo(request, response);
+            } else if ("condominio".equals(etapa)) {
+                processarEtapaCondominio(request, response);
+            } else if ("token".equals(etapa) || "endereco".equals(etapa)) {
                 processarEtapaEmConstrucao(request, response, etapa);
             } else if ("morador-endereco".equals(etapa)) {
                 processarEtapaMoradorEndereco(request, response);
@@ -477,7 +481,75 @@ public class UsuarioServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/cadastro/cadastro_sucesso.jsp").forward(request, response);
     }
 
-    // TODO: telas que ainda não gravam no banco (endereço da cooperativa, tipo do condomínio, token do morador).
+    //================ SÍNDICO: TIPO E DADOS DO CONDOMÍNIO ================
+
+    private void processarEtapaTipo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+
+        if (cad == null) {
+            sessao.setAttribute("etapaCadastro", "conta");
+        } else if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "sindico-dados");
+        } else {
+            String tipo = request.getParameter("tipoCondominio");
+            if (!"residencial".equals(tipo) && !"comercial".equals(tipo) && !"industrial".equals(tipo)) {
+                request.setAttribute("erroCadastro", "Selecione o tipo do condomínio.");
+            } else {
+                cad.setTipoCondominio(tipo);
+                sessao.setAttribute("etapaCadastro", "condominio");
+            }
+        }
+        mostrarCadastro(request, response);
+    }
+
+    private void processarEtapaCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+        CadastroPendente cad = (CadastroPendente) sessao.getAttribute("cadastroPendente");
+
+        if (cad == null || cad.getTipoCondominio() == null) {
+            sessao.setAttribute("etapaCadastro", cad == null ? "conta" : "tipo");
+            mostrarCadastro(request, response);
+            return;
+        }
+        if ("voltar".equals(request.getParameter("acao"))) {
+            sessao.setAttribute("etapaCadastro", "tipo");
+            mostrarCadastro(request, response);
+            return;
+        }
+
+        String tipo = cad.getTipoCondominio();
+        String nome = request.getParameter("nomeCondominio");
+        String razao = request.getParameter("razaoSocial");
+        String cnpj = request.getParameter("cnpj");
+        String telefone = request.getParameter("telefone");
+        String responsavel = request.getParameter("responsavel");
+
+        cad.setNomeCondominio(nome);
+        cad.setRazaoSocial(razao);
+        cad.setCnpj(cnpj);
+        cad.setTelefone(telefone);
+        cad.setResponsavel(responsavel);
+
+        boolean residencial = "residencial".equals(tipo);
+        boolean industrial = "industrial".equals(tipo);
+        String nomeOuRazao = residencial ? nome : razao;
+
+        if (nomeOuRazao == null || nomeOuRazao.isBlank()) {
+            request.setAttribute("erroCadastro", residencial ? "Informe o nome do condomínio." : "Informe a razão social.");
+        } else if (cnpj == null || cnpj.replaceAll("\\D", "").length() != 14) {
+            request.setAttribute("erroCadastro", "CNPJ inválido, precisa ter 14 dígitos.");
+        } else if (!industrial && (telefone == null || telefone.replaceAll("\\D", "").length() < 10)) {
+            request.setAttribute("erroCadastro", "Informe um telefone válido com DDD.");
+        } else if (responsavel == null || responsavel.isBlank()) {
+            request.setAttribute("erroCadastro", "Informe o responsável.");
+        } else {
+            sessao.setAttribute("etapaCadastro", "endereco");
+        }
+        mostrarCadastro(request, response);
+    }
+
+    // TODO: telas que ainda não gravam no banco (endereço do condomínio, token do morador).
     // Por enquanto só deixam voltar ou avisam que a etapa está em construção.
     private void processarEtapaEmConstrucao(HttpServletRequest request, HttpServletResponse response, String etapa) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
@@ -489,8 +561,8 @@ public class UsuarioServlet extends HttpServlet {
             String anterior;
             if ("cooperativa-endereco".equals(etapa)) {
                 anterior = "cooperativa-dados";
-            } else if ("tipo".equals(etapa)) {
-                anterior = "sindico-dados";
+            } else if ("endereco".equals(etapa)) {
+                anterior = "condominio";
             } else {
                 anterior = "morador-dados";
             }
