@@ -93,7 +93,7 @@
         <label class="campo">Bairro (opcional)<input type="text" name="bairro" placeholder="Nome do bairro"></label>
         <label class="campo">Rua (opcional)<input type="text" name="rua" placeholder="Nome da rua"></label>
         <label class="campo">Número (opcional)<input type="number" name="numero" placeholder="123" min="0"></label>
-        <label class="campo campo--largo">Complemento (opcional)<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <label class="campo">Complemento (opcional)<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
       </div>
     </div>
     <div class="modal__linha"></div>
