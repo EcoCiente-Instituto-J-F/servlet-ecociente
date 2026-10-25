@@ -59,13 +59,6 @@ public class CooperativaServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
-    //O formulário envia o nome da cooperativa/responsável como "nome" (ou "responsavel").
-    private String lerNome(HttpServletRequest request) {
-        String nome = Formulario.texto(request, "nome");
-        if (nome.isEmpty()) nome = Formulario.texto(request, "responsavel");
-        return Formulario.exigir(nome, "o nome", 100);
-    }
-
     //Status do formulário: "true"/"Ativa" ou "false"/"Inativa". Sem valor, fica ativa.
     private boolean lerAtiva(HttpServletRequest request) {
         String status = Formulario.texto(request, "status");
@@ -73,7 +66,9 @@ public class CooperativaServlet extends HttpServlet {
     }
 
     private boolean adicionarCooperativa(HttpServletRequest request) {
-        String nome = lerNome(request);
+        String nomeCooperativa = Formulario.exigir(Formulario.texto(request, "nomeCooperativa"), "o nome da cooperativa", 100);
+        String responsavel = Formulario.exigir(Formulario.texto(request, "responsavel"), "o nome do responsável", 100);
+        String cpf = Formulario.cpf(request.getParameter("cpf"), true);
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
         String email = Formulario.email(Formulario.texto(request, "email"));
         String senha = request.getParameter("senha");
@@ -89,20 +84,28 @@ public class CooperativaServlet extends HttpServlet {
         if (daoUsuarios.existeEmail(email, 0)) {
             throw new DadoInvalido("Este e-mail já está cadastrado.");
         }
+        if (daoUsuarios.existeCpf(cpf, 0)) {
+            throw new DadoInvalido("Este CPF já está cadastrado.");
+        }
         int idTipoUsuario = daoUsuarios.selecionarIdTipoPorNome("Cooperativa");
         if (idTipoUsuario == 0) {
             throw new DadoInvalido("Tipo de usuário Cooperativa não existe na tabela tipo_usuario.");
         }
 
         //Ids 0 porque o banco gera. O usuário dono e o endereço são criados junto, na mesma transação.
-        return daoCooperativas.inserir(new Cooperativa(
-                0, nome, email, Senha.gerarHash(senha), LocalDate.now(), lerAtiva(request), 0, idTipoUsuario,
+        Cooperativa cooperativa = new Cooperativa(
+                0, responsavel, email, Senha.gerarHash(senha), LocalDate.now(), lerAtiva(request), 0, idTipoUsuario,
                 0, cnpj
-        ), telefone, endereco);
+        );
+        cooperativa.setNomeCooperativa(nomeCooperativa);
+        cooperativa.setCpf(cpf);
+        return daoCooperativas.inserir(cooperativa, telefone, endereco);
     }
 
     private boolean alterarCooperativa(HttpServletRequest request, int id) {
-        String nome = lerNome(request);
+        String nomeCooperativa = Formulario.exigir(Formulario.texto(request, "nomeCooperativa"), "o nome da cooperativa", 100);
+        String responsavel = Formulario.exigir(Formulario.texto(request, "responsavel"), "o nome do responsável", 100);
+        String cpf = Formulario.cpf(request.getParameter("cpf"), true);
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
         String emailInformado = Formulario.texto(request, "email");
         String senha = request.getParameter("senha");
@@ -120,6 +123,9 @@ public class CooperativaServlet extends HttpServlet {
         Cooperativa cooperativa = daoCooperativas.buscarPorId(id);
         if (cooperativa == null) return false;
 
+        if (daoUsuarios.existeCpf(cpf, cooperativa.getIdUsuario())) {
+            throw new DadoInvalido("Este CPF já está cadastrado.");
+        }
         if (!emailInformado.isEmpty()) {
             String email = Formulario.email(emailInformado);
             if (daoUsuarios.existeEmail(email, cooperativa.getIdUsuario())) {
@@ -130,7 +136,9 @@ public class CooperativaServlet extends HttpServlet {
         if (senha != null && !senha.isEmpty()) {
             cooperativa.setSenhaHash(Senha.gerarHash(senha));
         }
-        cooperativa.setNome(nome);
+        cooperativa.setNome(responsavel);
+        cooperativa.setNomeCooperativa(nomeCooperativa);
+        cooperativa.setCpf(cpf);
         cooperativa.setCnpj(cnpj);
         cooperativa.setStatus(lerAtiva(request));
 

@@ -19,16 +19,17 @@ public class CooperativaDAO {
     public boolean inserir(Cooperativa c) {
         String sql = """
                 INSERT INTO cooperativa
-                    (cnpj, id_usuario)
+                    (nome_cooperativa, cnpj, id_usuario)
                 VALUES
-                    (?, ?)
+                    (?, ?, ?)
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            ps.setString(1, c.getCnpj());
-            ps.setInt(2, c.getIdUsuario());
+            ps.setString(1, c.getNomeCooperativa());
+            ps.setString(2, c.getCnpj());
+            ps.setInt(3, c.getIdUsuario());
 
             ps.executeUpdate();
             return true;
@@ -53,7 +54,9 @@ public class CooperativaDAO {
                        u.id_endereco,
                        u.id_tipo_usuario,
                        c.id_cooperativa,
-                       c.cnpj
+                       c.cnpj,
+                       c.nome_cooperativa,
+                       u.cpf
                 FROM cooperativa c
                 JOIN usuario u ON u.id_usuario = c.id_usuario
                 WHERE c.id_cooperativa = ?
@@ -67,7 +70,7 @@ public class CooperativaDAO {
             try (ResultSet rs = ps.executeQuery()) {
 
                 if (rs.next()) {
-                    return new Cooperativa(
+                    Cooperativa cooperativa = new Cooperativa(
                             rs.getInt(1),
                             rs.getString(2),
                             rs.getString(3),
@@ -79,6 +82,9 @@ public class CooperativaDAO {
                             rs.getInt(9),
                             rs.getString(10)
                     );
+                    cooperativa.setNomeCooperativa(rs.getString(11));
+                    cooperativa.setCpf(rs.getString(12));
+                    return cooperativa;
                 }
             }
 
@@ -150,7 +156,9 @@ public class CooperativaDAO {
                        u.id_endereco,
                        u.id_tipo_usuario,
                        c.id_cooperativa,
-                       c.cnpj
+                       c.cnpj,
+                       c.nome_cooperativa,
+                       u.cpf
                 FROM cooperativa c
                 JOIN usuario u ON u.id_usuario = c.id_usuario
                 ORDER BY c.id_cooperativa
@@ -162,7 +170,7 @@ public class CooperativaDAO {
 
             while (rs.next()) {
 
-                cooperativas.add(new Cooperativa(
+                Cooperativa cooperativa = new Cooperativa(
                         rs.getInt(1),
                         rs.getString(2),
                         rs.getString(3),
@@ -173,7 +181,10 @@ public class CooperativaDAO {
                         rs.getInt(8),
                         rs.getInt(9),
                         rs.getString(10)
-                ));
+                );
+                cooperativa.setNomeCooperativa(rs.getString(11));
+                cooperativa.setCpf(rs.getString(12));
+                cooperativas.add(cooperativa);
             }
 
         } catch (SQLException sqle) {
@@ -189,7 +200,8 @@ public class CooperativaDAO {
 
         String sql = """
                 UPDATE cooperativa
-                SET cnpj = ?,
+                SET nome_cooperativa = ?,
+                    cnpj = ?,
                     id_usuario = ?
                 WHERE id_cooperativa = ?
                 """;
@@ -197,9 +209,10 @@ public class CooperativaDAO {
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            ps.setString(1, c.getCnpj());
-            ps.setInt(2, c.getIdUsuario());
-            ps.setInt(3, c.getIdCooperativa());
+            ps.setString(1, c.getNomeCooperativa());
+            ps.setString(2, c.getCnpj());
+            ps.setInt(3, c.getIdUsuario());
+            ps.setInt(4, c.getIdCooperativa());
 
             ps.executeUpdate();
             return true;
@@ -245,18 +258,21 @@ public class CooperativaDAO {
                        (SELECT COUNT(*) FROM parceira p
                         WHERE p.id_cooperativa = c.id_cooperativa
                           AND (p.data_fim IS NULL OR p.data_fim >= CURRENT_DATE)),
-                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento
+                       e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento,
+                       c.nome_cooperativa, u.cpf
                 FROM cooperativa c
                 JOIN usuario u ON u.id_usuario = c.id_usuario
                 LEFT JOIN endereco e ON e.id_endereco = u.id_endereco
-                WHERE u.nome ILIKE ?
-                ORDER BY u.nome
+                WHERE c.nome_cooperativa ILIKE ? OR u.nome ILIKE ?
+                ORDER BY c.nome_cooperativa
                 """;
 
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
-            ps.setString(1, "%" + (busca == null ? "" : busca.trim()) + "%");
+            String padrao = "%" + (busca == null ? "" : busca.trim()) + "%";
+            ps.setString(1, padrao);
+            ps.setString(2, padrao);
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
@@ -267,6 +283,8 @@ public class CooperativaDAO {
                     );
                     cooperativa.setDadosExibicao("Cooperativa", rs.getString(10), EnderecoDAO.deLinha(rs, rs.getInt(6), 12));
                     cooperativa.setCondominiosVinculados(rs.getInt(11));
+                    cooperativa.setNomeCooperativa(rs.getString(19));
+                    cooperativa.setCpf(rs.getString(20));
                     cooperativas.add(cooperativa);
                 }
             }
@@ -307,8 +325,8 @@ public class CooperativaDAO {
                 int idEndereco = endereco == null ? 0 : EnderecoDAO.inserirNaTransacao(conexao, endereco);
 
                 String sqlUsuario = """
-                        INSERT INTO usuario (nome, email, senha_hash, status, id_endereco, id_tipo_usuario)
-                        VALUES (?, ?, ?, ?, ?, ?)
+                        INSERT INTO usuario (nome, email, senha_hash, status, id_endereco, id_tipo_usuario, cpf)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
                         RETURNING id_usuario
                         """;
                 int idUsuario;
@@ -319,15 +337,17 @@ public class CooperativaDAO {
                     ps.setBoolean(4, c.isStatus());
                     if (idEndereco == 0) ps.setNull(5, Types.INTEGER); else ps.setInt(5, idEndereco);
                     ps.setInt(6, c.getIdTipoUsuario());
+                    ps.setString(7, c.getCpf());
                     try (ResultSet rs = ps.executeQuery()) {
                         rs.next();
                         idUsuario = rs.getInt(1);
                     }
                 }
 
-                try (PreparedStatement ps = conexao.prepareStatement("INSERT INTO cooperativa (cnpj, id_usuario) VALUES (?, ?)")) {
-                    ps.setString(1, c.getCnpj());
-                    ps.setInt(2, idUsuario);
+                try (PreparedStatement ps = conexao.prepareStatement("INSERT INTO cooperativa (nome_cooperativa, cnpj, id_usuario) VALUES (?, ?, ?)")) {
+                    ps.setString(1, c.getNomeCooperativa());
+                    ps.setString(2, c.getCnpj());
+                    ps.setInt(3, idUsuario);
                     ps.executeUpdate();
                 }
                 TelefoneDAO.salvarNaTransacao(conexao, idUsuario, telefone);
@@ -359,7 +379,7 @@ public class CooperativaDAO {
 
                 String sqlUsuario = """
                         UPDATE usuario
-                        SET nome = ?, email = ?, senha_hash = ?, status = ?, id_endereco = ?
+                        SET nome = ?, email = ?, senha_hash = ?, status = ?, id_endereco = ?, cpf = ?
                         WHERE id_usuario = ?
                         """;
                 try (PreparedStatement ps = conexao.prepareStatement(sqlUsuario)) {
@@ -368,14 +388,16 @@ public class CooperativaDAO {
                     ps.setString(3, c.getSenhaHash());
                     ps.setBoolean(4, c.isStatus());
                     if (idEndereco == 0) ps.setNull(5, Types.INTEGER); else ps.setInt(5, idEndereco);
-                    ps.setInt(6, c.getIdUsuario());
+                    ps.setString(6, c.getCpf());
+                    ps.setInt(7, c.getIdUsuario());
                     ps.executeUpdate();
                 }
 
                 int linhas;
-                try (PreparedStatement ps = conexao.prepareStatement("UPDATE cooperativa SET cnpj = ? WHERE id_cooperativa = ?")) {
-                    ps.setString(1, c.getCnpj());
-                    ps.setInt(2, c.getIdCooperativa());
+                try (PreparedStatement ps = conexao.prepareStatement("UPDATE cooperativa SET nome_cooperativa = ?, cnpj = ? WHERE id_cooperativa = ?")) {
+                    ps.setString(1, c.getNomeCooperativa());
+                    ps.setString(2, c.getCnpj());
+                    ps.setInt(3, c.getIdCooperativa());
                     linhas = ps.executeUpdate();
                 }
                 TelefoneDAO.salvarNaTransacao(conexao, c.getIdUsuario(), telefone);

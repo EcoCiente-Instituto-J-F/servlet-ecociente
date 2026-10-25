@@ -47,12 +47,11 @@ public class ParceriaDAO {
 
         String sql = """
                 SELECT p.id_parceira, p.data_inicio, p.data_fim, p.id_condominio, p.id_cooperativa,
-                       c.nome, u.nome
+                       c.nome, co.nome_cooperativa
                 FROM parceira p
                 JOIN condominio c ON c.id_condominio = p.id_condominio
                 JOIN cooperativa co ON co.id_cooperativa = p.id_cooperativa
-                JOIN usuario u ON u.id_usuario = co.id_usuario
-                WHERE c.nome ILIKE ? OR u.nome ILIKE ?
+                WHERE c.nome ILIKE ? OR co.nome_cooperativa ILIKE ?
                 ORDER BY p.id_parceira
                 """;
         String padrao = "%" + (busca == null ? "" : busca.trim()) + "%";
