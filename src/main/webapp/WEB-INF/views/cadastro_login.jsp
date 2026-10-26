@@ -1239,6 +1239,9 @@
                         <c:when test="${etapaCadastro == 'morador-endereco'}">
                             <%@ include file="cadastro/morador_endereco.jsp" %>
                         </c:when>
+                        <c:when test="${etapaCadastro == 'sindico-token'}">
+                            <%@ include file="cadastro/sindico_token.jsp" %>
+                        </c:when>
                         <c:otherwise>
                             <%@ include file="cadastro/conta.jsp" %>
                         </c:otherwise>
