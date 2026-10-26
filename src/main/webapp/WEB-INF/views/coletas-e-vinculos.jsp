@@ -31,6 +31,10 @@
   <main class="conteudo">
     <header class="cabecalho-pagina">
       <div>
+        <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
+          <span class="seta" aria-hidden="true">&larr;</span>
+          <span>Voltar</span>
+        </a>
         <p class="cabecalho-pagina__etiqueta">Tabela: Parceria</p>
         <h1 class="cabecalho-pagina__titulo">Coletas &amp; vínculos</h1>
         <p class="cabecalho-pagina__descricao">Parcerias ativas entre condomínios e cooperativas</p>
