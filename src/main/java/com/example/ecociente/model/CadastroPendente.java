@@ -29,7 +29,6 @@ public class CadastroPendente {
     private String nomeCooperativa;
     private String nomeCondominio;
     private String razaoSocial;
-    private String responsavel;
     private String numeroUnidades;
     private String areaM2;
     private String referencia;
@@ -39,9 +38,6 @@ public class CadastroPendente {
 
     public String getRazaoSocial() { return razaoSocial; }
     public void setRazaoSocial(String razaoSocial) { this.razaoSocial = razaoSocial; }
-
-    public String getResponsavel() { return responsavel; }
-    public void setResponsavel(String responsavel) { this.responsavel = responsavel; }
 
     public String getNumeroUnidades() { return numeroUnidades; }
     public void setNumeroUnidades(String numeroUnidades) { this.numeroUnidades = numeroUnidades; }
