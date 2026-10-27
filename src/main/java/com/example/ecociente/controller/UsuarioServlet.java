@@ -536,7 +536,6 @@ public class UsuarioServlet extends HttpServlet {
         String razaoSocial = request.getParameter("razaoSocial");
         String cnpj = request.getParameter("cnpj");
         String telefone = request.getParameter("telefone");
-        String responsavel = request.getParameter("responsavel");
         String numeroUnidades = request.getParameter("numeroUnidades");
         String areaM2 = request.getParameter("areaM2");
 
@@ -544,7 +543,6 @@ public class UsuarioServlet extends HttpServlet {
         cad.setRazaoSocial(razaoSocial);
         cad.setCnpj(cnpj);
         if (telefone != null && !telefone.isBlank()) cad.setTelefone(telefone); //industrial não pede telefone: fica o da etapa de dados
-        cad.setResponsavel(responsavel);
         cad.setNumeroUnidades(numeroUnidades);
         cad.setAreaM2(areaM2);
         sessao.setAttribute("cadastroPendente", cad);
