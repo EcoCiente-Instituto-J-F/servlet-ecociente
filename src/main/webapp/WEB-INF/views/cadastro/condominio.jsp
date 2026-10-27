@@ -39,9 +39,9 @@
         <c:choose>
             <c:when test="${tipo == 'industrial'}">
                 <div class="form-group">
-                    <label for="cad-responsavel">Responsável ambiental</label>
+                    <label for="cad-area">Área do empreendimento (m²)</label>
                     <div class="input-wrapper">
-                        <input class="input-field" type="text" id="cad-responsavel" name="responsavel" value="<c:out value='${cad.responsavel}' />" placeholder="Digite o nome do responsável" autocomplete="name" required maxlength="120">
+                        <input class="input-field" type="number" id="cad-area" name="areaM2" value="<c:out value='${valorArea}' />" placeholder="Ex.: 1500.00" inputmode="decimal" step="0.01" min="0.01" required>
                     </div>
                 </div>
             </c:when>
@@ -56,43 +56,14 @@
         </c:choose>
     </div>
 
-    <c:choose>
-        <c:when test="${tipo == 'residencial'}">
-            <div class="form-group">
-                <label for="cad-responsavel">Síndico(a) responsável</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="text" id="cad-responsavel" name="responsavel" value="<c:out value='${cad.responsavel}' />" placeholder="Digite o nome do síndico(a)" autocomplete="name" required maxlength="120">
-                </div>
+    <c:if test="${tipo != 'industrial'}">
+        <div class="form-group">
+            <label for="cad-unidades">Número de unidades</label>
+            <div class="input-wrapper">
+                <input class="input-field" type="number" id="cad-unidades" name="numeroUnidades" value="<c:out value='${valorUnidades}' />" placeholder="Ex.: 120" inputmode="numeric" min="1" required>
             </div>
-        </c:when>
-        <c:when test="${tipo == 'comercial'}">
-            <div class="form-group">
-                <label for="cad-responsavel">Administrador(a) responsável</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="text" id="cad-responsavel" name="responsavel" value="<c:out value='${cad.responsavel}' />" placeholder="Digite o nome do responsável" autocomplete="name" required maxlength="120">
-                </div>
-            </div>
-        </c:when>
-    </c:choose>
-
-    <c:choose>
-        <c:when test="${tipo == 'industrial'}">
-            <div class="form-group">
-                <label for="cad-area">Área do empreendimento (m²)</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="number" id="cad-area" name="areaM2" value="<c:out value='${valorArea}' />" placeholder="Ex.: 1500.00" inputmode="decimal" step="0.01" min="0.01" required>
-                </div>
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div class="form-group">
-                <label for="cad-unidades">Número de unidades</label>
-                <div class="input-wrapper">
-                    <input class="input-field" type="number" id="cad-unidades" name="numeroUnidades" value="<c:out value='${valorUnidades}' />" placeholder="Ex.: 120" inputmode="numeric" min="1" required>
-                </div>
-            </div>
-        </c:otherwise>
-    </c:choose>
+        </div>
+    </c:if>
 
     <c:set var="textoAvancar" value="Próximo" />
     <%@ include file="_botoes.jsp" %>
