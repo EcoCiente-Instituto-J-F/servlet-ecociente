@@ -242,14 +242,15 @@
             <div class="botoes">
                 <c:choose>
                     <c:when test="${oferecerPlano}">
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao botao-secundario">Continuar no plano gratuito</a>
-                        <a href="${pageContext.request.contextPath}/cadastro/plano" class="botao botao-principal">${planoPendente ? 'Continuar para o pagamento' : 'Escolher meu plano'}</a>
+                        <a href="${pageContext.request.contextPath}/inicio" class="botao botao-secundario">Voltar ao início</a>
+                        <a href="${pageContext.request.contextPath}/cadastro/plano" class="botao botao-principal">${planoPendente ? 'Continuar para o pagamento' : 'Fazer assinatura'}</a>
                     </c:when>
                     <c:otherwise>
-                        <a href="${pageContext.request.contextPath}/login-cadastro" class="botao botao-principal">Voltar para entrar</a>
+                        <a href="${pageContext.request.contextPath}/inicio" class="botao botao-principal">Voltar ao início</a>
                     </c:otherwise>
                 </c:choose>
             </div>
+
 
         </section>
     </main>

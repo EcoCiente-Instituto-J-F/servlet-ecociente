@@ -60,13 +60,6 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label for="cad-referencia">Ponto de referência <span class="opcional">(opcional)</span></label>
-        <div class="input-wrapper">
-            <input class="input-field" type="text" id="cad-referencia" name="referencia" value="<c:out value='${cad.referencia}' />" placeholder="Ex.: em frente à praça" maxlength="120">
-        </div>
-    </div>
-
     <c:set var="textoAvancar" value="Criar conta" />
     <%@ include file="_botoes.jsp" %>
 </form>
