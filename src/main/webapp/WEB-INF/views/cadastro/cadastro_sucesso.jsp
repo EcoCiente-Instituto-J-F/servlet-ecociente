@@ -167,6 +167,42 @@
                 min-height: 44px;
             }
         }
+        /* ----- Token do condomínio (só aparece para o síndico) ----- */
+        .bloco-token {
+            width: 100%;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            border: 1px dashed #064E3B;
+            border-radius: 10px;
+            background-color: #F4F8F5;
+        }
+
+        .rotulo-token {
+            color: #064E3B;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .token-codigo {
+            color: #D64573;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 28px;
+            letter-spacing: 6px;
+            user-select: all;
+        }
+
+        .dica-token {
+            color: #6B7370;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
     </style>
 </head>
 <body>
@@ -194,6 +230,15 @@
                 </c:choose>
             </p>
 
+            <c:if test="${not empty tokenCondominio}">
+                <div class="bloco-token">
+                    <p class="rotulo-token">Código do seu condomínio</p>
+                    <p class="token-codigo" id="token-condominio"><c:out value="${tokenCondominio}" /></p>
+                    <button type="button" class="botao botao-secundario" id="copiar-token">Copiar código</button>
+                    <p class="dica-token">Compartilhe este código com quem for se vincular ao condomínio. Anote agora: ele só aparece nesta tela.</p>
+                </div>
+            </c:if>
+
             <div class="botoes">
                 <c:choose>
                     <c:when test="${oferecerPlano}">
@@ -208,6 +253,23 @@
 
         </section>
     </main>
+
+    <script>
+        (function () {
+            var botao = document.getElementById('copiar-token');
+            if (!botao) return;
+            botao.addEventListener('click', function () {
+                var codigo = document.getElementById('token-condominio').textContent.trim();
+                var avisar = function () {
+                    botao.textContent = 'Código copiado!';
+                    setTimeout(function () { botao.textContent = 'Copiar código'; }, 2000);
+                };
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(codigo).then(avisar);
+                }
+            });
+        })();
+    </script>
 
 </body>
 </html>

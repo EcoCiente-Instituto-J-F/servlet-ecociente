@@ -90,7 +90,7 @@
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="contato@cooperativa.com" data-obrigatorio-novo maxlength="150"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
-        <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 6 caracteres" data-obrigatorio-novo minlength="6" autocomplete="new-password"></label>
+        <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 8 caracteres" data-obrigatorio-novo minlength="8" autocomplete="new-password"></label>
         <label class="campo">Status<select name="status"><option value="true">Ativa</option><option value="false">Inativa</option></select></label>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
