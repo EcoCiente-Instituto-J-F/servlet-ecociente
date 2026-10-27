@@ -2,6 +2,11 @@
 <c:set var="tituloEtapa" value="Crie sua conta" />
 <c:set var="subtituloEtapa" value="Comece cadastrando seu e-mail e uma senha." />
 <%@ include file="_cabecalho.jsp" %>
+<c:if test="${emailJaCadastrado}">
+    <div class="botoes">
+        <a href="${ctx}/login?proximo=plano&amp;email=<c:out value='${param.email}' />" class="botao-submit botao-secundario">Fazer assinatura</a>
+    </div>
+</c:if>
 
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="conta">

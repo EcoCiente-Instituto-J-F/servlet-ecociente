@@ -188,6 +188,20 @@
             padding-right: 24px;
         }
 
+        .forgot-password {
+            display: block;
+            text-align: right;
+            font-size: 11px;
+            color: #064E3B;
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 6px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
         .botao-submit {
             width: 100%;
             background-color: #064E3B;
@@ -1203,6 +1217,9 @@
                 <c:set var="cad" value="${sessionScope.cadastroPendente}" />
                 <div class="painel painel-cadastro">
                     <c:choose>
+                        <c:when test="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}">
+                            <%@ include file="cadastro/login.jsp" %>
+                        </c:when>
                         <c:when test="${etapaCadastro == 'pag-dados'}">
                             <%@ include file="cadastro/pag_dados.jsp" %>
                         </c:when>
@@ -1241,6 +1258,9 @@
                         </c:when>
                         <c:when test="${etapaCadastro == 'sindico-token'}">
                             <%@ include file="cadastro/sindico_token.jsp" %>
+                        </c:when>
+                        <c:when test="${etapaCadastro == 'plano'}">
+                            <%@ include file="cadastro/plano.jsp" %>
                         </c:when>
                         <c:otherwise>
                             <%@ include file="cadastro/conta.jsp" %>

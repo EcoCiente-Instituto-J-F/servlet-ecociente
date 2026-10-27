@@ -28,4 +28,4 @@
     </div>
 </form>
 
-<p class="link-entrar link-gratuito"><a href="${ctx}/login-cadastro">Agora não, continuar no plano gratuito</a></p>
+<p class="link-entrar link-gratuito"><a href="${ctx}/inicio">Agora não, continuar no plano gratuito</a></p>
