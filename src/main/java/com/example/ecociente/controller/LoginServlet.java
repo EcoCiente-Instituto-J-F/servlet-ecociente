@@ -1,6 +1,13 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.CondominioDAO;
+import com.example.ecociente.dao.SindicoDAO;
 import com.example.ecociente.dao.UsuarioDAO;
+import com.example.ecociente.model.CadastroPendente;
+import com.example.ecociente.model.Condominio;
+import com.example.ecociente.model.Orcamento;
+import com.example.ecociente.model.Sindico;
+import com.example.ecociente.model.TipoCondominio;
 import com.example.ecociente.model.Usuario;
 import com.example.ecociente.util.Senha;
 import jakarta.servlet.ServletException;
@@ -11,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.math.RoundingMode;
 
 //Servlet responsavel pelos dois logins do sistema: usuario comum (/login) e painel administrativo (/login-crud).
 @WebServlet(urlPatterns = {"/login", "/login-crud", "/logout"})
@@ -67,6 +75,22 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        //"Fazer assinatura" (proximo=plano): só o síndico assina, pelo condomínio dele
+        CadastroPendente assinatura = null;
+        if (!telaAdmin && "plano".equals(request.getParameter("proximo"))) {
+            assinatura = assinaturaDoSindico(usuario);
+            if (assinatura == null) {
+                request.setAttribute("erroLogin", "A assinatura é feita pela conta do síndico do condomínio.");
+                mostrarTela(request, response);
+                return;
+            }
+            if (!Orcamento.podeAssinar(assinatura.getPlano(), assinatura.getQuantidade())) {
+                request.setAttribute("erroLogin", "A assinatura é para condomínios com " + Orcamento.UNIDADES_MINIMAS + " unidades ou mais.");
+                mostrarTela(request, response);
+                return;
+            }
+        }
+
         //sessao nova a cada login (evita aproveitar uma sessao antiga)
         HttpSession antiga = request.getSession(false);
         if (antiga != null) antiga.invalidate();
@@ -76,7 +100,49 @@ public class LoginServlet extends HttpServlet {
         sessao.setAttribute("iniciaisUsuarioLogado", iniciais(usuario.getNome()));
         sessao.setAttribute("tipoUsuarioLogado", usuario.getIdTipoUsuario());
 
+        if (assinatura != null) {
+            sessao.setAttribute("cadastroPendente", assinatura);
+            response.sendRedirect(request.getContextPath() + "/cadastro/plano");
+            return;
+        }
+
         response.sendRedirect(request.getContextPath() + (telaAdmin ? "/painel" : "/inicio"));
+    }
+
+    //Monta o que as telas de pagamento usam (o mesmo que o UsuarioServlet guarda ao criar a conta do síndico).
+    //null se o usuário não for síndico.
+    private CadastroPendente assinaturaDoSindico(Usuario usuario) {
+        Sindico sindico = new SindicoDAO().buscarPorUsuario(usuario.getIdUsuario());
+        if (sindico == null) return null;
+        CondominioDAO condominioDAO = new CondominioDAO();
+        Condominio condominio = condominioDAO.selecionarPorId(sindico.getIdCondominio());
+        if (condominio == null) return null;
+
+        //O código do plano é o nome do tipo do condomínio (residencial, comercial ou industrial)
+        String plano = null;
+        for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
+            if (tipo.getId() == condominio.getIdTipoCondominio()) plano = tipo.getNome().toLowerCase();
+        }
+
+        int quantidade;
+        if (condominio.getAreaM2() != null) {
+            quantidade = condominio.getAreaM2().setScale(0, RoundingMode.CEILING).intValue();
+        } else {
+            quantidade = condominio.getNumeroUnidades() == null ? 1 : condominio.getNumeroUnidades();
+        }
+
+        CadastroPendente cad = new CadastroPendente();
+        cad.setNome(usuario.getNome());
+        cad.setEmail(usuario.getEmail());
+        cad.setCpf(sindico.getCpf());
+        cad.setDocumento(sindico.getCpf());
+        cad.setContaCriada(true);
+        cad.setIdUsuario(usuario.getIdUsuario());
+        cad.setIdCondominio(condominio.getIdCondominio());
+        cad.setPlano(plano);
+        cad.setQuantidade(Math.min(Math.max(quantidade, 1), Orcamento.QUANTIDADE_MAXIMA));
+        cad.setCiclo("mensal");
+        return cad;
     }
 
     //hash invalido no banco nao pode derrubar o login
