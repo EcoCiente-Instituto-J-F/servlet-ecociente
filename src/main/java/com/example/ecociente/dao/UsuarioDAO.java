@@ -360,6 +360,36 @@ public class UsuarioDAO {
         return tipos;
     }
 
+    // Usuários que podem virar síndico: não são administrador, nem síndico, nem cooperativa
+    public ArrayList<Usuario> selecionarDisponiveisParaSindico(int idTipoAdministrador){
+        ArrayList<Usuario> usuarios = new ArrayList<>();
+        String sql = """
+                SELECT id_usuario, nome, email, data_cadastro, status, id_endereco, id_tipo_usuario
+                FROM usuario
+                WHERE id_tipo_usuario != ?
+                  AND id_usuario NOT IN (SELECT id_usuario FROM sindico)
+                  AND id_usuario NOT IN (SELECT id_usuario FROM cooperativa)
+                ORDER BY nome
+                """;
+        try (
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setInt(1, idTipoAdministrador);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()){
+                    usuarios.add(new Usuario(
+                            rs.getInt(1), rs.getString(2), rs.getString(3), null,
+                            rs.getDate(4).toLocalDate(), rs.getBoolean(5), rs.getInt(6), rs.getInt(7)
+                    ));
+                }
+            }
+        } catch (SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return usuarios;
+    }
+
     // Id do tipo cujo nome começa com o texto (ex.: "Cooperativa"); 0 se não existe
     public int selecionarIdTipoPorNome(String nome){
         String sql = "SELECT id_tipo_usuario FROM tipo_usuario WHERE LOWER(nome_tipo) LIKE LOWER(?) ORDER BY id_tipo_usuario LIMIT 1";
