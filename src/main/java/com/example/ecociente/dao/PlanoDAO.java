@@ -13,12 +13,12 @@ public class PlanoDAO {
     // ======================= MÉTODOS READ =======================
 
     // O banco tem 2 planos: "empresarial" (condomínios residenciais e comerciais) e "industrial".
-    // Buscar o plano ativo do tipo do condomínio (residencial, comercial ou industrial)
+    // Buscar o plano ativo do tipo do condomínio (residencial-comercial ou industrial; residencial e comercial continuam aceitos)
     public Plano selecionarPorCodigo(String tipoCondominio) {
 
         if (tipoCondominio == null) return null;
         String tipo = tipoCondominio.toLowerCase();
-        if (!tipo.equals("residencial") && !tipo.equals("comercial") && !tipo.equals("industrial")) return null;
+        if (!tipo.equals("residencial-comercial") && !tipo.equals("residencial") && !tipo.equals("comercial") && !tipo.equals("industrial")) return null;
 
         String sql = """
                 SELECT id_plano, codigo, nome, descricao, unidade, preco_mensal, preco_anual, ativo
@@ -33,9 +33,9 @@ public class PlanoDAO {
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // No banco a unidade do plano empresarial é só "unidade": nas telas vira apartamento ou empresa, conforme o tipo
+                    // No banco a unidade do plano empresarial é só "unidade": nas telas fica "unidade" para residencial-comercial (apartamento ou empresa só nos tipos antigos)
                     String unidade = rs.getString(5);
-                    if ("unidade".equals(unidade)) unidade = tipo.equals("comercial") ? "empresa" : "apartamento";
+                    if ("unidade".equals(unidade) && !tipo.equals("residencial-comercial")) unidade = tipo.equals("comercial") ? "empresa" : "apartamento";
 
                     return new Plano(
                             rs.getInt(1),

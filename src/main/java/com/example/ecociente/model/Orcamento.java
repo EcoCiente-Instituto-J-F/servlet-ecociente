@@ -17,6 +17,17 @@ public class Orcamento {
         return "industrial".equals(tipoCondominio) || quantidade >= UNIDADES_MINIMAS;
     }
 
+    // Única fonte da quantidade cobrada: área em m² arredondada para cima (industrial) ou número de unidades cadastrado
+    public static int quantidadeDoCondominio(Condominio condominio) {
+        int quantidade;
+        if (condominio.getAreaM2() != null) {
+            quantidade = condominio.getAreaM2().setScale(0, RoundingMode.CEILING).intValue();
+        } else {
+            quantidade = condominio.getNumeroUnidades() == null ? 1 : condominio.getNumeroUnidades();
+        }
+        return Math.min(Math.max(quantidade, 1), QUANTIDADE_MAXIMA);
+    }
+
     private static final Locale BRASIL = Locale.of("pt", "BR");
     private static final BigDecimal MESES = BigDecimal.valueOf(12);
 
