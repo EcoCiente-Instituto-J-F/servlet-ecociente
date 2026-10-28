@@ -2,14 +2,18 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Cabeçalho do painel, incluído em todas as telas do administrador --%>
 <header class="cabecalho">
     <a class="cabecalho__logo" href="${ctx}/painel" aria-label="EcoCiente - página inicial"><img src="${ctx}/assets/img/logo-ecociente.svg" alt="EcoCiente"></a>
+    <%-- Pesquisa: envia o texto digitado como ?q= para a própria página --%>
     <form class="busca" role="search" method="get">
       <img src="${ctx}/assets/icones/busca.svg" alt="">
       <label class="somente-leitor" for="campo-busca">Pesquisar</label>
       <input id="campo-busca" type="search" name="q" value="<c:out value='${param.q}'/>" placeholder="Pesquisar usuários, condomínios, cooperativas...">
     </form>
+    <%-- Engrenagem: abre o modal de configurações --%>
     <button class="cabecalho__engrenagem" type="button" data-abrir-modal="modal-configuracoes" aria-label="Configurações"><img src="${ctx}/assets/icones/configuracoes.svg" alt=""></button>
+    <%-- Nome e iniciais do administrador logado (vêm da sessão); clicar abre o perfil --%>
     <button class="usuario-logado" type="button" data-abrir-modal="modal-perfil" aria-label="Abrir perfil">
       <span class="usuario-logado__avatar"><span class="usuario-logado__iniciais"><c:out value="${empty sessionScope.iniciaisUsuarioLogado ? 'AD' : sessionScope.iniciaisUsuarioLogado}"/></span></span>
       <c:out value="${empty sessionScope.nomeUsuarioLogado ? 'Admin' : sessionScope.nomeUsuarioLogado}"/>

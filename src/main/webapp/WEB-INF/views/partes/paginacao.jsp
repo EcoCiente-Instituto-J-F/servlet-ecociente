@@ -2,7 +2,10 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Paginação das tabelas: setas e números de página, mantendo a busca e a ordem escolhidas --%>
+<%-- Só aparece quando o servidor informa quantas páginas existem --%>
 <c:if test="${not empty totalPaginas}">
+<%-- Guarda a busca e a ordem atuais para repetir nos links de cada página --%>
 <c:if test="${not empty param.q}">
   <c:url var="qCodificado" value="/"><c:param name="q" value="${param.q}"/></c:url>
   <c:set var="sufixoBusca" value="&amp;q=${fn:substringAfter(qCodificado, '?q=')}"/>
@@ -11,6 +14,7 @@
   <c:url var="ordemCodificada" value="/"><c:param name="ordem" value="${param.ordem}"/></c:url>
   <c:set var="sufixoBusca" value="${sufixoBusca}&amp;ordem=${fn:substringAfter(ordemCodificada, '?ordem=')}&amp;dir=${param.dir == 'desc' ? 'desc' : 'asc'}"/>
 </c:if>
+<%-- Seta anterior, números das páginas (até 4), a última página e seta próxima --%>
 <nav class="paginacao" aria-label="Paginação">
   <a href="?pagina=${paginaAtual > 1 ? paginaAtual - 1 : 1}${sufixoBusca}" aria-label="Página anterior"><img src="${ctx}/assets/icones/seta-esquerda.svg" alt=""></a>
   <c:forEach var="n" begin="1" end="${totalPaginas < 4 ? totalPaginas : 4}">

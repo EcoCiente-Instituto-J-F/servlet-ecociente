@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Janelas (modais) que existem em todas as telas do painel: configurações, perfil, excluir e sair --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 <!-- ===== Configurações (engrenagem) ===== -->
 <dialog class="modal" id="modal-configuracoes" style="--largura:470px" aria-labelledby="modal-configuracoes-titulo">
@@ -16,6 +17,7 @@
       <p class="config__secao">Conta</p>
       <div class="formulario">
         <label class="campo">Idioma<select name="idioma"><option>Português - BR</option></select></label>
+        <%-- O tema escolhido só vale ao clicar em Salvar alterações (ver interacoes.js) --%>
         <div class="campo">Tema
           <div class="tema">
             <label><img class="" src="${ctx}/assets/icones/sol.svg" alt="">Claro<input type="radio" name="tema" value="claro" checked></label>
@@ -56,6 +58,7 @@
 <!-- ===== Excluir (usado por todas as telas: interacoes.js preenche rota e id) ===== -->
 <dialog class="modal modal--sair" id="modal-excluir" style="--largura:340px" aria-labelledby="modal-excluir-titulo">
   <form method="post">
+    <%-- Campos preenchidos pelo interacoes.js: ação, id do registro e destino do envio --%>
     <input type="hidden" name="acao" value="excluir" data-campo-acao>
     <input type="hidden" name="id" data-chave-id>
     <button class="modal__fechar" type="button" data-fechar-modal aria-label="Fechar" style="top:14px;right:16px"><img class="" src="${ctx}/assets/icones/fechar.svg" alt=""></button>
