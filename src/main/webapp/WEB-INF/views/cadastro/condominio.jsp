@@ -1,8 +1,8 @@
 <%@ page pageEncoding="UTF-8" %>
-<%-- Etapa do síndico: dados do condomínio. Os campos mudam conforme o tipo (residencial, comercial ou industrial) --%>
+<%-- Etapa do síndico: dados do condomínio. Os campos mudam conforme o tipo (residencial/comercial ou industrial) --%>
 <c:set var="tipo" value="${cad.tipoCondominio}" />
 <c:set var="tituloEtapa" value="Dados do condomínio" />
-<c:set var="subtituloEtapa" value="Conte um pouco sobre o seu condomínio ${tipo}." />
+<c:set var="subtituloEtapa" value="Conte um pouco sobre o seu condomínio${tipo == 'industrial' ? ' industrial' : ''}." />
 <%@ include file="_cabecalho.jsp" %>
 <c:catch var="semUnidades"><c:set var="valorUnidades" value="${cad.numeroUnidades}" /></c:catch>
 <c:catch var="semArea"><c:set var="valorArea" value="${cad.areaM2}" /></c:catch>
@@ -12,19 +12,19 @@
     <input type="hidden" name="etapa" value="condominio">
 
     <c:choose>
-        <c:when test="${tipo == 'residencial'}">
+        <c:when test="${tipo == 'industrial'}">
             <div class="form-group">
-                <label for="cad-nome-cond">Nome do condomínio</label>
+                <label for="cad-razao">Razão social</label>
                 <div class="input-wrapper">
-                    <input class="input-field" type="text" id="cad-nome-cond" name="nomeCondominio" value="<c:out value='${cad.nomeCondominio}' />" placeholder="Digite o nome do condomínio" required maxlength="120">
+                    <input class="input-field" type="text" id="cad-razao" name="razaoSocial" value="<c:out value='${cad.razaoSocial}' />" placeholder="Digite a razão social" autocomplete="organization" required maxlength="100">
                 </div>
             </div>
         </c:when>
         <c:otherwise>
             <div class="form-group">
-                <label for="cad-razao">Razão social</label>
+                <label for="cad-nome-cond">Nome do condomínio ou razão social</label>
                 <div class="input-wrapper">
-                    <input class="input-field" type="text" id="cad-razao" name="razaoSocial" value="<c:out value='${cad.razaoSocial}' />" placeholder="Digite a razão social" autocomplete="organization" required maxlength="150">
+                    <input class="input-field" type="text" id="cad-nome-cond" name="nomeCondominio" value="<c:out value='${cad.nomeCondominio}' />" placeholder="Digite o nome do condomínio ou a razão social" required maxlength="100">
                 </div>
             </div>
         </c:otherwise>
@@ -50,16 +50,16 @@
             </c:when>
             <c:otherwise>
                 <div class="form-group" data-erro="Telefone incompleto: digite o DDD e o número, ex.: (11) 98765-4321.">
-                    <label for="cad-tel-cond">${tipo == 'comercial' ? 'Telefone comercial' : 'Telefone'}</label>
+                    <label for="cad-tel-cond">Telefone</label>
                     <div class="input-wrapper">
-                        <input class="input-field" type="tel" id="cad-tel-cond" name="telefone" value="<c:out value='${cad.telefone}' />" placeholder="${tipo == 'comercial' ? '(00) 0000-0000' : '(00) 00000-0000'}" autocomplete="tel-national" inputmode="tel" required pattern="\(?[0-9]{2}\)?\s?[0-9]{4,5}-?[0-9]{4}" title="Telefone com DDD">
+                        <input class="input-field" type="tel" id="cad-tel-cond" name="telefone" value="<c:out value='${cad.telefone}' />" placeholder="(00) 00000-0000" autocomplete="tel-national" inputmode="tel" required pattern="\(?[0-9]{2}\)?\s?[0-9]{4,5}-?[0-9]{4}" title="Telefone com DDD">
                     </div>
                 </div>
             </c:otherwise>
         </c:choose>
     </div>
 
-    <%-- Número de unidades (residencial e comercial). No industrial, o campo é a área em m² --%>
+    <%-- Número de unidades (residencial/comercial). No industrial, o campo é a área em m² --%>
     <c:if test="${tipo != 'industrial'}">
         <div class="form-group">
             <label for="cad-unidades">Número de unidades</label>
