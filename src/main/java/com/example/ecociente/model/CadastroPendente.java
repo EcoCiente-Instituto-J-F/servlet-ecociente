@@ -33,6 +33,66 @@ public class CadastroPendente {
     private String areaM2;
     private String referencia;
 
+    // Telas de pagamento (os JSPs pag_* leem estes campos)
+    private String documento;
+    private String ciclo;
+    private String metodo;
+    private String nomeCartao;
+    private String docTitular;
+    private String docPagador;
+    private String emailBoleto;
+    private boolean contaCriada; // conta já gravada no banco: só falta (opcionalmente) a assinatura
+    private boolean dadosPagamentoOk; // dados de cobrança (pag-dados) preenchidos e validados
+
+    // Assinatura (tabelas plano e assinatura)
+    private int idUsuario; // dono da conta criada
+    private Integer idCondominio; // condomínio do síndico; nulo para quem não tem condomínio
+    private String plano; // código do plano (o mesmo do tipo do condomínio)
+    private int quantidade; // apartamentos, empresas ou m² cobrados
+    private int idAssinatura; // assinatura pendente já gravada; 0 se ainda não gravou
+
+    public String getDocumento() { return documento; }
+    public void setDocumento(String documento) { this.documento = documento; }
+
+    public String getCiclo() { return ciclo; }
+    public void setCiclo(String ciclo) { this.ciclo = ciclo; }
+
+    public String getMetodo() { return metodo; }
+    public void setMetodo(String metodo) { this.metodo = metodo; }
+
+    public String getNomeCartao() { return nomeCartao; }
+    public void setNomeCartao(String nomeCartao) { this.nomeCartao = nomeCartao; }
+
+    public String getDocTitular() { return docTitular; }
+    public void setDocTitular(String docTitular) { this.docTitular = docTitular; }
+
+    public String getDocPagador() { return docPagador; }
+    public void setDocPagador(String docPagador) { this.docPagador = docPagador; }
+
+    public String getEmailBoleto() { return emailBoleto; }
+    public void setEmailBoleto(String emailBoleto) { this.emailBoleto = emailBoleto; }
+
+    public boolean isContaCriada() { return contaCriada; }
+    public void setContaCriada(boolean contaCriada) { this.contaCriada = contaCriada; }
+
+    public boolean isDadosPagamentoOk() { return dadosPagamentoOk; }
+    public void setDadosPagamentoOk(boolean dadosPagamentoOk) { this.dadosPagamentoOk = dadosPagamentoOk; }
+
+    public int getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
+
+    public Integer getIdCondominio() { return idCondominio; }
+    public void setIdCondominio(Integer idCondominio) { this.idCondominio = idCondominio; }
+
+    public String getPlano() { return plano; }
+    public void setPlano(String plano) { this.plano = plano; }
+
+    public int getQuantidade() { return quantidade; }
+    public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
+
+    public int getIdAssinatura() { return idAssinatura; }
+    public void setIdAssinatura(int idAssinatura) { this.idAssinatura = idAssinatura; }
+
     public String getNomeCondominio() { return nomeCondominio; }
     public void setNomeCondominio(String nomeCondominio) { this.nomeCondominio = nomeCondominio; }
 

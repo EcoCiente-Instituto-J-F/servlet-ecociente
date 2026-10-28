@@ -1,15 +1,20 @@
 package com.example.ecociente.controller;
 
+import com.example.ecociente.dao.AssinaturaDAO;
 import com.example.ecociente.dao.CondominioDAO;
 import com.example.ecociente.dao.CooperativaDAO;
 import com.example.ecociente.dao.EnderecoDAO;
+import com.example.ecociente.dao.PlanoDAO;
 import com.example.ecociente.dao.SindicoDAO;
 import com.example.ecociente.dao.TelefoneDAO;
 import com.example.ecociente.dao.UsuarioDAO;
+import com.example.ecociente.model.Assinatura;
 import com.example.ecociente.model.CadastroPendente;
 import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Cooperativa;
 import com.example.ecociente.model.Endereco;
+import com.example.ecociente.model.Orcamento;
+import com.example.ecociente.model.Plano;
 import com.example.ecociente.model.TipoCondominio;
 import com.example.ecociente.model.Telefone;
 import com.example.ecociente.model.Usuario;
@@ -25,15 +30,18 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
-@WebServlet(urlPatterns = {"/cadastro", "/usuarios"})
+@WebServlet(urlPatterns = {"/cadastro", "/cadastro/plano", "/usuarios"})
 public class UsuarioServlet extends HttpServlet {
 
     private UsuarioDAO usuarioDAO;
     private CooperativaDAO cooperativaDAO;
     private CondominioDAO condominioDAO;
     private SindicoDAO sindicoDAO;
+    private PlanoDAO planoDAO;
+    private AssinaturaDAO assinaturaDAO;
 
     @Override
     public void init() {
@@ -41,6 +49,8 @@ public class UsuarioServlet extends HttpServlet {
         cooperativaDAO = new CooperativaDAO();
         condominioDAO = new CondominioDAO();
         sindicoDAO = new SindicoDAO();
+        planoDAO = new PlanoDAO();
+        assinaturaDAO = new AssinaturaDAO();
     }
 
     @Override
@@ -49,6 +59,8 @@ public class UsuarioServlet extends HttpServlet {
 
         if (caminho.equals("/usuarios")) {
             mostrarUsuarios(request, response);
+        } else if (caminho.equals("/cadastro/plano")) {
+            iniciarAssinatura(request, response);
         } else if (caminho.equals("/cadastro")) {
             response.sendRedirect(request.getContextPath() + "/login-cadastro?aba=cadastro");
         }
@@ -76,6 +88,12 @@ public class UsuarioServlet extends HttpServlet {
                 processarEtapaCondominio(request, response);
             } else if ("endereco".equals(etapa)) {
                 processarEtapaEnderecoCondominio(request, response);
+            } else if ("pag-dados".equals(etapa)) {
+                processarEtapaPagDados(request, response);
+            } else if ("pag-resumo".equals(etapa)) {
+                processarEtapaPagResumo(request, response);
+            } else if ("pag-pagamento".equals(etapa)) {
+                processarEtapaPagPagamento(request, response);
             } else if ("token".equals(etapa)) {
                 processarEtapaEmConstrucao(request, response, etapa);
             } else if ("morador-endereco".equals(etapa)) {
@@ -205,6 +223,7 @@ public class UsuarioServlet extends HttpServlet {
         String erro = validarConta(email, senha, confirmaSenha);
         if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
             erro = "Este e-mail já está cadastrado.";
+            request.setAttribute("emailJaCadastrado", true); //conta.jsp oferece "Fazer assinatura" pelo login
         }
         if (erro != null) {
             request.setAttribute("erroCadastro", erro);
@@ -479,6 +498,7 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
+        //Nenhum plano do banco serve para cooperativa (plano.unidade só aceita apartamento, empresa ou m2): termina sem assinatura.
         concluirCadastro(request, response, sessao, "cooperativa");
     }
 
@@ -654,6 +674,8 @@ public class UsuarioServlet extends HttpServlet {
         Endereco endereco = new Endereco(0, cep.replaceAll("\\D", ""), cidade.trim(), uf.trim(), bairro.trim(), rua.trim(), numero,
                 complemento == null || complemento.isBlank() ? null : complemento.trim());
 
+        int idCondominio;
+        int quantidade;
         try {
             boolean industrial = "industrial".equals(cad.getTipoCondominio());
             String nome = "residencial".equals(cad.getTipoCondominio()) ? cad.getNomeCondominio() : cad.getRazaoSocial();
@@ -672,15 +694,22 @@ public class UsuarioServlet extends HttpServlet {
                 condominio.setNumeroUnidades(Formulario.inteiroPositivoOpcional(cad.getNumeroUnidades(), "o número de unidades"));
             }
 
-            sindicoDAO.cadastrarComCondominio(usuario, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), condominio, endereco);
-            request.setAttribute("tokenCondominio", token);
+            //O código do condomínio só aparece depois da tela de pagamento.
+            idCondominio = sindicoDAO.cadastrarComCondominio(usuario, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), condominio, endereco);
+
+            //A quantidade cobrada começa pelo que foi informado no condomínio (área arredondada para cima).
+            if (industrial) {
+                quantidade = condominio.getAreaM2() == null ? 1 : condominio.getAreaM2().setScale(0, RoundingMode.CEILING).intValue();
+            } else {
+                quantidade = condominio.getNumeroUnidades() == null ? 1 : condominio.getNumeroUnidades();
+            }
         } catch (RuntimeException e) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
             mostrarCadastro(request, response);
             return;
         }
 
-        concluirCadastro(request, response, sessao, cad.getTipoCondominio());
+        seguirParaAssinatura(request, response, sessao, cad, idCondominio, quantidade);
     }
 
     //Limpa o cadastro da sessao e mostra a tela de cadastro concluido.
@@ -810,5 +839,248 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         concluirCadastro(request, response, sessao, "morador");
+    }
+
+    //================ ASSINATURA: TELAS DE PAGAMENTO (só a navegação, depois do cadastro do síndico e da cooperativa) ================
+    // Fluxo: pag-dados -> pag-resumo -> pag-pagamento
+    // O plano é o do tipo do condomínio (tabela plano, codigo = residencial, comercial ou industrial) e o valor é sempre
+    // calculado aqui no servidor. "Ir para o pagamento" grava a assinatura como pendente.
+    // TODO: sem gateway ainda: o último passo não cobra nada e a assinatura continua pendente.
+
+    //Conta criada: guarda só o que as telas de pagamento aproveitam (nunca a senha) e segue direto para elas.
+    //A tela de sucesso (com o código do condomínio) só aparece no fim, depois do pagamento.
+    private void seguirParaAssinatura(HttpServletRequest request, HttpServletResponse response, HttpSession sessao, CadastroPendente cad,
+                                      int idCondominio, int quantidade) throws ServletException, IOException {
+        Usuario criado = usuarioDAO.selecionarPorEmail(cad.getEmail());
+
+        CadastroPendente assinatura = new CadastroPendente();
+        assinatura.setNome(cad.getNome());
+        assinatura.setEmail(cad.getEmail());
+        assinatura.setTelefone(cad.getTelefone());
+        assinatura.setCpf(cad.getCpf());
+        assinatura.setDocumento(cad.getCpf());
+        assinatura.setContaCriada(true);
+        assinatura.setIdUsuario(criado == null ? 0 : criado.getIdUsuario());
+        assinatura.setIdCondominio(idCondominio);
+        assinatura.setPlano(cad.getTipoCondominio());
+        assinatura.setQuantidade(Math.min(Math.max(quantidade, 1), Orcamento.QUANTIDADE_MAXIMA));
+        assinatura.setCiclo("mensal");
+
+        //Menos de 100 unidades não assina: pula plano e pagamento e mostra o código do condomínio.
+        if (!Orcamento.podeAssinar(cad.getTipoCondominio(), quantidade)) {
+            concluirAssinatura(request, response, assinatura);
+            return;
+        }
+
+        sessao.setAttribute("cadastroPendente", assinatura);
+        sessao.removeAttribute("etapaCadastro");
+        sessao.removeAttribute("abaAtiva");
+
+        //Redirect: atualizar a página não reenvia o endereço (o que gravaria o condomínio de novo).
+        response.sendRedirect(request.getContextPath() + "/cadastro/plano");
+    }
+
+    //Depois da tela de pagamento: limpa a sessão do cadastro e mostra a tela de sucesso com o código do condomínio.
+    private void concluirAssinatura(HttpServletRequest request, HttpServletResponse response, CadastroPendente cad) throws ServletException, IOException {
+        HttpSession sessao = request.getSession();
+        sessao.removeAttribute("cadastroPendente");
+        sessao.removeAttribute("etapaCadastro");
+        sessao.removeAttribute("abaAtiva");
+
+        if (cad.getIdCondominio() != null) {
+            try {
+                Condominio condominio = condominioDAO.selecionarPorId(cad.getIdCondominio());
+                if (condominio != null) request.setAttribute("tokenCondominio", condominio.getToken());
+            } catch (RuntimeException e) {
+                //sem o código a tela de sucesso aparece do mesmo jeito
+            }
+        }
+        request.setAttribute("perfilCriado", cad.getPlano());
+        request.getRequestDispatcher("/WEB-INF/views/cadastro/cadastro_sucesso.jsp").forward(request, response);
+    }
+
+    //Cadastro que já tem conta criada no banco; null se não houver.
+    private CadastroPendente cadastroDaAssinatura(HttpServletRequest request) {
+        CadastroPendente cad = (CadastroPendente) request.getSession().getAttribute("cadastroPendente");
+        return cad != null && cad.isContaCriada() ? cad : null;
+    }
+
+    //Orçamento com o preço atual do banco; null se o plano não existir ou estiver inativo.
+    private Orcamento orcamento(CadastroPendente cad) {
+        Plano plano = planoDAO.selecionarPorCodigo(cad.getPlano());
+        return plano == null ? null : new Orcamento(plano, "anual".equals(cad.getCiclo()), cad.getQuantidade());
+    }
+
+    //Resumo e pagamento mostram os valores do orçamento (orc nos JSPs).
+    private void mostrarAssinatura(HttpServletRequest request, HttpServletResponse response, String etapa) throws ServletException, IOException {
+        if (etapa.equals("pag-resumo") || etapa.equals("pag-pagamento")) {
+            Orcamento orc;
+            try {
+                orc = orcamento(cadastroDaAssinatura(request));
+            } catch (RuntimeException e) {
+                orc = null;
+            }
+            if (orc == null) {
+                request.setAttribute("erroCadastro", "O plano do seu condomínio não está disponível no momento.");
+                etapa = "pag-dados";
+            } else {
+                request.setAttribute("orc", orc);
+            }
+        }
+        request.getSession().setAttribute("etapaCadastro", etapa);
+        mostrarCadastro(request, response);
+    }
+
+    //GET /cadastro/plano: botão "Escolher meu plano" da tela de conta criada.
+    private void iniciarAssinatura(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CadastroPendente cad = cadastroDaAssinatura(request);
+        if (cad == null) {
+            response.sendRedirect(request.getContextPath() + "/login-cadastro?aba=cadastro");
+            return;
+        }
+        mostrarAssinatura(request, response, cad.isDadosPagamentoOk() ? "pag-resumo" : "pag-dados");
+    }
+
+    //Sem conta criada na sessão: volta para o início do cadastro.
+    private void voltarParaInicio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        mostrarAssinatura(request, response, "conta");
+    }
+
+    //----- Dados de cobrança -----
+
+    private void processarEtapaPagDados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CadastroPendente cad = cadastroDaAssinatura(request);
+        if (cad == null) {
+            voltarParaInicio(request, response);
+            return;
+        }
+        //A conta já está gravada: não há etapa anterior para editar. Sai para o início; o cadastro fica na sessão
+        //e /cadastro/plano retoma daqui.
+        if ("voltar".equals(request.getParameter("acao"))) {
+            response.sendRedirect(request.getContextPath() + "/inicio");
+            return;
+        }
+
+        String nome = request.getParameter("nome");
+        String telefone = request.getParameter("telefone");
+        String documento = request.getParameter("documento");
+        cad.setNome(nome);
+        cad.setTelefone(telefone);
+        cad.setDocumento(documento);
+        cad.setTermos(request.getParameter("termos"));
+        cad.setDadosPagamentoOk(false);
+
+        String doc = Formulario.digitos(documento);
+        String erro = null;
+        if (nome == null || !nome.trim().matches("\\S+(\\s+\\S+)+")) {
+            erro = "Digite o nome completo, com nome e sobrenome.";
+        } else if (telefone == null || Formulario.digitos(telefone).length() < 10 || Formulario.digitos(telefone).length() > 11) {
+            erro = "Informe um telefone válido.";
+        } else if (doc.length() != 11 && doc.length() != 14) {
+            erro = "CPF ou CNPJ inválido: o CPF tem 11 números e o CNPJ tem 14.";
+        } else if (!"aceito".equals(cad.getTermos())) {
+            erro = "É preciso aceitar os Termos de uso e a Política de privacidade.";
+        }
+        if (erro != null) {
+            request.setAttribute("erroCadastro", erro);
+            mostrarAssinatura(request, response, "pag-dados");
+            return;
+        }
+
+        cad.setDadosPagamentoOk(true);
+        mostrarAssinatura(request, response, "pag-resumo");
+    }
+
+    //----- Resumo -----
+
+    private void processarEtapaPagResumo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CadastroPendente cad = cadastroDaAssinatura(request);
+        if (cad == null) {
+            voltarParaInicio(request, response);
+            return;
+        }
+        if (!cad.isDadosPagamentoOk()) {
+            mostrarAssinatura(request, response, "pag-dados");
+            return;
+        }
+
+        String acao = Formulario.texto(request, "acao");
+        if (acao.equals("voltar")) {
+            mostrarAssinatura(request, response, "pag-dados");
+            return;
+        }
+
+        if (acao.equals("ciclo-mensal")) cad.setCiclo("mensal");
+        if (acao.equals("ciclo-anual")) cad.setCiclo("anual");
+
+        //Quantidade digitada vem formatada ("1.250"): só os números valem.
+        String digitos = Formulario.digitos(request.getParameter("quantidade"));
+        int quantidade = digitos.isEmpty() || digitos.length() > 7 ? 0 : Integer.parseInt(digitos);
+        if (acao.equals("mais")) quantidade++;
+        if (acao.equals("menos")) quantidade--;
+        if (quantidade < 1 || quantidade > Orcamento.QUANTIDADE_MAXIMA) {
+            request.setAttribute("erroCadastro", "Informe uma quantidade entre 1 e 9.999.999.");
+            mostrarAssinatura(request, response, "pag-resumo");
+            return;
+        }
+        if (!Orcamento.podeAssinar(cad.getPlano(), quantidade)) {
+            request.setAttribute("erroCadastro", "A assinatura é para " + Orcamento.UNIDADES_MINIMAS + " unidades ou mais.");
+            mostrarAssinatura(request, response, "pag-resumo");
+            return;
+        }
+        cad.setQuantidade(quantidade);
+
+        //Só o botão principal (sem ação) segue para o pagamento; ciclo, +/- e "Atualizar valor" ficam no resumo.
+        if (!acao.isEmpty()) {
+            mostrarAssinatura(request, response, "pag-resumo");
+            return;
+        }
+
+        //Grava (ou atualiza) a assinatura pendente com o valor calculado aqui, nunca com valor vindo do formulário.
+        try {
+            Orcamento orc = orcamento(cad);
+            if (orc == null) {
+                mostrarAssinatura(request, response, "pag-resumo"); //mostra o aviso de plano indisponível
+                return;
+            }
+            Assinatura assinatura = new Assinatura(cad.getCiclo(), BigDecimal.valueOf(cad.getQuantidade()), orc.getValorCobrado(),
+                    cad.getIdUsuario(), cad.getIdCondominio(), orc.getPlano().getIdPlano());
+            cad.setIdAssinatura(assinaturaDAO.salvarPendente(assinatura));
+        } catch (RuntimeException e) {
+            request.setAttribute("erroCadastro", "Não foi possível registrar a assinatura. Confira se já não existe uma assinatura para este condomínio.");
+            mostrarAssinatura(request, response, "pag-resumo");
+            return;
+        }
+
+        mostrarAssinatura(request, response, "pag-pagamento");
+    }
+
+    //----- Forma de pagamento (sem cobrança) -----
+
+    private void processarEtapaPagPagamento(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CadastroPendente cad = cadastroDaAssinatura(request);
+        if (cad == null) {
+            voltarParaInicio(request, response);
+            return;
+        }
+        if (!cad.isDadosPagamentoOk()) {
+            mostrarAssinatura(request, response, "pag-dados");
+            return;
+        }
+
+        if ("voltar".equals(request.getParameter("acao"))) {
+            mostrarAssinatura(request, response, "pag-resumo");
+            return;
+        }
+        if (cad.getIdAssinatura() == 0) {
+            mostrarAssinatura(request, response, "pag-resumo"); //a assinatura pendente é gravada no resumo
+            return;
+        }
+
+        //Não lê nem guarda dados de cartão: sem gateway, nada é cobrado nem gerado.
+        //TODO: com o gateway, ativar a assinatura (status ativa, data_inicio e proxima_cobranca) quando o pagamento for confirmado.
+        String metodo = request.getParameter("metodo");
+        cad.setMetodo("pix".equals(metodo) || "boleto".equals(metodo) ? metodo : "cartao");
+        concluirAssinatura(request, response, cad);
     }
 }

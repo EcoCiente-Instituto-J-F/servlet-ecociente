@@ -60,7 +60,8 @@ public class SindicoDAO {
 
     // Cadastro do síndico que assina: grava o usuário (sem endereço próprio), o telefone, o endereço e o condomínio
     // (já com o token) e o vínculo de síndico, tudo na mesma transação. O mandato começa hoje, sem data de fim.
-    public boolean cadastrarComCondominio(Usuario usuario, String telefone, Condominio condominio, Endereco endereco) {
+    // Devolve o id do condomínio criado (a assinatura fica ligada a ele).
+    public int cadastrarComCondominio(Usuario usuario, String telefone, Condominio condominio, Endereco endereco) {
 
         try (Connection conexao = ConexaoBD.conectar()) {
             conexao.setAutoCommit(false);
@@ -120,7 +121,7 @@ public class SindicoDAO {
                 }
 
                 conexao.commit();
-                return true;
+                return idCondominio;
             } catch (SQLException sqle) {
                 conexao.rollback();
                 throw sqle;
@@ -237,6 +238,62 @@ public class SindicoDAO {
              PreparedStatement ps = conexao.prepareStatement(sql)) {
 
             ps.setInt(1, idCondominio);
+
+            try (ResultSet rs = ps.executeQuery()) {
+
+                if (rs.next()) {
+                    Sindico sindico = new Sindico(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getString(4),
+                            dataOuNulo(rs.getDate(5)),
+                            rs.getBoolean(6),
+                            rs.getInt(7),
+                            rs.getInt(8),
+                            rs.getInt(9),
+                            dataOuNulo(rs.getDate(10)),
+                            dataOuNulo(rs.getDate(11)),
+                            rs.getInt(12)
+                    );
+                    sindico.setCpf(rs.getString(13));
+                    return sindico;
+                }
+            }
+
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+
+        return null;
+    }
+
+    // Buscar síndico pelo ID do usuário (null se o usuário não for síndico)
+    public Sindico buscarPorUsuario(int idUsuario) {
+
+        String sql = """
+                SELECT u.id_usuario,
+                       u.nome,
+                       u.email,
+                       u.senha_hash,
+                       u.data_cadastro,
+                       u.status,
+                       u.id_endereco,
+                       u.id_tipo_usuario,
+                       s.id_sindico,
+                       s.data_inicio_mandato,
+                       s.data_fim_mandato,
+                       s.id_condominio,
+                       u.cpf
+                FROM sindico s
+                JOIN usuario u ON u.id_usuario = s.id_usuario
+                WHERE s.id_usuario = ?
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
+
+            ps.setInt(1, idUsuario);
 
             try (ResultSet rs = ps.executeQuery()) {
 
