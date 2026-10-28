@@ -82,6 +82,7 @@ public class SindicoServlet extends HttpServlet {
         String problema = validarMandato(dataInicio, dataFim);
         if (problema == null && daoUsuarios.existeCpf(cpf, idUsuario)) problema = "Este CPF já está cadastrado em outro usuário.";
         if (problema == null && daoSindicos.buscarIdUsuario(idUsuario)) problema = "Este usuário já é síndico.";
+        if (problema == null && daoSindicos.buscarPorCondominio(idCondominio) != null) problema = "Este condomínio já tem síndico.";
         if (problema != null) {
             request.setAttribute("erro", problema);
             request.setAttribute("adicionado", "false");
@@ -89,9 +90,11 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        //O CPF fica no cadastro do usuário.
+        //O CPF fica no cadastro do usuário, que passa a ser do tipo Síndico.
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
         usuario.setCpf(cpf);
+        int idTipoSindico = daoUsuarios.selecionarIdTipoPorNome("Sindico");
+        if (idTipoSindico != 0) usuario.setTipoUsuario(idTipoSindico);
         daoUsuarios.atualizar(usuario, null, null);
 
         //Dados do usuário vão vazios (a tabela sindico não usa). Id 0 porque o banco gera.
@@ -131,6 +134,8 @@ public class SindicoServlet extends HttpServlet {
         if (problema == null && daoUsuarios.existeCpf(cpfDigitos, sindico.getIdUsuario())) {
             problema = "Este CPF já está cadastrado em outro usuário.";
         }
+        Sindico doCondominio = daoSindicos.buscarPorCondominio(Integer.parseInt(request.getParameter("idCondominio")));
+        if (problema == null && doCondominio != null && doCondominio.getIdSindico() != id) problema = "Este condomínio já tem síndico.";
         if (problema != null) {
             request.setAttribute("erro", problema);
             request.setAttribute("alterado", "false");

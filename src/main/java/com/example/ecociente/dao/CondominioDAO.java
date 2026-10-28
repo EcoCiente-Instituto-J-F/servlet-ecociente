@@ -7,6 +7,7 @@ import com.example.ecociente.model.TipoCondominio;
 
 import java.security.SecureRandom;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class CondominioDAO{
@@ -229,7 +230,9 @@ public class CondominioDAO{
                        (SELECT u.nome FROM sindico s JOIN usuario u ON u.id_usuario = s.id_usuario
                         WHERE s.id_condominio = c.id_condominio ORDER BY s.id_sindico LIMIT 1),
                        e.cep, e.cidade, e.estado, e.bairro, e.rua, e.numero, e.complemento,
-                       c.numero_unidades, c.area_m2
+                       c.numero_unidades, c.area_m2,
+                       (SELECT s.id_usuario FROM sindico s
+                        WHERE s.id_condominio = c.id_condominio ORDER BY s.id_sindico LIMIT 1)
                 FROM condominio c
                 LEFT JOIN tipo_condominio tc ON tc.id_tipo_condominio = c.id_tipo_condominio
                 JOIN endereco e ON e.id_endereco = c.id_endereco
@@ -250,6 +253,7 @@ public class CondominioDAO{
                     condominio.setDadosExibicao(rs.getString(8), rs.getString(9), EnderecoDAO.deLinha(rs, rs.getInt(6), 10));
                     condominio.setNumeroUnidades(rs.getObject(17, Integer.class));
                     condominio.setAreaM2(rs.getBigDecimal(18));
+                    condominio.setIdUsuarioSindico(rs.getObject(19, Integer.class));
                     condominios.add(condominio);
                 }
             }
@@ -322,8 +326,22 @@ public class CondominioDAO{
         }
     }
 
-    // Cadastra o endereço e o condomínio na mesma transação
-    public boolean inserir(Condominio condominio, Endereco endereco){
+    // Cadastra o endereço, o condomínio e (se veio) o síndico na mesma transação.
+    // Se dois cadastros sortearem o mesmo token ao mesmo tempo, sorteia outro e tenta de novo.
+    public boolean inserir(Condominio condominio, Endereco endereco, Integer idUsuarioSindico, int idTipoSindico, LocalDate inicioMandato){
+        for(int tentativa = 1; ; tentativa++){
+            try{
+                return inserirUmaVez(condominio, endereco, idUsuarioSindico, idTipoSindico, inicioMandato);
+            }
+            catch(RuntimeException e){
+                boolean tokenRepetido = e.getMessage() != null && e.getMessage().contains("condominio_token_key");
+                if(!tokenRepetido || tentativa == 5) throw e;
+                condominio.setToken(gerarTokenUnico());
+            }
+        }
+    }
+
+    private boolean inserirUmaVez(Condominio condominio, Endereco endereco, Integer idUsuarioSindico, int idTipoSindico, LocalDate inicioMandato){
         try(Connection conexao = ConexaoBD.conectar()){
             conexao.setAutoCommit(false);
             try{
@@ -332,8 +350,9 @@ public class CondominioDAO{
                 String sql = """
                         INSERT INTO condominio (nome, cnpj, status, token, id_endereco, id_tipo_condominio, numero_unidades, area_m2)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        RETURNING id_condominio
                         """;
-                int linhas;
+                int idCondominio;
                 try(PreparedStatement ps = conexao.prepareStatement(sql)){
                     ps.setString(1, condominio.getNome());
                     ps.setString(2, condominio.getCnpj());
@@ -343,10 +362,31 @@ public class CondominioDAO{
                     ps.setInt(6, condominio.getIdTipoCondominio());
                     ps.setObject(7, condominio.getNumeroUnidades(), Types.INTEGER);
                     ps.setBigDecimal(8, condominio.getAreaM2());
-                    linhas = ps.executeUpdate();
+                    try(ResultSet rs = ps.executeQuery()){
+                        rs.next();
+                        idCondominio = rs.getInt(1);
+                    }
+                }
+
+                if(idUsuarioSindico != null){
+                    String sqlSindico = """
+                            INSERT INTO sindico (data_inicio_mandato, id_usuario, id_condominio)
+                            VALUES (?, ?, ?)
+                            """;
+                    try(PreparedStatement ps = conexao.prepareStatement(sqlSindico)){
+                        ps.setDate(1, Date.valueOf(inicioMandato));
+                        ps.setInt(2, idUsuarioSindico);
+                        ps.setInt(3, idCondominio);
+                        ps.executeUpdate();
+                    }
+                    try(PreparedStatement ps = conexao.prepareStatement("UPDATE usuario SET id_tipo_usuario = ? WHERE id_usuario = ?")){
+                        ps.setInt(1, idTipoSindico);
+                        ps.setInt(2, idUsuarioSindico);
+                        ps.executeUpdate();
+                    }
                 }
                 conexao.commit();
-                return linhas == 1;
+                return true;
             }
             catch(SQLException sqle){
                 conexao.rollback();
@@ -395,7 +435,7 @@ public class CondominioDAO{
         }
     }
 
-    // Apaga o condomínio e o endereço dele (se ninguém mais usa). Falha se ainda tem morador, síndico ou parceria
+    // Apaga o síndico, o condomínio e o endereço dele (se ninguém mais usa). Falha se ainda tem morador ou parceria
     public boolean deletarComEndereco(int id){
         try(Connection conexao = ConexaoBD.conectar()){
             conexao.setAutoCommit(false);
@@ -407,6 +447,11 @@ public class CondominioDAO{
                         if(!rs.next()) return false;
                         idEndereco = rs.getInt(1);
                     }
+                }
+
+                try(PreparedStatement ps = conexao.prepareStatement("DELETE FROM sindico WHERE id_condominio = ?")){
+                    ps.setInt(1, id);
+                    ps.executeUpdate();
                 }
 
                 int linhas;

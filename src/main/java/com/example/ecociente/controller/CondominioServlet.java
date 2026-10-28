@@ -1,8 +1,11 @@
 package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.CondominioDAO;
+import com.example.ecociente.dao.SindicoDAO;
+import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Endereco;
+import com.example.ecociente.model.Usuario;
 import com.example.ecociente.util.DadoInvalido;
 import com.example.ecociente.util.Formulario;
 import jakarta.servlet.ServletException;
@@ -13,11 +16,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 //Servlet usada para as ações do CRUD de Condomínios. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
 @WebServlet(urlPatterns = {"/condominios"})
 public class CondominioServlet extends HttpServlet {
     CondominioDAO daoCondominios = new CondominioDAO();
+    UsuarioDAO daoUsuarios = new UsuarioDAO();
+    SindicoDAO daoSindicos = new SindicoDAO();
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarSelects(request, response);
@@ -30,6 +36,7 @@ public class CondominioServlet extends HttpServlet {
 
         request.setAttribute("condominios", Formulario.paginar(request, daoCondominios.selecionarTodos(procura)));
         request.setAttribute("tiposCondominio", daoCondominios.selecionarTipos());
+        request.setAttribute("usuariosSindico", daoUsuarios.selecionarDisponiveisParaSindico(LoginServlet.TIPO_ADMINISTRADOR));
         request.getRequestDispatcher("/WEB-INF/views/condominios.jsp").forward(request, response);
     }
 
@@ -81,11 +88,37 @@ public class CondominioServlet extends HttpServlet {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outro condomínio.");
         }
 
-        //Id 0 porque o banco gera. O endereço é criado junto, na mesma transação.
-        Condominio condominio = new Condominio(0, nome, cnpj, true, null, 0, idTipoCondominio);
+        //O síndico é opcional. Se veio, precisa poder assumir o condomínio.
+        String idSindico = Formulario.texto(request, "idUsuarioSindico");
+        Integer idUsuarioSindico = null;
+        int idTipoSindico = 0;
+        LocalDate inicioMandato = Formulario.data(request.getParameter("dataInicioMandato"), "do início do mandato");
+        if (inicioMandato == null) inicioMandato = LocalDate.now();
+        if (!idSindico.isEmpty()) {
+            idUsuarioSindico = Formulario.id(idSindico, "usuário");
+            validarSindico(idUsuarioSindico);
+            idTipoSindico = daoUsuarios.selecionarIdTipoPorNome("Sindico");
+            if (idTipoSindico == 0) throw new DadoInvalido("O tipo de usuário Síndico não existe no banco.");
+        }
+
+        //Id 0 porque o banco gera. O endereço, o condomínio e o síndico são criados juntos, na mesma transação.
+        Condominio condominio = new Condominio(0, nome, cnpj, true, daoCondominios.gerarTokenUnico(), 0, idTipoCondominio);
         condominio.setNumeroUnidades(unidades);
         condominio.setAreaM2(area);
-        return daoCondominios.inserir(condominio, endereco);
+        boolean ok = daoCondominios.inserir(condominio, endereco, idUsuarioSindico, idTipoSindico, inicioMandato);
+        if (ok) request.setAttribute("tokenGerado", condominio.getToken());
+        return ok;
+    }
+
+    //O usuário precisa existir, não ser administrador nem síndico e ter CPF cadastrado.
+    private void validarSindico(int idUsuario) {
+        Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
+        if (usuario == null) throw new DadoInvalido("Usuário do síndico não encontrado.");
+        if (usuario.getIdTipoUsuario() == LoginServlet.TIPO_ADMINISTRADOR) throw new DadoInvalido("O administrador não pode ser síndico.");
+        if (daoSindicos.buscarIdUsuario(idUsuario)) throw new DadoInvalido("Este usuário já é síndico.");
+        if (usuario.getCpf() == null || usuario.getCpf().isBlank()) {
+            throw new DadoInvalido("Este usuário não tem CPF. Cadastre o CPF dele na tela de Usuários antes de torná-lo síndico.");
+        }
     }
 
     private boolean alterarCondominio(HttpServletRequest request, int id) {
@@ -117,6 +150,8 @@ public class CondominioServlet extends HttpServlet {
         condominio.setIdTipoCondominio(idTipoCondominio);
         condominio.setNumeroUnidades(unidades);
         condominio.setAreaM2(area);
+        //Condomínios criados antes do token existir ganham um aqui.
+        if (condominio.getToken() == null || condominio.getToken().isBlank()) condominio.setToken(daoCondominios.gerarTokenUnico());
 
         return daoCondominios.atualizarCondominio(condominio, endereco);
     }
@@ -125,7 +160,7 @@ public class CondominioServlet extends HttpServlet {
         try {
             return daoCondominios.deletarComEndereco(id);
         } catch (RuntimeException e) {
-            throw new DadoInvalido("Não foi possível excluir: o condomínio ainda tem moradores, síndico ou parcerias vinculados.");
+            throw new DadoInvalido("Não foi possível excluir: o condomínio ainda tem moradores ou parcerias vinculados.");
         }
     }
 }
