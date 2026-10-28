@@ -1,13 +1,16 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Primeira etapa do cadastro: e-mail e senha (mínimo de 8 caracteres) --%>
 <c:set var="tituloEtapa" value="Crie sua conta" />
 <c:set var="subtituloEtapa" value="Comece cadastrando seu e-mail e uma senha." />
 <%@ include file="_cabecalho.jsp" %>
+<%-- Se o e-mail já tem conta, oferece entrar para fazer a assinatura --%>
 <c:if test="${emailJaCadastrado}">
     <div class="botoes">
         <a href="${ctx}/login?proximo=plano&amp;email=<c:out value='${param.email}' />" class="botao-submit botao-secundario">Fazer assinatura</a>
     </div>
 </c:if>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="conta">
 
@@ -18,6 +21,7 @@
         </div>
     </div>
 
+    <%-- Senha e confirmação, com botão para mostrar ou esconder --%>
     <div class="form-row">
         <div class="form-group" data-erro="Faltam caracteres: a senha precisa ter no mínimo 8.">
             <label for="cad-senha">Senha</label>

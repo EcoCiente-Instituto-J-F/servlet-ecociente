@@ -1,11 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa de escolha do plano, depois que a conta já foi criada --%>
 <c:set var="tituloEtapa" value="Escolha seu plano" />
 <c:set var="subtituloEtapa" value="Sua conta já está criada. Escolha o plano ideal para o seu condomínio." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="plano">
 
+    <%-- Planos disponíveis --%>
     <div class="opcoes duas" role="radiogroup" aria-label="Plano">
         <label class="opcao">
             <input type="radio" name="plano" value="residencial" required ${cad.plano == 'residencial' ? 'checked' : ''}>
@@ -28,4 +31,5 @@
     </div>
 </form>
 
+<%-- Quem não quer assinar agora volta para a página inicial no plano gratuito --%>
 <p class="link-entrar link-gratuito"><a href="${ctx}/inicio">Agora não, continuar no plano gratuito</a></p>

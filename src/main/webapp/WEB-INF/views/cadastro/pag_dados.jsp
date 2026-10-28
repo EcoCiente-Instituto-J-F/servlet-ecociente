@@ -1,8 +1,10 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Pagamento (dados): dados pessoais para emitir a cobrança e aceite dos termos --%>
 <c:set var="tituloEtapa" value="Dados pessoais" />
 <c:set var="subtituloEtapa" value="Precisamos de alguns dados para emitir a cobrança no seu nome." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="pag-dados">
 
@@ -13,6 +15,7 @@
         </div>
     </div>
 
+    <%-- Campos de identificação do pagador --%>
     <div class="form-row">
         <div class="form-group" data-erro="Telefone incompleto: digite o DDD e o número, ex.: (11) 98765-4321.">
             <label for="cad-telefone">Telefone</label>

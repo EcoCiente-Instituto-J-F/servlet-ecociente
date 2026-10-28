@@ -1,8 +1,10 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do morador em condomínio: token do síndico (opcional), bloco e apartamento --%>
 <c:set var="tituloEtapa" value="Token e moradia" />
 <c:set var="subtituloEtapa" value="Se você tem o token enviado pelo síndico, informe-o e diga onde você mora no condomínio." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="token">
 
@@ -31,6 +33,7 @@
         </div>
     </div>
 
+    <%-- Explica ao morador por que o token é pedido --%>
     <div class="info-token" role="note">
         <strong>Por que pedimos o token?</strong>
         Ele vincula sua conta ao seu condomínio, para você acompanhar a coleta seletiva e os resultados do seu prédio.

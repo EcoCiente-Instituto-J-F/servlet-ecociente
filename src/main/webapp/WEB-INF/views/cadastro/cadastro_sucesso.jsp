@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Tela de cadastro concluído (mostra o código do condomínio só para o síndico) --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -207,6 +208,7 @@
 </head>
 <body>
 
+    <%-- Cartão central com a mensagem de sucesso --%>
     <main class="card-wrapper">
         <section class="card-sucesso" aria-labelledby="titulo-sucesso">
 
@@ -221,6 +223,7 @@
             </h1>
 
             <p class="texto-sucesso">
+                <%-- O texto muda conforme o perfil que acabou de ser criado (perfilCriado) --%>
                 <c:choose>
                     <c:when test="${perfilCriado == 'residencial'}">Agora é só convidar os moradores e acompanhar os dados do condomínio.</c:when>
                     <c:when test="${perfilCriado == 'comercial'}">Agora é só convidar as empresas e acompanhar os dados do condomínio.</c:when>
@@ -239,6 +242,7 @@
                 </div>
             </c:if>
 
+            <%-- Se o servidor oferece plano, leva à escolha do plano; senão, volta para a tela de entrada --%>
             <div class="botoes">
                 <c:choose>
                     <c:when test="${oferecerPlano}">
@@ -255,6 +259,7 @@
         </section>
     </main>
 
+    <%-- Botão que copia o código do condomínio --%>
     <script>
         (function () {
             var botao = document.getElementById('copiar-token');

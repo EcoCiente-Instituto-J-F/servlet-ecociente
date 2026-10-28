@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Tela única do cadastro. Mostra uma etapa por vez, escolhida pelo servidor (etapaCadastro); cada etapa fica em cadastro/*.jsp --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -12,13 +13,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+    <%-- Todos os estilos desta tela ficam aqui dentro (não vêm da pasta css/) --%>
     <style>
+        /* Zera as margens e faz o tamanho dos elementos incluir borda e espaço interno */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
         }
 
+        /* Fundo e alinhamento geral da página */
         body {
             background-image: url('${pageContext.request.contextPath}/assets/tela-fundo-login.png');
             background-size: cover;
@@ -30,6 +34,7 @@
             font-family: 'Instrument Sans', sans-serif;
         }
 
+        /* Estrutura: logo à esquerda e cartão do cadastro à direita */
         .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -46,6 +51,7 @@
             display: block;
         }
 
+        /* Moldura de vidro em volta do cartão branco */
         .card-wrapper {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(8px);
@@ -57,6 +63,7 @@
             max-width: 500px;
         }
 
+        /* Cartão branco onde aparecem as etapas do cadastro */
         .container-login {
             position: relative;
             background-color: #ffffff;
@@ -65,6 +72,7 @@
             width: 100%;
         }
 
+        /* Caixa invisível que controla o olho de mostrar a senha */
         .ver-senha {
             position: absolute;
             width: 1px;
@@ -75,6 +83,7 @@
             opacity: 0;
         }
 
+        /* Título e subtítulo de cada etapa */
         .titulo-container {
             margin-bottom: 12px;
         }
@@ -105,6 +114,7 @@
             margin-bottom: 20px;
         }
 
+        /* Campo do formulário: rótulo em cima e caixa embaixo */
         .form-group {
             margin-bottom: 18px;
             position: relative;
@@ -119,6 +129,7 @@
             margin-bottom: 4px;
         }
 
+        /* Linha com campos lado a lado */
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -131,6 +142,7 @@
             align-items: center;
         }
 
+        /* Caixa de texto */
         .input-field {
             width: 100%;
             border: none;
@@ -151,6 +163,7 @@
             border-bottom-color: #064E3B;
         }
 
+        /* Senha: o olho alterna entre escondida e visível */
         .campo-senha {
             -webkit-text-security: disc;
         }
@@ -188,6 +201,7 @@
             padding-right: 24px;
         }
 
+        /* Link "Esqueceu sua senha?" (tela de login) */
         .forgot-password {
             display: block;
             text-align: right;
@@ -202,6 +216,7 @@
             text-decoration: underline;
         }
 
+        /* Botão principal de cada etapa */
         .botao-submit {
             width: 100%;
             background-color: #064E3B;
@@ -217,6 +232,7 @@
             margin-bottom: 16px;
         }
 
+        /* Botão Voltar, no canto da página */
         .botao-voltar {
             position: absolute;
             top: 24px;
@@ -250,6 +266,7 @@
             line-height: 1;
         }
 
+        /* Mensagem de erro de uma etapa */
         .mensagem-erro {
             font-size: 12px;
             padding: 8px 10px;
@@ -269,6 +286,7 @@
             margin-bottom: 0;
         }
 
+        /* Variações da linha: 3 colunas, e rua + número */
         .form-row.tres {
             grid-template-columns: 1fr 1fr 1.3fr;
         }
@@ -282,6 +300,7 @@
             color: #6B7370;
         }
 
+        /* Texto de ajuda embaixo do campo */
         .dica-campo {
             font-size: 11px;
             color: #6B7370;
@@ -299,6 +318,7 @@
             margin: 0;
         }
 
+        /* Lista de seleção (estado) */
         select.input-field {
             appearance: none;
             -webkit-appearance: none;
@@ -315,6 +335,7 @@
             color: #333333;
         }
 
+        /* Botões do fim de cada etapa: avançar e voltar */
         .botoes {
             display: flex;
             gap: 12px;
@@ -349,6 +370,7 @@
             order: 0;
         }
 
+        /* Link de apoio embaixo do formulário */
         .link-entrar {
             text-align: center;
             font-size: 12px;
@@ -363,6 +385,7 @@
             cursor: pointer;
         }
 
+        /* Aviso de proteção de dados (LGPD) */
         .aviso-lgpd {
             display: flex;
             align-items: center;
@@ -380,6 +403,7 @@
             flex-shrink: 0;
         }
 
+        /* Caixa de aceite dos termos de uso */
         .aceite-termos {
             display: flex;
             align-items: center;
@@ -499,6 +523,7 @@
             color: #6B7370;
         }
 
+        /* Campo do código (token) do condomínio */
         .campo-token {
             --caixa: 40px;
             --espaco: 8px;
@@ -527,6 +552,7 @@
             background-repeat: no-repeat;
         }
 
+        /* Texto de ajuda sobre o token */
         .token-ajuda {
             display: flex;
             flex-direction: column;
@@ -557,6 +583,7 @@
             margin-bottom: 2px;
         }
 
+        /* Etiqueta "Etapa 1 de 2" do pagamento */
         .rotulo-etapa {
             font-size: 10px;
             font-weight: 700;
@@ -566,6 +593,7 @@
             margin-bottom: 6px;
         }
 
+        /* Texto só para leitores de tela (não aparece na tela) */
         .so-leitor {
             position: absolute;
             width: 1px;
@@ -577,6 +605,7 @@
             padding: 0;
         }
 
+        /* Pagamento: resumo do plano, ciclo de cobrança e quantidade */
         .plano-escolhido {
             display: flex;
             align-items: center;
@@ -633,6 +662,7 @@
             margin-bottom: 6px;
         }
 
+        /* Botões Mensal e Anual */
         .seletor-ciclo {
             display: inline-flex;
             border: 1px solid #064E3B;
@@ -663,6 +693,7 @@
             outline-offset: 2px;
         }
 
+        /* Campo de quantidade com botões de mais e menos */
         .quantidade {
             display: flex;
             align-items: center;
@@ -749,6 +780,7 @@
             outline-offset: 2px;
         }
 
+        /* Quadro "como chegamos nesse valor" do plano anual */
         .calculo-anual {
             margin: 14px 0 18px;
             padding: 12px 14px;
@@ -808,6 +840,7 @@
             margin-bottom: 14px;
         }
 
+        /* Linha do valor total */
         .total {
             display: flex;
             align-items: center;
@@ -835,6 +868,7 @@
             white-space: nowrap;
         }
 
+        /* Pagamento: resumo do pedido e valor a pagar */
         .resumo-pedido {
             display: flex;
             align-items: center;
@@ -867,6 +901,7 @@
             font-size: 15px;
         }
 
+        /* Botões de forma de pagamento: cartão, Pix e boleto */
         .metodos {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -916,6 +951,7 @@
             outline-offset: 2px;
         }
 
+        /* Só o formulário do método marcado aparece */
         .form-metodo {
             display: none;
         }
@@ -927,6 +963,7 @@
             animation: aparecer 0.25s ease;
         }
 
+        /* Pix: QR code, passos e código copia e cola */
         .pix-qr {
             display: flex;
             align-items: center;
@@ -1009,6 +1046,7 @@
             outline-offset: 2px;
         }
 
+        /* Mensagens de erro dos campos: aparecem quando a pessoa digita algo inválido */
         .form-group::after,
         .aceite-termos::after {
             display: none;
@@ -1059,6 +1097,7 @@
             padding: 12px 14px;
         }
 
+        /* Telas médias */
         @media (max-width: 900px) {
             body {
                 align-items: flex-start;
@@ -1094,6 +1133,7 @@
             }
         }
 
+        /* Celulares */
         @media (max-width: 700px) {
             body {
                 padding: 64px 12px 16px;
@@ -1199,11 +1239,13 @@
 </head>
 <body>
 
+<%-- Volta para a página inicial --%>
 <a href="${pageContext.request.contextPath}/inicio" class="botao-voltar" aria-label="Voltar para a página inicial">
     <span class="seta" aria-hidden="true">&larr;</span>
     <span>Voltar</span>
 </a>
 
+<%-- Logo à esquerda e cartão à direita --%>
 <div class="container">
 
     <div class="logotipo">
@@ -1214,9 +1256,12 @@
         <div class="container-login">
 
                 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+                <%-- cad guarda o que a pessoa já preencheu nas etapas anteriores (fica na sessão) --%>
                 <c:set var="cad" value="${sessionScope.cadastroPendente}" />
                 <div class="painel painel-cadastro">
+                    <%-- Escolhe qual etapa mostrar, conforme o servidor mandou em etapaCadastro --%>
                     <c:choose>
+                        <%-- Veio da rota /login: mostra o login no lugar do cadastro --%>
                         <c:when test="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}">
                             <%@ include file="cadastro/login.jsp" %>
                         </c:when>
@@ -1262,6 +1307,7 @@
                         <c:when test="${etapaCadastro == 'plano'}">
                             <%@ include file="cadastro/plano.jsp" %>
                         </c:when>
+                        <%-- Sem etapa definida: começa pela criação da conta (e-mail e senha) --%>
                         <c:otherwise>
                             <%@ include file="cadastro/conta.jsp" %>
                         </c:otherwise>

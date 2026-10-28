@@ -1,11 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do síndico: tipo do condomínio (residencial, comercial ou industrial) --%>
 <c:set var="tituloEtapa" value="Tipo de condomínio" />
 <c:set var="subtituloEtapa" value="Selecione o tipo do seu condomínio." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="tipo">
 
+    <%-- Opções em cartões; a que a pessoa já escolheu antes vem marcada --%>
     <div class="opcoes" role="radiogroup" aria-label="Tipo de condomínio">
         <label class="opcao">
             <input type="radio" name="tipoCondominio" value="residencial" required ${cad.tipoCondominio == 'residencial' ? 'checked' : ''}>

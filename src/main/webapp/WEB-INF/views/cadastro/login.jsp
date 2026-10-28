@@ -1,8 +1,10 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Login de quem já tem conta, usado para fazer a assinatura --%>
 <c:set var="tituloEtapa" value="Acesse sua conta" />
 <c:set var="subtituloEtapa" value="Você já tem cadastro. Entre para fazer a assinatura." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- Envia e-mail e senha para o login; o campo proximo guarda para onde ir depois de entrar --%>
 <form action="${ctx}/login" method="POST">
     <input type="hidden" name="proximo" value="<c:out value='${param.proximo}' />">
 
@@ -29,6 +31,7 @@
         <a href="#" class="forgot-password">Esqueceu sua senha?</a>
     </div>
 
+    <%-- Mensagem de erro do login --%>
     <c:if test="${not empty erroLogin}">
         <p class="mensagem-erro" role="alert"><c:out value="${erroLogin}" /></p>
     </c:if>

@@ -1,4 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%-- Página inicial (landing page) do EcoCiente: tela pública, sem login --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -15,6 +16,7 @@
 </head>
 <body>
     <div class="site-ajuste">
+        <%-- Topo da página: logo e links de navegação (levam às seções desta mesma página) --%>
         <header class="header">
             <nav class="navbar">
                 <div class="logotipo-navbar">
@@ -36,6 +38,7 @@
             </nav>
         </header>
 
+        <%-- Faixa de abertura com a chamada principal --%>
         <section class="hero">
             <div class="container-hero">
                 <div class="conteudo-hero">
@@ -56,6 +59,7 @@
             </div>
         </section>
 
+        <%-- Conteúdo principal: o que o EcoCiente oferece e o que a pessoa ganha usando --%>
         <div class="container">
             <h2 class="titulo-secao">O EcoCiente oferece:</h2>
             <div class="oferece">
@@ -107,6 +111,7 @@
                 </ul>
             </div>
 
+            <%-- Funcionalidades: o que o condomínio precisa para reciclar melhor --%>
             <div class="container-verde" id="funcionalidades">
                 <h2 class="titulo-branco titulo-funcionalidades">Tudo que seu condomínio precisa para reciclar melhor</h2>
                 <p class="subtitulo-funcionalidades">Conectamos tecnologia, pessoas e cooperativas para um futuro mais sustentável.</p>
@@ -158,6 +163,7 @@
                 </ul>
             </div>
 
+            <%-- Benefícios --%>
             <section class="beneficios" id="beneficios">
                 <div class="descricao-beneficios">
                     <div class="badge-beneficios">
@@ -191,6 +197,7 @@
             </section>
 
 
+            <%-- Planos de assinatura: Comunidade (gratuito), Empresarial Residencial e Industrial --%>
             <section class="planos" id="planos">
                 <h2 class="titulo-planos">Planos de assinatura</h2>
 
@@ -312,6 +319,7 @@
                  </div>
             </section>
 
+            <%-- Seção para cooperativas --%>
             <section class="cooperativa">
                 <div class="container-cooperativa">
                     <div class="conteudo-cooperativa">
@@ -366,6 +374,7 @@
                     </div>
                 </div>
             </section>
+            <%-- Links para baixar o aplicativo --%>
             <section class="baixe-aqui">
                 <div class="container-baixe">
                     <div class="linha-full"></div>
@@ -389,6 +398,7 @@
                 </div>
             </section>
 
+            <%-- Nossa missão --%>
             <section class="nossa-missao" id="nossa-missao">
                 <div class="container-missao">
                     <div class="conteudo-missao">
@@ -431,6 +441,7 @@
                     </div>
                 </div>
             </section>
+            <%-- Quem somos --%>
             <section class="quem-somos" id="quem-somos">
                 <div class="container-quem-somos">
                     <div class="imagem-quem-somos">
@@ -473,6 +484,7 @@
                     </div>
                 </div>
             </section>
+            <%-- Perguntas frequentes --%>
             <section class="duvidas" id="duvidas">
                 <h2 class="titulo-duvidas">Perguntas frequentes</h2>
 
@@ -536,6 +548,7 @@
         </div>
 
     </div>
+        <%-- Rodapé: links de navegação, contato e documentos (termos de uso e política de privacidade) --%>
         <footer class="rodape">
             <div class="container-rodape">
                 <div class="coluna-rodape">
