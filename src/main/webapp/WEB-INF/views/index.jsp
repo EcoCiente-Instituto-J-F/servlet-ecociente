@@ -34,7 +34,7 @@
                 <li><a href="#planos">Planos</a></li>
                 <li><a href="#nossa-missao">Nossa Missão</a></li>
                 <li><a href="#duvidas">Dúvidas</a></li>
-                <li><a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-navbar">Começar agora <span>&rarr;</span></a></li>
+                <li><a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-navbar">Começar agora <svg class="seta" width="16" height="16" viewBox="-1 -1 16 16" fill="none" aria-hidden="true"><path d="M0 7H14M7 0L14 7L7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>
             </ul>
         </nav>
     </header>
@@ -55,7 +55,7 @@
                 </p>
                 <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-hero">
                     <span>Começar agora</span>
-                    <span class="seta">&rarr;</span>
+                    <svg class="seta" width="16" height="16" viewBox="-1 -1 16 16" fill="none" aria-hidden="true"><path d="M0 7H14M7 0L14 7L7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
             </div>
             <div class="mockups-hero">
@@ -70,21 +70,21 @@
         <div class="oferece">
             <div class="card-oferece">
                 <div class="icone-oferece">
-                    <img src="${pageContext.request.contextPath}/assets/icone-grafico.svg?v=2" alt="Icone Redução de Custos">
+                    <img src="${pageContext.request.contextPath}/assets/icone-grafico.svg" alt="Icone Redução de Custos">
                 </div>
                 <span class="titulo-card-oferece">Redução de Custos</span>
                 <p class="texto-oferece">Conectamos você a cooperativas parceiras, reduzindo custos com descarte e promovendo uma gestão mais sustentável e eficiente.</p>
             </div>
             <div class="card-oferece">
                 <div class="icone-oferece">
-                    <img src="${pageContext.request.contextPath}/assets/icone-dinheiro.svg?v=2" alt="Icone valorização">
+                    <img src="${pageContext.request.contextPath}/assets/icone-dinheiro.svg" alt="Icone valorização">
                 </div>
                 <span class="titulo-card-oferece">Valorização do Imóvel</span>
                 <p class="texto-oferece">Contribuímos para o meio ambiente, práticas sustentáveis aumentam a percepção de qualidade e agregam valor ao imóvel.</p>
             </div>
             <div class="card-oferece">
                 <div class="icone-oferece">
-                    <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg?v=2" alt="Icone Gestão Ambiental">
+                    <img src="${pageContext.request.contextPath}/assets/icone-arvore.svg" alt="Icone Gestão Ambiental">
                 </div>
                 <span class="titulo-card-oferece">Gestão Ambiental</span>
                 <p class="texto-oferece">Facilitamos a gestão dos resíduos recicláveis e a adoção de práticas alinhadas às normas ambientais, promovendo mais organização e sustentabilidade para o seu condomínio.</p>
@@ -172,7 +172,7 @@
         <section class="beneficios" id="beneficios">
             <div class="descricao-beneficios">
                 <div class="badge-beneficios">
-                    <span class="icone-check">✓</span>
+                    <span class="icone-check"></span>
                     <span>Benefícios</span>
                 </div>
                 <div class="titulo-branco titulo-beneficios">
@@ -182,19 +182,19 @@
 
                 <div class="grid-icones-beneficios">
                     <div class="item-icone-beneficio">
-                        <img src="${pageContext.request.contextPath}/assets/icone-folha-rosa.svg?v=2" alt="Sustentabilidade">
+                        <img src="${pageContext.request.contextPath}/assets/icone-folha-rosa.svg" alt="Sustentabilidade">
                         <span>Sustentabilidade na prática</span>
                     </div>
                     <div class="item-icone-beneficio">
-                        <img src="${pageContext.request.contextPath}/assets/icone-shield-rosa.svg?v=2" alt="Gestão">
+                        <img src="${pageContext.request.contextPath}/assets/icone-shield-rosa.svg" alt="Gestão">
                         <span>Gestão que transforma</span>
                     </div>
                     <div class="item-icone-beneficio">
-                        <img src="${pageContext.request.contextPath}/assets/people-icon-rosa.svg?v=2" alt="Parcerias">
+                        <img src="${pageContext.request.contextPath}/assets/people-icon-rosa.svg" alt="Parcerias">
                         <span>Parcerias que fazem a diferença</span>
                     </div>
                     <div class="item-icone-beneficio">
-                        <img src="${pageContext.request.contextPath}/assets/grafico-icon-rosa.svg?v=2" alt="Resultados">
+                        <img src="${pageContext.request.contextPath}/assets/grafico-icon-rosa.svg" alt="Resultados">
                         <span>Resultados que geram impactos</span>
                     </div>
                 </div>
@@ -219,7 +219,7 @@
                 <!-- CARD 2: EMPRESARIAL RESIDENCIAL -->
                 <article class="card-plano">
                     <div class="cabecalho-card">
-                        <img src="${pageContext.request.contextPath}/assets/icone-empresarial-residencial.svg?v=2" alt="Ícone Empresarial" class="icone-plano">
+                        <img src="${pageContext.request.contextPath}/assets/icone-empresarial-residencial.svg" alt="Ícone Empresarial" class="icone-plano">
                         <div>
                             <span class="subtitulo-card">PLANO</span>
                             <h3 class="nome-plano">Empresarial Residencial</h3>
@@ -254,7 +254,7 @@
                 <!-- CARD 3: INDUSTRIAL -->
                 <article class="card-plano">
                     <div class="cabecalho-card">
-                        <img src="${pageContext.request.contextPath}/assets/icone-industrial.svg?v=2" alt="Ícone Industrial" class="icone-plano">
+                        <img src="${pageContext.request.contextPath}/assets/icone-industrial.svg" alt="Ícone Industrial" class="icone-plano">
                         <div>
                             <span class="subtitulo-card">PLANO</span>
                             <h3 class="nome-plano">Industrial</h3>
@@ -290,7 +290,7 @@
             <div class="acao-planos">
                 <a href="${pageContext.request.contextPath}/login-cadastro?aba=cadastro" class="botao-plano">
                     <span>Começar agora</span>
-                    <span class="seta">&rarr;</span>
+                    <svg class="seta" width="16" height="16" viewBox="-1 -1 16 16" fill="none" aria-hidden="true"><path d="M0 7H14M7 0L14 7L7 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
             </div>
         </section>
@@ -317,28 +317,28 @@
                     <ul class="lista-recursos-cooperativa">
                         <li class="item-recurso-cooperativa">
                             <div class="icone-recurso-cooperativa">
-                                <img src="${pageContext.request.contextPath}/assets/icone-celular.svg?v=2" alt="Receba solicitações">
+                                <img src="${pageContext.request.contextPath}/assets/icone-celular.svg" alt="Receba solicitações">
                             </div>
                             <span>Receba novas solicitações de coleta</span>
                         </li>
 
                         <li class="item-recurso-cooperativa">
                             <div class="icone-recurso-cooperativa">
-                                <img src="${pageContext.request.contextPath}/assets/icone-caminhao.svg?v=2" alt="Organize coletas">
+                                <img src="${pageContext.request.contextPath}/assets/icone-caminhao.svg" alt="Organize coletas">
                             </div>
                             <span>Organize e otimize suas coletas</span>
                         </li>
 
                         <li class="item-recurso-cooperativa">
                             <div class="icone-recurso-cooperativa">
-                                <img src="${pageContext.request.contextPath}/assets/grafico-verde-icone.svg?v=2" alt="Acompanhe materiais">
+                                <img src="${pageContext.request.contextPath}/assets/grafico-verde-icone.svg" alt="Acompanhe materiais">
                             </div>
                             <span>Acompanhe materiais e resultados</span>
                         </li>
 
                         <li class="item-recurso-cooperativa">
                             <div class="icone-recurso-cooperativa">
-                                <img src="${pageContext.request.contextPath}/assets/icone-maos.svg?v=2" alt="Conecte-se">
+                                <img src="${pageContext.request.contextPath}/assets/icone-maos.svg" alt="Conecte-se">
                             </div>
                             <span>Conecte-se com novos parceiros</span>
                         </li>
@@ -384,7 +384,7 @@
                     <div class="grid-estatisticas-missao">
                         <div class="item-estatistica">
                             <div class="icone-estatistica">
-                                <img src="${pageContext.request.contextPath}/assets/icon-pessoa.svg?v=2" alt="Barreiras de informação">
+                                <img src="${pageContext.request.contextPath}/assets/icon-pessoa.svg" alt="Barreiras de informação">
                             </div>
                             <span class="numero-estatistica">39% das pessoas</span>
                             <p class="texto-estatistica">Enfrentam barreiras de informação ou motivação</p>
@@ -392,7 +392,7 @@
 
                         <div class="item-estatistica">
                             <div class="icone-estatistica">
-                                <img src="${pageContext.request.contextPath}/assets/icon-recicle.svg?v=2" alt="Símbolo de reciclagem">
+                                <img src="${pageContext.request.contextPath}/assets/icon-recicle.svg" alt="Símbolo de reciclagem">
                             </div>
                             <span class="numero-estatistica">8,3% resíduos</span>
                             <p class="texto-estatistica">É tudo o que hoje é efetivamente reciclado.</p>
@@ -400,7 +400,7 @@
 
                         <div class="item-estatistica">
                             <div class="icone-estatistica">
-                                <img src="${pageContext.request.contextPath}/assets/icon-infinito.svg?v=2" alt="ODS 12.8">
+                                <img src="${pageContext.request.contextPath}/assets/icon-infinito.svg" alt="ODS 12.8">
                             </div>
                             <span class="numero-estatistica">ODS 12.8</span>
                             <p class="texto-estatistica">É a meta da ONU que guia o projeto.</p>
@@ -432,7 +432,7 @@
                     <div class="grid-diferenciais-quem-somos">
                         <div class="item-diferencial">
                             <div class="icone-diferencial">
-                                <img src="${pageContext.request.contextPath}/assets/icon-estudantes.svg?v=2" alt="Somos estudantes">
+                                <img src="${pageContext.request.contextPath}/assets/icon-estudantes.svg" alt="Somos estudantes">
                             </div>
                             <span class="titulo-diferencial">Somos estudantes</span>
                             <p class="texto-diferencial">Movidos pelo propósito de fazer a diferença.</p>
@@ -440,7 +440,7 @@
 
                         <div class="item-diferencial">
                             <div class="icone-diferencial">
-                                <img src="${pageContext.request.contextPath}/assets/icon-ideia.svg?v=2" alt="Transformamos ideias">
+                                <img src="${pageContext.request.contextPath}/assets/icon-ideia.svg" alt="Transformamos ideias">
                             </div>
                             <span class="titulo-diferencial">Transformamos ideias</span>
                             <p class="texto-diferencial">Criamos soluções práticas para desafios reais.</p>
@@ -448,7 +448,7 @@
 
                         <div class="item-diferencial">
                             <div class="icone-diferencial">
-                                <img src="${pageContext.request.contextPath}/assets/icon-planet.svg?v=2" alt="Geramos impacto">
+                                <img src="${pageContext.request.contextPath}/assets/icon-planet.svg" alt="Geramos impacto">
                             </div>
                             <span class="titulo-diferencial">Geramos impacto</span>
                             <p class="texto-diferencial">Acreditamos em um futuro mais sustentável.</p>

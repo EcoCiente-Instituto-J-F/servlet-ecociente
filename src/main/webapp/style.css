@@ -1,4 +1,4 @@
-﻿* {
+﻿﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -112,6 +112,20 @@ h2, h3, h4 {
     opacity: 0.7;
 }
 
+.links-navbar {
+    align-items: center;
+}
+
+.links-navbar .botao-navbar {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #D64573;
+    color: #ffffff;
+    padding: 10px 24px;
+    border-radius: 50px;
+}
+
 /* Botão hamburguer (só aparece no mobile) */
 .entrada-menu {
     display: none;
@@ -197,6 +211,26 @@ h2, h3, h4 {
     margin: 0 auto;
 }
 
+.botao-hero {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #D64573;
+    color: #ffffff;
+    font-family: 'Montserrat', 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 34px;
+    border-radius: 50px;
+    transition: opacity 0.2s;
+}
+
+.botao-hero:hover {
+    opacity: 0.85;
+}
+
 /* ---------- Container principal ---------- */
 
 .container {
@@ -204,7 +238,7 @@ h2, h3, h4 {
     position: relative;
     z-index: 2;
     background-color: white;
-    border-radius: 40px 40px 0 0;
+    border-radius: 100px 100px 0 0;
 }
 
 /* ---------- O EcoCiente oferece ---------- */
@@ -490,24 +524,31 @@ input[name="modo-card"] {
     gap: 8px;
     border: 1.5px solid #0EB488;
     background: rgba(6, 78, 59, 0.6);
-    padding: 8px;
+    padding: 8px 24px 8px 8px;
     border-radius: 50px;
-    font-size: 16px;
-    width: 130px;
+    font-size: 20px;
+    width: fit-content;
 }
 
 .icone-check {
     background-color: #DFEADE;
-    color: #D64573;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
+    font-size: 0;
     flex-shrink: 0;
+}
+
+.icone-check::after {
+    content: '';
+    width: 8px;
+    height: 14px;
+    border: solid #064E3B;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-1px, -1px);
 }
 
 .titulo-beneficios {
@@ -573,8 +614,10 @@ input[name="modo-card"] {
 
 .grid-planos {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
+    max-width: 1010px;
+    margin: 0 auto;
     align-items: stretch;
 }
 
@@ -784,9 +827,17 @@ input[name="modo-card"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 0;
     flex-shrink: 0;
+}
+
+.lista-recursos .check-icone::after {
+    content: '';
+    width: 4px;
+    height: 8px;
+    border: solid #ffffff;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg) translate(-0.5px, -0.5px);
 }
 
 .botao-plano {
@@ -938,39 +989,43 @@ input[name="modo-card"] {
     margin-left: -90px;
 }
 
-/* ----- Baixe aqui ----- */
+/* ----- Baixe aqui (Tudo na palma da sua mão) ----- */
 
 .baixe-aqui {
     width: 100%;
     margin-top: var(--espaco-secao);
     display: flex;
     justify-content: center;
+    border-top: 2px solid #CFE0DB;
+    padding-top: 80px;
 }
 
 .container-baixe {
     max-width: 1200px;
     width: 100%;
     display: grid;
-    gap: 10px;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
     align-items: center;
 }
 
-.linha-full {
-    width: 100vw;
-    position: relative;
-    left: 50%;
-    right: 50%;
-    margin-left: -50vw;
-    margin-right: -50vw;
-    border-top: 1px solid #064E3B;
-    margin-bottom: 23px;
+.conteudo-baixe {
+    display: flex;
+    flex-direction: column;
+}
+
+.etiqueta-baixe {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: #717171;
+    margin-bottom: 16px;
 }
 
 .titulo-baixe {
     font-family: 'Montserrat', 'Instrument Sans', sans-serif;
-    color: #064E3B;
-    font-size: clamp(32px, 6.5vw, 78px);
-    text-align: center;
+    color: #D64573;
+    font-size: clamp(28px, 3.2vw, 38px);
     font-weight: 600;
     line-height: 1.15;
 }
@@ -978,47 +1033,67 @@ input[name="modo-card"] {
 .descricao-baixe {
     font-family: 'Instrument Sans', sans-serif;
     color: #717171;
-    text-align: center;
-    font-size: clamp(16px, 2vw, 24px);
-    font-weight: 600;
-    margin-top: 23px;
-    margin-left: auto;
-    margin-right: auto;
-    max-width: 700px;
+    font-size: clamp(16px, 1.8vw, 22px);
     line-height: 1.6;
+    max-width: 440px;
 }
 
-.botoes-baixe {
+.lista-baixe {
+    list-style: none;
+    margin-top: 30px;
     display: flex;
-    justify-content: center;
-    width: 100%;
-    align-items: center;
-    margin-top: 23px;
-    gap: 30px;
+    flex-direction: column;
+    gap: 24px;
 }
 
-.botoes-baixe img {
-    max-width: 180px;
-    height: auto;
-    display: block;
+.lista-baixe li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: clamp(16px, 1.8vw, 22px);
+    color: #717171;
+    max-width: 380px;
+    text-align: left;
+}
+
+.lista-baixe li::before {
+    content: '';
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #DFEADE;
+    color: #064E3B;
+    border-radius: 50% 50% 50% 0;
+}
+
+.lista-baixe li::after {
+    content: '';
+    position: absolute;
+    left: 28px;
+    top: 50%;
+    width: 8px;
+    height: 15px;
+    border: solid #064E3B;
+    border-width: 0 2px 2px 0;
+    transform: translateY(-65%) rotate(45deg);
 }
 
 .mockup-baixe {
     display: flex;
     justify-content: center;
-    align-items: flex-end;
     width: 100%;
-    margin-top: 30px;
-    margin-bottom: 0;
-    padding-bottom: 0;
 }
 
 .mockup-baixe img {
     display: block;
     width: 100%;
-    max-width: 400px;
+    max-width: 560px;
     height: auto;
-    margin-bottom: -1%;
 }
 
 /* ----- Nossa Misão ----- */
@@ -1038,6 +1113,8 @@ input[name="modo-card"] {
 .conteudo-missao {
     display: flex;
     flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
 .titulo-missao {
@@ -1090,8 +1167,8 @@ input[name="modo-card"] {
 
 .numero-estatistica {
     font-family: 'Montserrat', sans-serif;
-    font-size: clamp(16px, 1.8vw, 20px);
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
     color: #064E3B;
     margin-bottom: 6px;
 }
@@ -1105,8 +1182,18 @@ input[name="modo-card"] {
 
 .imagem-missao {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     width: 100%;
+}
+
+.legenda-ods {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 12px;
+    line-height: 1.4;
+    color: #717171;
+    max-width: 480px;
+    margin-top: 14px;
 }
 
 .imagem-missao img {
@@ -1274,24 +1361,22 @@ input[name="modo-card"] {
 }
 
 .icone-plus {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background-color: #DFEADE;
-    color: #064E3B;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    position: relative;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .icone-plus::before {
-    content: '+';
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1;
+    content: '';
+    width: 11px;
+    height: 11px;
+    border: solid #064E3B;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg) translate(-3px, -3px);
 }
 
 .resposta-faq {
@@ -1315,9 +1400,7 @@ input[name="modo-card"] {
 }
 
 .entrada-faq:checked ~ .pergunta-faq .icone-plus {
-    background-color: #D64573;
-    color: #ffffff;
-    transform: rotate(45deg);
+    transform: rotate(180deg);
 }
 
 /* ----- RODAPÉ (FOOTER) ----- */
@@ -1523,17 +1606,11 @@ input[name="modo-card"] {
         transform: none;
     }
 
-    .titulo-baixe {
-        font-size: clamp(42px, 6.5vw, 64px);
-    }
 
     .descricao-baixe {
         max-width: 600px;
     }
 
-    .botoes-baixe img {
-        max-width: 165px;
-    }
 
     .mockup-baixe img {
         max-width: 360px;
@@ -1560,6 +1637,19 @@ input[name="modo-card"] {
 }
 
 @media (max-width: 900px) {
+    .container-baixe {
+        grid-template-columns: 1fr;
+    }
+
+    .conteudo-baixe {
+        align-items: center;
+        text-align: center;
+    }
+
+    .legenda-ods {
+        text-align: center;
+    }
+
 
     :root {
         --espaco-secao: 60px;
@@ -1789,21 +1879,12 @@ input[name="modo-card"] {
         max-width: 450px;
     }
 
-    .titulo-baixe {
-        font-size: clamp(36px, 7vw, 52px);
-    }
 
     .descricao-baixe {
         max-width: 550px;
     }
 
-    .botoes-baixe {
-        gap: 20px;
-    }
 
-    .botoes-baixe img {
-        max-width: 150px;
-    }
 
     .lista-recursos-cooperativa {
         display: flex;
@@ -2108,25 +2189,15 @@ input[name="modo-card"] {
     }
 
     .titulo-baixe {
-        font-size: 34px;
-        margin: -5vw;
-        margin-bottom: 1px;
+        font-size: 28px;
     }
 
     .descricao-baixe {
-        margin-top: 18px;
         line-height: 1.5;
         max-width: 300px;
     }
 
-    .botoes-baixe {
-        gap: 12px;
-        margin-top: 20px;
-    }
 
-    .botoes-baixe img {
-        max-width: 140px;
-    }
 
     .mockup-baixe {
         margin-top: 25px;
@@ -2309,13 +2380,7 @@ input[name="modo-card"] {
         font-size: 15px;
     }
 
-    .botoes-baixe {
-        gap: 8px;
-    }
 
-    .botoes-baixe img {
-        max-width: 125px;
-    }
 
     .mockup-baixe img {
         max-width: 270px;
