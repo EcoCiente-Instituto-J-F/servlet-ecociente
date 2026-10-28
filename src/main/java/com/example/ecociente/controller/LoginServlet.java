@@ -117,10 +117,10 @@ public class LoginServlet extends HttpServlet {
         Condominio condominio = condominioDAO.selecionarPorId(sindico.getIdCondominio());
         if (condominio == null) return null;
 
-        //O código do plano é o nome do tipo do condomínio (residencial, comercial ou industrial)
+        //O código do plano vem do nome do tipo do condomínio (residencial, comercial, residencial/comercial ou industrial)
         String plano = null;
         for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
-            if (tipo.getId() == condominio.getIdTipoCondominio()) plano = tipo.getNome().toLowerCase();
+            if (tipo.getId() == condominio.getIdTipoCondominio()) plano = tipo.getNome().trim().toLowerCase().replace("/", "-").replace(" ", "");
         }
 
 
