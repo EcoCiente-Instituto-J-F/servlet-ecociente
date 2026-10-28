@@ -1,8 +1,11 @@
 /* HOME: indicadores e gráfico de cadastros (12 meses, com seletor de ano) */
 
+/* Linha de cartões do topo: 4 colunas (--tres usa 3) */
 .indicadores { display: grid; grid-template-columns: repeat(4, 1fr); gap: 40px; margin-top: 2px; }
 .indicadores--tres { grid-template-columns: repeat(3, 1fr); gap: 50px; margin-top: 0; }
+/* Área dos gráficos: duas colunas; --unico deixa uma só, na largura toda */
 .paineis { display: grid; grid-template-columns: 683fr 450fr; gap: 30px; margin-top: 39px; }
+/* Cartão que guarda o gráfico */
 .painel { position: relative; height: 328px; padding: 23px 19px 0; }
 .painel__titulo { font-size: 12px; line-height: 16px; font-weight: 700; color: var(--cor-primaria); }
 
@@ -10,15 +13,19 @@
 
 /* Gráfico de linhas */
 .grafico__topo { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-right: 22px; }
+/* Seletor de ano do gráfico */
 .grafico__ano { height: 26px; padding: 0 10px; border: 1px solid var(--cor-borda-campo); border-radius: 8px; background: var(--cor-fundo-campo); color: var(--cor-texto-suave); font: 600 11px var(--fonte-texto); cursor: pointer; }
 .grafico__topo .painel__titulo { margin-right: auto; }
+/* Número grande: total de cadastros do ano */
 .grafico__total { margin-top: 8px; font: 700 22px/26px var(--fonte-titulo); color: var(--cor-primaria); }
+/* Legenda colorida (Usuário, Síndico, Cooperativas) */
 .grafico__legenda { display: flex; gap: 31px; font-size: 11px; line-height: 16px; color: var(--cor-texto-suave); }
 .grafico__legenda li { display: flex; align-items: center; gap: 6px; }
 .grafico__legenda li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--cor); }
+/* O desenho do gráfico fica por cima do cartão e não recebe cliques */
 .grafico__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
-/* Volume por categoria.  */
+/* Volume por categoria (estilo que hoje nenhuma tela usa). */
 .categorias { margin-top: 25px; }
 .categoria + .categoria { margin-top: 18.6px; }
 .categoria__topo { display: flex; align-items: center; gap: 12px; height: 14px; box-sizing: content-box; padding-bottom: 4.5px; border-bottom: 1px solid var(--cor-borda); }
