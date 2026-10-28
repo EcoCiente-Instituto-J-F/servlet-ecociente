@@ -1,11 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do síndico: endereço do condomínio --%>
 <c:set var="tituloEtapa" value="Endereço" />
 <c:set var="subtituloEtapa" value="Onde fica o seu condomínio? Usaremos para planejar a rota de coleta." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="endereco">
 
+    <%-- CEP, estado e cidade --%>
     <div class="form-row tres">
         <div class="form-group" data-erro="CEP incompleto: digite os 8 números, ex.: 01310-100.">
             <label for="cad-cep">CEP</label>
@@ -30,6 +33,7 @@
         </div>
     </div>
 
+    <%-- Rua e número --%>
     <div class="form-row rua-numero">
         <div class="form-group">
             <label for="cad-rua">Nome da rua</label>

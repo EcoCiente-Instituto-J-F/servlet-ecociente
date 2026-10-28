@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isErrorPage="true" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Tela de erro: escolhe a variante (400, 404 ou erro de servidor) pelo código recebido --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%--
     Tela de erro da aplicação (400, 404 e erro de servidor).
@@ -178,6 +179,7 @@
 </head>
 <body>
 
+    <%-- Cartão central: imagem, código, título, texto e botão --%>
     <main class="card-wrapper">
         <section class="card-erro" aria-labelledby="titulo-erro">
 

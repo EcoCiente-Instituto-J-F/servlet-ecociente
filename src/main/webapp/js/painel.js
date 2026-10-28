@@ -1,9 +1,11 @@
 /* PAINEL (home) — atualiza os cards e os gráficos sozinhos*/
 
+// Área da página que mostra os cartões e o gráfico
 const areaDoPainel = document.getElementById('area-do-painel');
 const INTERVALO_EM_MS = 30000;   // de quanto em quanto tempo atualiza
 let anoEscolhido = null;         // ano do seletor do gráfico (null = o atual)
 
+// Busca no servidor os cartões e o gráfico mais recentes e troca o conteúdo da área
 async function atualizarPainel(forcar) {
   if (document.hidden && !forcar) return;
   try {
@@ -21,10 +23,12 @@ async function atualizarPainel(forcar) {
 }
 
 // O seletor de ano fica dentro da área que é recarregada, por isso o evento é escutado na área
+// Trocar o ano no seletor atualiza o gráfico na hora
 areaDoPainel.addEventListener('change', (evento) => {
   if (evento.target.id !== 'seletor-ano') return;
   anoEscolhido = evento.target.value;
   atualizarPainel(true);
 });
 
+// Atualiza sozinho de tempos em tempos
 setInterval(() => atualizarPainel(false), INTERVALO_EM_MS);

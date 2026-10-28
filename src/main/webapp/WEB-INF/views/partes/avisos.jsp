@@ -1,5 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Faixas de aviso (sucesso ou erro) mostradas no topo das telas depois de cadastrar, alterar ou excluir --%>
+<%-- Erro enviado pelo servidor: mostra a mensagem e reabre o modal com o que a pessoa tinha digitado --%>
 <c:if test="${not empty erro}">
   <p class="aviso aviso--erro" role="alert"><c:out value="${erro}"/></p>
   <%-- Reabre o modal com os valores enviados: interacoes.js lê estes itens --%>
@@ -11,6 +13,7 @@
     </div>
   </c:if>
 </c:if>
+<%-- Avisos de sucesso e de falha de cada ação --%>
 <c:if test="${adicionado == 'true'}"><p class="aviso aviso--sucesso" role="status">Cadastro realizado com sucesso.</p></c:if>
 <c:if test="${alterado == 'true'}"><p class="aviso aviso--sucesso" role="status">Alterações salvas com sucesso.</p></c:if>
 <c:if test="${deletado == 'true'}"><p class="aviso aviso--sucesso" role="status">Registro excluído com sucesso.</p></c:if>

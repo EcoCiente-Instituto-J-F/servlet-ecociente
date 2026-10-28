@@ -1,4 +1,6 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Dados pessoais do cadastro. Serve para cooperativa, síndico e morador: os textos e a etapa enviada mudam conforme o perfil --%>
+<%-- Descobre o perfil escolhido para ajustar os textos e a etapa enviada --%>
 <c:set var="ehCooperativa" value="${cad.perfil == 'cooperativa'}" />
 <c:set var="ehSindico" value="${cad.perfil == 'sindico'}" />
 <c:set var="tituloEtapa" value="Dados pessoais" />
@@ -10,6 +12,7 @@
             : 'Deixe seu contato para receber os avisos de coleta do seu bairro.')}" />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" muda conforme o perfil (cooperativa-dados, sindico-dados ou morador-dados) --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa"
         value="${ehCooperativa
@@ -38,9 +41,11 @@
         </div>
     </div>
 
+    <%-- Campo de data de nascimento --%>
     <%@ include file="_nascimento.jsp" %>
 
     <c:set var="textoLgpd" value="${ehCooperativa ? 'Usamos esses dados apenas para validar a cooperativa, conforme a LGPD.' : 'Usamos telefone e CPF apenas para identificar sua conta, conforme a LGPD.'}" />
+    <%-- Aviso de proteção de dados e aceite dos termos --%>
     <%@ include file="_aceite.jsp" %>
 
     <c:set var="textoAvancar" value="Próximo" />

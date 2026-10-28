@@ -1,9 +1,11 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa da cooperativa: nome, CNPJ e endereço da sede --%>
 <c:set var="tituloEtapa" value="Endereço" />
 <c:set var="subtituloEtapa" value="Torne sua cooperativa parceira. Informe o CNPJ e o endereço da sede." />
 <%@ include file="_cabecalho.jsp" %>
 <c:catch var="semNomeCooperativa"><c:set var="valorNomeCooperativa" value="${cad.nomeCooperativa}" /></c:catch>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="cooperativa-endereco">
 
@@ -14,6 +16,7 @@
         </div>
     </div>
 
+    <%-- CNPJ, CEP e estado --%>
     <div class="form-row tres">
         <div class="form-group" data-erro="CNPJ incompleto: digite os 14 números, ex.: 00.000.000/0000-00.">
             <label for="cad-cnpj">CNPJ</label>
@@ -53,6 +56,7 @@
         </div>
     </div>
 
+    <%-- Rua e número --%>
     <div class="form-row rua-numero">
         <div class="form-group">
             <label for="cad-rua">Nome da rua</label>

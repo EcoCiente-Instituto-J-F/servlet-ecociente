@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de usuários do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="usuarios" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,17 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-usuario"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-usuario"/></jsp:include>
+    <%-- Tabela de usuários --%>
     <section class="tabela-cartao">
       <c:if test="${empty usuarios and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:30%"><col style="width:30%"><col style="width:23%"><col style="width:12%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="nome">Nome do usuário</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="email">E-mail</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="localidade">Localidade</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="tipo">Tipo</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+          <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="u" items="${usuarios}">
             <tr data-id="<c:out value="${u.idUsuario}"/>" data-nome="<c:out value="${u.nome}"/>" data-email="<c:out value="${u.email}"/>" data-tipo="<c:out value="${u.tipo}"/>" data-telefone="<c:out value="${u.telefone}"/>" data-endereco="<c:out value="${u.endereco}"/>" data-id-tipo-usuario="<c:out value="${u.idTipoUsuario}"/>" data-iniciais="<c:out value="${u.iniciais}"/>" data-cpf="<c:out value="${u.cpf}"/>" data-tag="<c:out value="${u.tag}"/>" data-cep="<c:out value="${u.cep}"/>" data-cidade="<c:out value="${u.cidade}"/>" data-estado="<c:out value="${u.estado}"/>" data-bairro="<c:out value="${u.bairro}"/>" data-rua="<c:out value="${u.rua}"/>" data-numero="<c:out value="${u.numero}"/>" data-complemento="<c:out value="${u.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${u.idUsuario}" aria-label="Selecionar linha"><span><c:out value="${u.nome}"/></span></div></td>
@@ -61,19 +69,24 @@
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
+          <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
           <c:forEach begin="${fn:length(usuarios)}" end="7">
             <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
           </c:forEach>
         </tbody>
       </table>
+      <%-- Números das páginas --%>
       <jsp:include page="/WEB-INF/views/partes/paginacao.jsp"/>
     </section>
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-usuario" style="--largura:640px" aria-labelledby="modal-usuario-titulo">
+  <%-- Uma só rota para tudo: o campo id vazio cadastra e preenchido altera --%>
   <form action="${ctx}/usuarios" method="post" data-endereco-opcional>
     <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -83,14 +96,18 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
         <label class="campo">Nome completo<input type="text" name="nome" placeholder="Nome do usuário" required maxlength="100"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="email@exemplo.com" required maxlength="150"></label>
+        <%-- Senha: obrigatória só ao cadastrar. Ao editar, vazia mantém a atual (o olho mostra ou esconde) --%>
         <label class="campo">Senha<span class="campo__senha"><input type="password" name="senha" placeholder="Mínimo de 8 caracteres" data-placeholder-editar="Deixe em branco para manter" data-obrigatorio-novo minlength="8" autocomplete="new-password"><button class="campo__olho" type="button" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line class="risco" x1="2" y1="2" x2="22" y2="22"></line></svg></button></span></label>
         <label class="campo">Confirmar senha<span class="campo__senha"><input type="password" name="confirma_senha" placeholder="Repita a senha" data-placeholder-editar="Repita só se trocar a senha" data-obrigatorio-novo autocomplete="new-password"><button class="campo__olho" type="button" data-mostrar-senha aria-label="Mostrar senha" aria-pressed="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle><line class="risco" x1="2" y1="2" x2="22" y2="22"></line></svg></button></span></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
         <label class="campo">CPF<input type="text" name="cpf" placeholder="000.000.000-00" maxlength="14" inputmode="numeric"></label>
+        <%-- Os tipos vêm da lista tiposUsuario enviada pelo servidor --%>
         <label class="campo">Tipo de usuário<select name="idTipoUsuario" required><option value="">Selecione</option><c:forEach var="t" items="${tiposUsuario}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
+        <%-- Endereço opcional: ou fica todo vazio ou completo (conferido pelo interacoes.js) --%>
         <label class="campo">CEP (opcional)<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code"></label>
         <label class="campo">Cidade (opcional)<input type="text" name="cidade" placeholder="São Paulo"></label>
         <label class="campo">Estado (opcional)<input type="text" name="estado" placeholder="SP" maxlength="2"></label>
@@ -108,6 +125,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-usuario" data-ficha style="--largura:420px" aria-labelledby="ficha-usuario-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha do usuário</p>

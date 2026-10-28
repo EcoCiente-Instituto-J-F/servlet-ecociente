@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de telefones do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="telefones" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,18 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-telefone"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-telefone"/></jsp:include>
+    <%-- Tabela de telefones --%>
     <section class="tabela-cartao">
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela">
         <colgroup><col style="width:47%"><col style="width:48%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Número</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Usuário</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+        <%-- Uma linha para cada item enviado pelo servidor --%>
         <c:forEach var="t" items="${telefones}">
+          <%-- Formata o número: celular (11 dígitos), fixo (10 dígitos) ou como está --%>
           <c:choose>
             <c:when test="${fn:length(t.numero) == 11}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 7)}-${fn:substring(t.numero, 7, 11)}"/></c:when>
             <c:when test="${fn:length(t.numero) == 10}"><c:set var="numeroBr" value="(${fn:substring(t.numero, 0, 2)}) ${fn:substring(t.numero, 2, 6)}-${fn:substring(t.numero, 6, 10)}"/></c:when>
@@ -66,6 +75,7 @@
             <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
           </tr>
         </c:forEach>
+        <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
         <c:forEach begin="${fn:length(telefones)}" end="7">
           <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td></tr>
         </c:forEach>
@@ -75,9 +85,12 @@
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-telefone" style="--largura:640px" aria-labelledby="modal-telefone-titulo">
+  <%-- Cadastrar e editar usam rotas diferentes; o interacoes.js troca o destino conforme o modo --%>
   <form action="${ctx}/adicionarTelefone" data-acao-novo="${ctx}/adicionarTelefone" data-acao-editar="${ctx}/alterarTelefone" method="post">
     <input type="hidden" name="idTelefone" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -87,9 +100,12 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
+        <%-- Só os números; o servidor guarda de 9 a 11 dígitos --%>
         <label class="campo">Número<input type="tel" name="numero" placeholder="(11) 91234-5678" required maxlength="15" inputmode="tel"></label>
         <%-- ALTERADO: u.id -> u.idUsuario --%>
+        <%-- Dono do telefone (um usuário que já existe) --%>
         <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
       </div>
     </div>
@@ -101,6 +117,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-telefone" data-ficha style="--largura:420px" aria-labelledby="ficha-telefone-titulo">
   <header class="modal__cabecalho">
     <p class="modal__etiqueta">Ficha do telefone</p>

@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de endereços do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="enderecos" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,18 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-endereco"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-endereco"/></jsp:include>
+    <%-- Tabela de endereços --%>
     <section class="tabela-cartao">
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela">
         <colgroup><col style="width:34%"><col style="width:22%"><col style="width:22%"><col style="width:17%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Rua e número</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Bairro</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Cidade / UF</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">CEP</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+          <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="e" items="${enderecos}">
+            <%-- Prepara os textos da linha: CEP com hífen e endereço completo --%>
             <c:set var="cepBr" value="${fn:length(e.cep) == 8 ? fn:substring(e.cep, 0, 5).concat('-').concat(fn:substring(e.cep, 5, 8)) : e.cep}"/>
             <c:set var="ruaNumero" value="${e.rua}, ${e.numero}"/>
             <c:set var="completo" value="${ruaNumero}${empty e.complemento ? '' : ' - '.concat(e.complemento)}${empty e.bairro ? '' : ' - '.concat(e.bairro)} - ${e.cidade}/${e.estado}"/>
@@ -63,6 +72,7 @@
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
+          <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
           <c:forEach begin="${fn:length(enderecos)}" end="7">
             <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
           </c:forEach>
@@ -72,9 +82,12 @@
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-endereco" style="--largura:640px" aria-labelledby="modal-endereco-titulo">
+  <%-- Cadastrar e editar usam rotas diferentes; o interacoes.js troca o destino conforme o modo --%>
   <form action="${ctx}/adicionarEndereco" data-acao-novo="${ctx}/adicionarEndereco" data-acao-editar="${ctx}/alterarEndereco" method="post">
     <input type="hidden" name="idEndereco" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -84,7 +97,9 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
+        <%-- Cada campo corresponde a uma coluna do endereço --%>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
@@ -102,6 +117,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-endereco" data-ficha style="--largura:420px" aria-labelledby="ficha-endereco-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha do endereço</p>

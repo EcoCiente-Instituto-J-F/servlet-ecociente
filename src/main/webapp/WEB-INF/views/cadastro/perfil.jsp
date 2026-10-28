@@ -1,11 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa: perfil do cadastro (cooperativa, síndico ou morador) --%>
 <c:set var="tituloEtapa" value="Perfil" />
 <c:set var="subtituloEtapa" value="Selecione o perfil que mais combina com você." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="perfil">
 
+    <%-- Opções em cartões; a que a pessoa já escolheu antes vem marcada (cad.perfil) --%>
     <div class="opcoes" role="radiogroup" aria-label="Perfil">
         <label class="opcao">
             <input type="radio" name="perfil" value="cooperativa" required ${cad.perfil == 'cooperativa' ? 'checked' : ''}>

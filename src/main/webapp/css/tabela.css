@@ -1,16 +1,24 @@
 /* TABELAS (usuários, condomínios, cooperativas, coletas)*/
 
+/* Caixa com borda que envolve a tabela */
 .tabela-cartao { border: 1px solid var(--cor-borda); border-radius: var(--raio-cartao); overflow: hidden; }
+/* Tabela com colunas de largura fixa */
 .tabela { width: 100%; table-layout: fixed; border-collapse: collapse; }
 .tabela th { height: 61px; text-align: left; font-size: 12px; font-weight: 600; color: var(--cor-texto-suave); }
 .tabela--alta th { height: 80px; }
+/* A primeira coluna tem mais recuo por causa da bolinha de seleção */
 .tabela th:first-child { padding-left: 45px; }
 .tabela td { height: var(--altura-linha-tabela); border-top: 1px solid var(--cor-borda); font-size: 11px; font-weight: 600; vertical-align: middle; }
+/* Ícone de ordenar no cabeçalho da tabela */
 .tabela__ordenar img { width: 11px; height: 15px; }
+/* Primeira célula da linha: bolinha de seleção + nome */
 .celula-principal { display: flex; align-items: center; gap: 16px; padding-left: 15px; }
+/* Bolinha para marcar a linha; fica preenchida quando marcada */
 .tabela__selecionar { appearance: none; flex: none; width: 14px; height: 14px; border: 1px solid var(--cor-texto-suave); border-radius: 50%; background: var(--cor-fundo-cartao); }
 .tabela__selecionar:checked { box-shadow: inset 0 0 0 3px var(--cor-fundo-cartao); background: var(--cor-primaria); }
+/* Foto redonda do usuário */
 .avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+/* Textos que podem quebrar em duas linhas dentro da célula */
 .celula-quebra { line-height: 15px; }
 .celula-quebra--localidade { max-width: 100px; }
 .celula-quebra--tipo { max-width: 96px; }

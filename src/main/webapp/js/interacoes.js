@@ -1,12 +1,15 @@
 /* INTERAÇÕES — menu lateral, seleção de linha, modais, formulários, ordenação e exclusão */
 
+// Todo o código fica dentro de uma função que roda sozinha, para as variáveis não se misturarem com outros scripts
 (() => {
   'use strict';
 
   /* ---------- 1. MENU LATERAL ---------- */
+  // Guarda o menu lateral e o botão que abre e fecha
   const menuLateral = document.querySelector('.menu-lateral');
   const botaoMenu = document.getElementById('botao-menu');
 
+  // Clicar no botão abre ou fecha o menu (mostra ou esconde os nomes)
   botaoMenu.addEventListener('click', () => {
     const estaAberto = menuLateral.classList.toggle('menu-lateral--aberto');
     botaoMenu.setAttribute('aria-expanded', String(estaAberto));
@@ -16,8 +19,10 @@
   /* ---------- 2. SELEÇÃO DE LINHA: habilita o botão Editar ---------- */
   // Botões que só funcionam com uma linha marcada (Editar e, em Usuários, Detalhes)
   const botoesDeSelecao = document.querySelectorAll('[data-acao="editar"], [data-requer-selecao]');
+  // Bolinha da linha marcada na tabela (null = nenhuma linha marcada)
   let bolinhaSelecionada = document.querySelector('input[name="linha"]:checked');
 
+  // Liga ou desliga os botões Editar, Excluir e Detalhes conforme exista linha marcada
   function atualizarBotaoEditar() {
     const habilitado = bolinhaSelecionada !== null;
     botoesDeSelecao.forEach((botao) => {
@@ -26,6 +31,7 @@
     });
   }
 
+  // Clique numa bolinha da tabela: marca a linha (ou desmarca, se ela já estava marcada)
   document.addEventListener('click', (evento) => {
     const bolinha = evento.target.closest('input[name="linha"]');
     if (!bolinha) return;
@@ -40,10 +46,12 @@
   atualizarBotaoEditar();
 
   /* ---------- LINHA SELECIONADA: dados vêm dos data-* do <tr> ---------- */
+  // Devolve os dados da linha marcada (atributos data-* do <tr>) ou null
   function dadosDaLinha() {
     return bolinhaSelecionada ? bolinhaSelecionada.closest('tr').dataset : null;
   }
 
+  // Monta as iniciais do nome (primeira e última palavra). Ex.: Ana Lima vira AL
   function iniciais(nome) {
     const partes = nome.split(/\s+/).filter(Boolean);
     if (partes.length === 0) return '—';
@@ -51,6 +59,7 @@
     return (partes[0][0] + ultima).toUpperCase();
   }
 
+  // Preenche o modal de detalhes com os dados da linha marcada
   function preencherFicha(modal) {
     const dados = dadosDaLinha();
     if (!modal.hasAttribute('data-ficha') || !dados) return;
@@ -62,8 +71,10 @@
   }
 
   /* ---------- FORMULÁRIO: limpa ou preenche conforme cadastrar/editar ---------- */
+  // Deixa a primeira letra maiúscula (nome vira Nome)
   const maiuscula = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
 
+  // Cadastrar: limpa o formulário. Editar: preenche com os dados da linha marcada
   function preencherFormulario(modal, modo) {
     const form = modal.querySelector('form');
     if (!form || !form.querySelector('[data-chave-id]') || modal.id === 'modal-excluir') return;
@@ -85,6 +96,7 @@
         campo.dataset.placeholderNovo ??= campo.placeholder;
         campo.placeholder = editando ? campo.dataset.placeholderEditar : campo.dataset.placeholderNovo;
       }
+      // A senha sempre volta a ficar escondida ao abrir o modal
       if (campo.type === 'password') campo.type = 'password';
       campo.setCustomValidity('');
       if (!dados || campo.type === 'password' || campo.type === 'checkbox') return;
@@ -100,6 +112,7 @@
   }
 
   /* ---------- EXCLUIR: um único modal de confirmação para todas as telas ---------- */
+  // Configura o modal de exclusão: para onde enviar, qual registro apagar e o nome mostrado na pergunta
   function prepararExclusao(modal, gatilho) {
     const dados = dadosDaLinha();
     const form = modal.querySelector('form');
@@ -116,13 +129,16 @@
   }
 
   /* ---------- MENU DE TRÊS PONTOS DA LINHA: Detalhes, Editar e Excluir ---------- */
+  // Menu flutuante aberto agora (null = nenhum)
   let menuDaLinha = null;
 
+  // Tira o menu flutuante da tela
   function fecharMenuDaLinha() {
     if (menuDaLinha) menuDaLinha.remove();
     menuDaLinha = null;
   }
 
+  // Cria o menu (Detalhes, Editar, Excluir) ao lado dos três pontos. Cada item aciona o botão correspondente do topo da página
   function abrirMenuDaLinha(botaoPontos) {
     fecharMenuDaLinha();
     const radio = botaoPontos.closest('tr').querySelector('input[name="linha"]');
@@ -151,6 +167,7 @@
     });
     document.body.append(menuDaLinha);
 
+    // Posiciona o menu perto do botão sem deixar sair da tela
     const caixa = botaoPontos.getBoundingClientRect();
     const largura = menuDaLinha.offsetWidth;
     menuDaLinha.style.top = Math.min(caixa.bottom + 4, window.innerHeight - menuDaLinha.offsetHeight - 8) + 'px';
@@ -158,6 +175,7 @@
     menuDaLinha.querySelector('button')?.focus();
   }
 
+  // Clique nos três pontos abre ou fecha o menu da linha; clique fora fecha
   document.addEventListener('click', (evento) => {
     const botaoPontos = evento.target.closest('.acoes-linha');
     if (botaoPontos) {
@@ -170,27 +188,33 @@
       fecharMenuDaLinha();
     }
   });
+  // A tecla Esc fecha o menu
   document.addEventListener('keydown', (evento) => { if (evento.key === 'Escape') fecharMenuDaLinha(); });
+  // Rolar a página também fecha o menu
   window.addEventListener('scroll', fecharMenuDaLinha, true);
 
   /* ---------- ORDENAR: clique no título da coluna ---------- */
   // Tabelas paginadas (data-ordem-servidor) pedem a ordem ao servidor; as outras ordenam as linhas da própria tela.
+  // Mostra a setinha de ordem na coluna escolhida e tira das outras
   function marcarOrdenacao(tabela, titulo, direcao) {
     tabela.querySelectorAll('th[aria-sort]').forEach((th) => th.removeAttribute('aria-sort'));
     if (titulo) titulo.setAttribute('aria-sort', direcao === 'desc' ? 'descending' : 'ascending');
   }
 
+  // Valor usado na comparação. Datas dd/mm/aaaa viram aaaammdd para ordenar na ordem certa
   function chaveDeOrdenacao(celula) {
     const texto = celula.textContent.trim();
     const data = texto.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
     return data ? data[3] + data[2] + data[1] : texto;
   }
 
+  // Ordena pela coluna clicada, alternando entre crescente e decrescente
   function ordenarColuna(botao) {
     const titulo = botao.closest('th');
     const tabela = botao.closest('table');
     const direcao = titulo.getAttribute('aria-sort') === 'ascending' ? 'desc' : 'asc';
 
+    // Tabela paginada: recarrega a página pedindo ao servidor a nova ordem
     if (tabela.hasAttribute('data-ordem-servidor')) {
       const endereco = new URL(window.location.href);
       endereco.searchParams.set('ordem', botao.dataset.ordem);
@@ -200,6 +224,7 @@
       return;
     }
 
+    // Tabela simples: reordena as linhas aqui mesmo (as linhas vazias de enfeite ficam no fim)
     const corpo = tabela.tBodies[0];
     const linhas = Array.from(corpo.rows).filter((linha) => !linha.hasAttribute('aria-hidden'));
     const vazias = Array.from(corpo.rows).filter((linha) => linha.hasAttribute('aria-hidden'));
@@ -210,11 +235,13 @@
     marcarOrdenacao(tabela, titulo, direcao);
   }
 
+  // Clique no título de uma coluna ordena a tabela
   document.addEventListener('click', (evento) => {
     const botao = evento.target.closest('.tabela__ordem');
     if (botao) ordenarColuna(botao);
   });
 
+  // Ao abrir a página, destaca a coluna que o servidor já ordenou
   const tabelaDoServidor = document.querySelector('table[data-ordem-servidor]');
   if (tabelaDoServidor) {
     const parametros = new URLSearchParams(window.location.search);
@@ -223,6 +250,7 @@
   }
 
   /* ---------- SENHA: mostrar/ocultar, confirmação e endereço opcional ---------- */
+  // Clique no olho mostra ou esconde a senha do campo ao lado
   document.addEventListener('click', (evento) => {
     const olho = evento.target.closest('[data-mostrar-senha]');
     if (!olho) return;
@@ -233,6 +261,7 @@
     olho.setAttribute('aria-label', vaiMostrar ? 'Ocultar senha' : 'Mostrar senha');
   });
 
+  // Confere se "Confirmar senha" é igual à senha e avisa no próprio campo
   function conferirSenhas(form) {
     const senha = form.querySelector('[name="senha"]');
     const confirmacao = form.querySelector('[name="confirma_senha"]');
@@ -251,12 +280,14 @@
       .setCustomValidity('Preencha o endereço completo ou deixe todos os campos de endereço vazios.');
   }
 
+  // A cada letra digitada, confere de novo a senha e o endereço
   document.addEventListener('input', (evento) => {
     const form = evento.target.closest('form');
     if (!form) return;
     if (evento.target.name === 'senha' || evento.target.name === 'confirma_senha') conferirSenhas(form);
     if (form.hasAttribute('data-endereco-opcional')) conferirEndereco(form);
   });
+  // Ao enviar o formulário, confere tudo e impede o envio se houver erro
   document.addEventListener('submit', (evento) => {
     conferirSenhas(evento.target);
     if (evento.target.hasAttribute('data-endereco-opcional')) conferirEndereco(evento.target);
@@ -267,6 +298,7 @@
   }, true);
 
   /* ---------- 3. MODAIS: abrir e fechar ---------- */
+  // Abre o modal pelo id e o deixa pronto (textos de editar, ficha e formulário)
   function abrirModal(idDoModal, modo, gatilho) {
     const modal = document.getElementById(idDoModal);
     if (!modal) return;
@@ -285,6 +317,7 @@
     return modal;
   }
 
+  // Clique em um botão com data-abrir-modal abre o modal; botão de fechar ou clique fora fecham
   document.addEventListener('click', (evento) => {
     const gatilho = evento.target.closest('[data-abrir-modal]');
     if (gatilho) {
@@ -319,11 +352,13 @@
   /* ---------- 4. TEMA CLARO/ESCURO ---------- */
   const CHAVE_DO_TEMA = 'tema-ecociente';   // nome com que o tema fica salvo no navegador
 
+  // Marca a opção Claro ou Escuro no modal de configurações
   function marcarTema(tema) {
     const opcao = document.querySelector(`input[name="tema"][value="${tema}"]`);
     if (opcao) opcao.checked = true;                        // marca Claro/Escuro nas configurações
   }
 
+  // Aplica o tema na página e guarda a escolha no navegador
   function aplicarTema(tema) {
     document.documentElement.dataset.tema = tema;
     try { localStorage.setItem(CHAVE_DO_TEMA, tema); } catch (erro) { /* navegador sem armazenamento */ }
@@ -341,6 +376,7 @@
     modalConfiguracoes.addEventListener('close', () => marcarTema(document.documentElement.dataset.tema));
   }
 
+  // Ao carregar a página, aplica o tema que a pessoa salvou (ou o claro)
   let temaSalvo = 'claro';
   try { temaSalvo = localStorage.getItem(CHAVE_DO_TEMA) || 'claro'; } catch (erro) { /* usa o tema claro */ }
   aplicarTema(temaSalvo);

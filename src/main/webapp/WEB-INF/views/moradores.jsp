@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de moradores do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="moradores" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,18 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-morador"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-morador"/></jsp:include>
+    <%-- Tabela de moradores --%>
     <section class="tabela-cartao">
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela">
         <colgroup><col style="width:30%"><col style="width:20%"><col style="width:25%"><col style="width:20%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Nome do morador</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">Apartamento</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Torre</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">Condomínio</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+        <%-- Uma linha para cada item enviado pelo servidor --%>
         <c:forEach var="m" items="${moradores}">
+          <%-- Procura o nome do condomínio do morador na lista enviada pelo servidor --%>
           <c:set var="nomeCondominio" value="---"/>
           <c:forEach var="o" items="${condominios}"><c:if test="${o.idCondominio == m.idCondominio}"><c:set var="nomeCondominio" value="${o.nome}"/></c:if></c:forEach>
           <tr data-id="<c:out value="${m.idMorador}"/>" data-nome="<c:out value="${m.nome}"/>" data-apartamento="<c:out value="${m.numeroApartamento}"/>" data-numero-apartamento="<c:out value="${m.numeroApartamento}"/>" data-torre="<c:out value="${m.torre}"/>" data-id-condominio="<c:out value="${m.idCondominio}"/>" data-condominio="<c:out value="${nomeCondominio}"/>" data-id-usuario="<c:out value="${m.idUsuario}"/>" data-tag="<c:out value="Morador"/>">
@@ -62,6 +71,7 @@
             <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
           </tr>
         </c:forEach>
+        <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
         <c:forEach begin="${fn:length(moradores)}" end="7">
           <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
         </c:forEach>
@@ -71,9 +81,12 @@
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-morador" style="--largura:640px" aria-labelledby="modal-morador-titulo">
+  <%-- Cadastrar e editar usam rotas diferentes; o interacoes.js troca o destino conforme o modo --%>
   <form action="${ctx}/adicionarMorador" data-acao-novo="${ctx}/adicionarMorador" data-acao-editar="${ctx}/alterarMorador" method="post">
     <input type="hidden" name="idMorador" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -83,11 +96,15 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
         <%-- ALTERADO: u.id -> u.idUsuario --%>
+        <%-- O morador é um usuário que já existe --%>
         <label class="campo">Usuário<select name="idUsuario" required><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
         <label class="campo">Número do apartamento<input type="text" name="numeroApartamento" placeholder="101" required maxlength="10"></label>
+        <%-- Torre é um texto livre e opcional --%>
         <label class="campo">Torre (opcional)<input type="text" name="torre" placeholder="A" maxlength="30"></label>
+        <%-- Condomínio onde o morador mora --%>
         <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
       </div>
     </div>
@@ -99,6 +116,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-morador" data-ficha style="--largura:420px" aria-labelledby="ficha-morador-titulo">
   <header class="modal__cabecalho">
     <p class="modal__etiqueta">Ficha do morador</p>

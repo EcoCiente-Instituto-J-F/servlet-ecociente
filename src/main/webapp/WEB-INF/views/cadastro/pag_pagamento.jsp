@@ -1,12 +1,15 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Pagamento (etapa 2 de 2): valor a pagar e forma de pagamento (cartão, Pix ou boleto) --%>
 <c:set var="rotuloEtapa" value="Etapa 2 de 2 · Pagamento" />
 <c:set var="tituloEtapa" value="Forma de pagamento" />
 <c:set var="subtituloEtapa" value="Escolha como prefere pagar sua assinatura." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- Forma de pagamento escolhida (cartão, se ainda não escolheu) --%>
 <c:set var="metodo" value="${empty cad.metodo ? 'cartao' : cad.metodo}" />
 <c:set var="docPadrao" value="${empty cad.docTitular ? cad.documento : cad.docTitular}" />
 
+<%-- Resumo do valor a pagar --%>
 <div class="resumo-pedido">
     <div>
         <strong>Plano <c:out value="${orc.plano.nome}" /></strong>
@@ -18,6 +21,7 @@
     </div>
 </div>
 
+<%-- Escolha entre cartão, Pix e boleto: só o formulário do método marcado aparece --%>
 <div class="metodos" role="radiogroup" aria-label="Forma de pagamento">
     <input type="radio" name="metodo-escolha" id="metodo-cartao" class="metodo-radio" ${metodo == 'cartao' ? 'checked' : ''}>
     <label for="metodo-cartao" class="metodo"><img src="${ctx}/assets/icone-cartao.svg" width="28" height="20" alt="">Cartão de crédito</label>

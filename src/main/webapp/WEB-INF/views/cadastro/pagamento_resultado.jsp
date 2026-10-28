@@ -1,6 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Resultado do pagamento: aprovado, boleto gerado ou não aprovado (conforme pagamento.status) --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
+<%-- Situação do pagamento enviada pelo servidor --%>
 <c:set var="st" value="${pagamento.status}" />
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -234,6 +236,7 @@
 </head>
 <body>
 
+    <%-- Cartão central com a mensagem do resultado --%>
     <main class="card-wrapper">
         <section class="card-resultado" aria-labelledby="titulo-resultado">
             <c:choose>

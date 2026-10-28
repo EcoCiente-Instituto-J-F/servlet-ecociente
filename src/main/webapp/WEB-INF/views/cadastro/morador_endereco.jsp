@@ -1,8 +1,10 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do morador em casa: endereço da moradia --%>
 <c:set var="tituloEtapa" value="Sua moradia" />
 <c:set var="subtituloEtapa" value="Informe onde você mora para acompanharmos a coleta da sua região." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="morador-endereco">
 
@@ -39,6 +41,7 @@
         </div>
     </div>
 
+    <%-- Rua e número --%>
     <div class="form-row rua-numero">
         <div class="form-group">
             <label for="cad-rua">Nome da rua</label>

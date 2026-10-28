@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de cooperativas do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="cooperativas" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,17 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-cooperativa"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-cooperativa"/></jsp:include>
+    <%-- Tabela de cooperativas --%>
     <section class="tabela-cartao">
       <c:if test="${empty cooperativas and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:33%"><col style="width:23%"><col style="width:25%"><col style="width:14%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="nomeCooperativa">Cooperativa</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cnpj">CNPJ</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="condominiosVinculados">Condomínios vinculados</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="status">Status</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+          <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="c" items="${cooperativas}">
             <tr data-id="<c:out value="${c.idCooperativa}"/>" data-nome="<c:out value="${c.nomeCooperativa}"/>" data-nome-cooperativa="<c:out value="${c.nomeCooperativa}"/>" data-responsavel="<c:out value="${c.responsavel}"/>" data-email="<c:out value="${c.email}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-telefone="<c:out value="${c.telefone}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-status="<c:out value="${c.status}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-cpf="<c:out value="${c.cpf}"/>" data-tag="<c:out value="${c.tag}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCooperativa}" aria-label="Selecionar linha"><span><c:out value="${c.nomeCooperativa}"/></span></div></td>
@@ -61,19 +69,24 @@
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
+          <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
           <c:forEach begin="${fn:length(cooperativas)}" end="7">
             <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
           </c:forEach>
         </tbody>
       </table>
+      <%-- Números das páginas --%>
       <jsp:include page="/WEB-INF/views/partes/paginacao.jsp"/>
     </section>
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-cooperativa" style="--largura:640px" aria-labelledby="modal-cooperativa-titulo">
+  <%-- Uma só rota para tudo: o campo id vazio cadastra e preenchido altera --%>
   <form action="${ctx}/cooperativas" method="post">
     <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -83,15 +96,20 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
+        <%-- A cooperativa tem um nome e um responsável (com CPF) --%>
         <label class="campo">Nome da cooperativa<input type="text" name="nomeCooperativa" placeholder="Verde Viva" required maxlength="100"></label>
         <label class="campo">Nome do responsável<input type="text" name="responsavel" placeholder="Carlos Mendes" required maxlength="100"></label>
         <label class="campo">CPF do responsável<input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric"></label>
         <label class="campo">Telefone<input type="tel" name="telefone" placeholder="(11) 90000-0000" maxlength="15" inputmode="tel"></label>
         <label class="campo">E-mail<input type="email" name="email" placeholder="contato@cooperativa.com" data-obrigatorio-novo maxlength="150"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
+        <%-- Senha: obrigatória só ao cadastrar --%>
         <label class="campo">Senha<input type="password" name="senha" placeholder="Mínimo de 8 caracteres" data-obrigatorio-novo minlength="8" autocomplete="new-password"></label>
+        <%-- Cooperativa ativa ou inativa --%>
         <label class="campo">Status<select name="status"><option value="true">Ativa</option><option value="false">Inativa</option></select></label>
+        <%-- Endereço da cooperativa: obrigatório --%>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
@@ -109,6 +127,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-cooperativa" data-ficha style="--largura:420px" aria-labelledby="ficha-cooperativa-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha da cooperativa</p>

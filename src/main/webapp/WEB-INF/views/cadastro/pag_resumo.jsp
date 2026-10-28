@@ -1,13 +1,16 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Pagamento (etapa 1 de 2): resumo do plano, ciclo de cobrança e quantidade --%>
 <c:set var="rotuloEtapa" value="Etapa 1 de 2 · Plano" />
 <c:set var="tituloEtapa" value="Resumo do plano" />
 <c:set var="subtituloEtapa" value="Confira o plano escolhido antes de seguir para o pagamento." />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="pag-resumo">
     <button type="submit" name="acao" value="recalcular" class="so-leitor" tabindex="-1" aria-hidden="true">Recalcular</button>
 
+    <%-- Plano escolhido --%>
     <div class="plano-escolhido">
         <img src="${ctx}/assets/${orc.plano.icone}" alt="" class="plano-icone">
         <div class="plano-info">
@@ -17,6 +20,7 @@
         </div>
     </div>
 
+    <%-- Alterna entre cobrança mensal e anual (recalcula o valor) --%>
     <fieldset class="ciclo">
         <legend>Ciclo de cobrança</legend>
         <div class="seletor-ciclo">
@@ -54,6 +58,7 @@
         <span class="valor-total"><c:out value="${orc.total}" /></span>
     </div>
 
+    <%-- Só no plano anual: mostra como o valor foi calculado e quanto a pessoa economiza --%>
     <c:if test="${orc.anual}">
         <div class="calculo-anual">
             <p class="calculo-titulo">Como chegamos nesse valor</p>

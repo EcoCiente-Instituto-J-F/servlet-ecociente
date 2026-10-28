@@ -1,11 +1,14 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do morador: mora em condomínio (com token do síndico) ou em casa --%>
 <c:set var="tituloEtapa" value="Moradia" />
 <c:set var="subtituloEtapa" value="Você faz parte de um condomínio?" />
 <%@ include file="_cabecalho.jsp" %>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="moradia">
 
+    <%-- Duas opções em cartões --%>
     <div class="opcoes duas" role="radiogroup" aria-label="Você faz parte de um condomínio?">
         <label class="opcao">
             <input type="radio" name="moradia" value="condominio" required ${cad.moradia == 'condominio' ? 'checked' : ''}>

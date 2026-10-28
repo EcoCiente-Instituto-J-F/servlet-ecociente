@@ -1,4 +1,5 @@
 <%@ page pageEncoding="UTF-8" %>
+<%-- Etapa do síndico: dados do condomínio. Os campos mudam conforme o tipo (residencial, comercial ou industrial) --%>
 <c:set var="tipo" value="${cad.tipoCondominio}" />
 <c:set var="tituloEtapa" value="Dados do condomínio" />
 <c:set var="subtituloEtapa" value="Conte um pouco sobre o seu condomínio ${tipo}." />
@@ -6,6 +7,7 @@
 <c:catch var="semUnidades"><c:set var="valorUnidades" value="${cad.numeroUnidades}" /></c:catch>
 <c:catch var="semArea"><c:set var="valorArea" value="${cad.areaM2}" /></c:catch>
 
+<%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="condominio">
 
@@ -28,6 +30,7 @@
         </c:otherwise>
     </c:choose>
 
+    <%-- CNPJ ao lado do telefone (ou da área, no industrial) --%>
     <div class="form-row">
         <div class="form-group" data-erro="CNPJ incompleto: digite os 14 números, ex.: 00.000.000/0000-00.">
             <label for="cad-cnpj">CNPJ</label>
@@ -56,6 +59,7 @@
         </c:choose>
     </div>
 
+    <%-- Número de unidades (residencial e comercial). No industrial, o campo é a área em m² --%>
     <c:if test="${tipo != 'industrial'}">
         <div class="form-group">
             <label for="cad-unidades">Número de unidades</label>
