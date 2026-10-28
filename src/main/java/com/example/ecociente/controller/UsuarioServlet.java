@@ -520,7 +520,9 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         String tipoCondominio = request.getParameter("tipoCondominio");
-        if (!"residencial".equals(tipoCondominio) && !"comercial".equals(tipoCondominio) && !"industrial".equals(tipoCondominio)) {
+        //Residencial e comercial têm o mesmo plano: "residencial" e "comercial" (cliente ou sessão antiga) viram residencial-comercial.
+        if ("residencial".equals(tipoCondominio) || "comercial".equals(tipoCondominio)) tipoCondominio = "residencial-comercial";
+        if (!"residencial-comercial".equals(tipoCondominio) && !"industrial".equals(tipoCondominio)) {
             request.setAttribute("erroCadastro", "Selecione o tipo do condomínio.");
             mostrarCadastro(request, response);
             return;
@@ -566,8 +568,8 @@ public class UsuarioServlet extends HttpServlet {
         cad.setAreaM2(areaM2);
         sessao.setAttribute("cadastroPendente", cad);
 
-        //Residencial usa o nome do condomínio; comercial e industrial usam a razão social.
-        String nome = "residencial".equals(cad.getTipoCondominio()) ? nomeCondominio : razaoSocial;
+        //Residencial / comercial usa o nome do condomínio; industrial usa a razão social.
+        String nome = "industrial".equals(cad.getTipoCondominio()) ? razaoSocial : nomeCondominio;
         if (nome == null || nome.isBlank() || nome.trim().length() > 100) {
             request.setAttribute("erroCadastro", "Informe o nome do condomínio, com até 100 caracteres.");
             mostrarCadastro(request, response);
@@ -662,7 +664,8 @@ public class UsuarioServlet extends HttpServlet {
         int idTipoUsuario = usuarioDAO.selecionarIdTipoPorNome("Sindico");
         int idTipoCondominio = 0;
         for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
-            if (tipo.getNome().equalsIgnoreCase(cad.getTipoCondominio())) idTipoCondominio = tipo.getId();
+            //O nome no banco ("Residencial/Comercial") vira o código do tipo ("residencial-comercial").
+            if (tipo.getNome().trim().replace("/", "-").replace(" ", "").equalsIgnoreCase(cad.getTipoCondominio())) idTipoCondominio = tipo.getId();
         }
         if (idTipoUsuario == 0 || idTipoCondominio == 0) {
             request.setAttribute("erroCadastro", "Tipo de usuário ou de condomínio não encontrado no banco.");
@@ -677,7 +680,7 @@ public class UsuarioServlet extends HttpServlet {
         int quantidade;
         try {
             boolean industrial = "industrial".equals(cad.getTipoCondominio());
-            String nome = "residencial".equals(cad.getTipoCondominio()) ? cad.getNomeCondominio() : cad.getRazaoSocial();
+            String nome = "industrial".equals(cad.getTipoCondominio()) ? cad.getRazaoSocial() : cad.getNomeCondominio();
 
             //O token é gerado na assinatura, junto com a gravação do condomínio.
             String token = condominioDAO.gerarTokenUnico();
@@ -838,7 +841,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ ASSINATURA: TELAS DE PAGAMENTO (só a navegação, depois do cadastro do síndico e da cooperativa) ================
     // Fluxo: pag-dados -> pag-resumo -> pag-pagamento
-    // O plano é o do tipo do condomínio (tabela plano, codigo = residencial, comercial ou industrial) e o valor é sempre
+    // O plano é o do tipo do condomínio (tabela plano, codigo = residencial-comercial ou industrial) e o valor é sempre
     // calculado aqui no servidor. A quantidade vem sempre do cadastro do condomínio (o síndico só escolhe o ciclo). "Ir para o pagamento" grava a assinatura como pendente.
     // TODO: sem gateway ainda: o último passo não cobra nada e a assinatura continua pendente.
 
