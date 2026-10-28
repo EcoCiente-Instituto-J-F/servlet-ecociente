@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%-- Tela única do cadastro. Mostra uma etapa por vez, escolhida pelo servidor (etapaCadastro); cada etapa fica em cadastro/*.jsp --%>
+<%-- Tela única de entrada e cadastro, com duas abas: Login e Cadastro. A aba Cadastro mostra uma etapa por vez, escolhida pelo servidor (etapaCadastro); cada etapa fica em cadastro/*.jsp --%>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -34,7 +34,7 @@
             font-family: 'Instrument Sans', sans-serif;
         }
 
-        /* Estrutura: logo à esquerda e cartão do cadastro à direita */
+        /* Estrutura: logo à esquerda e cartão à direita */
         .container {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -63,7 +63,7 @@
             max-width: 500px;
         }
 
-        /* Cartão branco onde aparecem as etapas do cadastro */
+        /* Cartão branco onde ficam as abas Login e Cadastro */
         .container-login {
             position: relative;
             background-color: #ffffff;
@@ -72,6 +72,9 @@
             width: 100%;
         }
 
+
+        /* Bolinhas escondidas que guardam qual aba está aberta; o olho de mostrar senha usa a mesma ideia */
+        .aba-radio,
         /* Caixa invisível que controla o olho de mostrar a senha */
         .ver-senha {
             position: absolute;
@@ -81,6 +84,59 @@
             clip: rect(0 0 0 0);
             white-space: nowrap;
             opacity: 0;
+        }
+
+        /* Abas Login e Cadastro */
+        .tabs {
+            display: flex;
+            width: 100%;
+            background-color: #ffffff;
+            border: 1px solid #064E3B;
+            padding: 3px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+        }
+
+        .tab-botao {
+            flex: 1;
+            padding: 7px 12px;
+            border-radius: 50px;
+            color: #064E3B;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            text-align: center;
+            user-select: none;
+            transition: all 0.25s ease;
+        }
+
+        #aba-login:checked ~ .tabs .tab-botao[for="aba-login"],
+        #aba-cadastro:checked ~ .tabs .tab-botao[for="aba-cadastro"] {
+            background-color: #064E3B;
+            color: #ffffff;
+        }
+
+        #aba-login:focus-visible ~ .tabs .tab-botao[for="aba-login"],
+        #aba-cadastro:focus-visible ~ .tabs .tab-botao[for="aba-cadastro"] {
+            outline: 2px solid #E05282;
+            outline-offset: -2px;
+        }
+
+        /* Cada aba é um painel: só o da aba marcada aparece */
+        .painel {
+            display: none;
+        }
+
+        #aba-login:checked ~ .painel-login,
+        #aba-cadastro:checked ~ .painel-cadastro {
+            display: block;
+            animation: aparecer 0.3s ease;
+        }
+
+        @keyframes aparecer {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         /* Título e subtítulo de cada etapa */
@@ -201,7 +257,7 @@
             padding-right: 24px;
         }
 
-        /* Link "Esqueceu sua senha?" (tela de login) */
+        /* Link "Esqueceu sua senha?" */
         .forgot-password {
             display: block;
             text-align: right;
@@ -1197,6 +1253,10 @@
             .input-field::placeholder {
                 font-size: 14px;
             }
+
+            .botao-submit {
+                min-height: 44px;
+            }
         }
 
         @media (max-width: 700px) {
@@ -1254,17 +1314,71 @@
 
     <div class="card-wrapper">
         <div class="container-login">
+            <%-- Quem chega por /login (inclusive "Fazer assinatura") abre direto a aba de login --%>
+            <c:set var="viaLogin" value="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}" />
+            <c:set var="abrirCadastro" value="${not viaLogin and (param.aba == 'cadastro' or abaAtiva == 'cadastro')}" />
+            <%-- As duas bolinhas escondidas guardam qual aba está aberta (a troca é feita só com CSS) --%>
+            <input type="radio" name="aba" id="aba-login" class="aba-radio" ${not abrirCadastro ? 'checked' : ''}>
+            <input type="radio" name="aba" id="aba-cadastro" class="aba-radio" ${abrirCadastro ? 'checked' : ''}>
 
+            <%-- Abas Login e Cadastro: somem nas etapas de plano e pagamento --%>
+            <c:if test="${not (etapaCadastro == 'plano' or etapaCadastro == 'pag-dados' or etapaCadastro == 'pag-resumo' or etapaCadastro == 'pag-pagamento')}">
+                <div class="tabs">
+                    <label for="aba-login" class="tab-botao">Login</label>
+                    <label for="aba-cadastro" class="tab-botao">Cadastro</label>
+                </div>
+            </c:if>
+
+            <%-- Aba Login: envia e-mail e senha para quem já tem conta --%>
+            <div class="painel painel-login">
+
+                <div class="titulo-container">
+                    <h3 class="titulo-padrao">Acesse sua conta</h3>
+                </div>
+                <p class="subtitulo">${param.proximo == 'plano' ? 'Entre para fazer a assinatura.' : 'Bem-vindo de volta! Continue de onde parou.'}</p>
+
+                <form action="${pageContext.request.contextPath}/login" method="POST">
+                    <input type="hidden" name="proximo" value="<c:out value='${param.proximo}' />">
+                    <div class="form-group">
+                        <label for="email">E-mail ou usuário</label>
+                        <div class="input-wrapper">
+                            <input class="input-field" type="text" id="email" name="email" value="<c:out value='${param.email}' />" placeholder="Digite seu e-mail">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="senha">Senha</label>
+                        <div class="input-wrapper">
+                            <input class="input-field campo-senha" type="text" id="senha" name="senha" placeholder="Digite sua senha" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+                            <input type="checkbox" id="ver-senha-login" class="ver-senha" aria-label="Mostrar senha">
+                            <label for="ver-senha-login" class="toggle-password">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <line class="risco" x1="2" y1="2" x2="22" y2="22"></line>
+                                </svg>
+                            </label>
+                        </div>
+                        <a href="#" class="forgot-password">Esqueceu sua senha?</a>
+                    </div>
+
+                    <%-- Mensagem de erro do login --%>
+                    <c:if test="${not empty erroLogin}">
+                        <p class="mensagem-erro"><c:out value="${erroLogin}" /></p>
+                    </c:if>
+
+                        <button type="submit" class="botao-submit">Entrar</button>
+                    </form>
+
+            </div>
                 <c:set var="ctx" value="${pageContext.request.contextPath}" />
                 <%-- cad guarda o que a pessoa já preencheu nas etapas anteriores (fica na sessão) --%>
                 <c:set var="cad" value="${sessionScope.cadastroPendente}" />
+                <%-- Aba Cadastro: mostra a etapa atual --%>
                 <div class="painel painel-cadastro">
                     <%-- Escolhe qual etapa mostrar, conforme o servidor mandou em etapaCadastro --%>
                     <c:choose>
-                        <%-- Veio da rota /login: mostra o login no lugar do cadastro --%>
-                        <c:when test="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}">
-                            <%@ include file="cadastro/login.jsp" %>
-                        </c:when>
                         <c:when test="${etapaCadastro == 'pag-dados'}">
                             <%@ include file="cadastro/pag_dados.jsp" %>
                         </c:when>
