@@ -51,6 +51,8 @@
     </header>
     <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-condominio"/></jsp:include>
+    <%-- Depois de cadastrar, o servidor manda o código (token) do condomínio novo --%>
+    <c:if test="${not empty tokenGerado}"><p class="aviso aviso--sucesso" role="status">Código do condomínio: <strong><c:out value="${tokenGerado}"/></strong>. Compartilhe com os moradores.</p></c:if>
     <%-- Tabela de condomínios --%>
     <section class="tabela-cartao">
       <c:if test="${empty condominios and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
@@ -61,7 +63,10 @@
         <tbody>
           <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="c" items="${condominios}">
-            <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-numero-unidades="<c:out value="${c.numeroUnidades}"/>" data-area-m2="<c:out value="${c.areaM2}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
+            <%-- O id do síndico só existe quando o servidor envia essa informação; se não enviar, fica vazio --%>
+            <c:set var="idSindicoLinha" value=""/>
+            <c:catch var="semIdSindico"><c:set var="idSindicoLinha" value="${c.idUsuarioSindico}"/></c:catch>
+            <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-numero-unidades="<c:out value="${c.numeroUnidades}"/>" data-area-m2="<c:out value="${c.areaM2}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>" data-id-usuario-sindico="<c:out value="${idSindicoLinha}"/>" data-token="<c:out value="${c.token}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCondominio}" aria-label="Selecionar linha"><span><c:out value="${c.nome}"/></span></div></td>
               <td><c:out value="${c.cnpj}"/></td>
               <td><c:out value="${c.tipo}"/></td>
@@ -101,10 +106,10 @@
         <label class="campo">Nome<input type="text" name="nome" placeholder="Nome do condomínio" required maxlength="100"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
         <%-- Os tipos vêm da lista tiposCondominio enviada pelo servidor --%>
-        <label class="campo">Tipo<select name="idTipoCondominio" required><option value="">Selecione</option><c:forEach var="t" items="${tiposCondominio}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Tipo<select name="idTipoCondominio" required><option value="">Selecione</option><c:forEach var="t" items="${tiposCondominio}"><option value="${t.id}" data-industrial="${t.nome == 'Industrial'}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
         <%-- Unidades (residencial e comercial) ou área em m² (industrial): nunca os dois --%>
-        <label class="campo">Nº de unidades (exceto industrial)<input type="number" name="numeroUnidades" placeholder="120" min="1"></label>
-        <label class="campo">Área em m² (só industrial)<input type="number" name="areaM2" placeholder="1500.00" step="0.01" min="0.01"></label>
+        <label class="campo" id="campo-unidades">Nº de unidades (exceto industrial)<input type="number" name="numeroUnidades" placeholder="120" min="1"></label>
+        <label class="campo" id="campo-area">Área em m² (só industrial)<input type="number" name="areaM2" placeholder="1500.00" step="0.01" min="0.01"></label>
         <%-- Endereço do condomínio: obrigatório --%>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
@@ -113,6 +118,9 @@
         <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
         <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
         <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
+        <%-- Síndico (opcional): só aparece como escolha ao cadastrar; ao editar os campos ficam travados (data-somente-novo) --%>
+        <label class="campo">Síndico (opcional)<select name="idUsuarioSindico" data-somente-novo><option value="">Sem síndico por enquanto</option><c:forEach var="u" items="${usuariosSindico}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
+        <label class="campo">Início do mandato<input type="date" name="dataInicioMandato" data-somente-novo></label>
       </div>
     </div>
     <div class="modal__linha"></div>
@@ -141,6 +149,7 @@
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Endereço</p><p class="ficha__valor" data-campo="endereco">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/condominios.svg" alt=""></span><div><p class="ficha__rotulo">Nº de unidades</p><p class="ficha__valor" data-campo="numeroUnidades">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/endereco.svg" alt=""></span><div><p class="ficha__rotulo">Área em m²</p><p class="ficha__valor" data-campo="areaM2">—</p></div></li>
+      <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/folha.svg" alt=""></span><div><p class="ficha__rotulo">Código do condomínio</p><p class="ficha__valor" data-campo="token">—</p></div></li>
       <li class="ficha__item"><span class="ficha__icone"><img class="" src="${ctx}/assets/icones/pessoas.svg" alt=""></span><div><p class="ficha__rotulo">Síndico responsável</p><p class="ficha__valor" data-campo="sindico">—</p></div></li>
       </ul>
     </div>
@@ -149,6 +158,35 @@
       <button class="botao botao--primario" type="button" data-abrir-modal="modal-condominio" data-modo="editar"><img class="icone-branco" src="${ctx}/assets/icones/editar.svg" alt="">Editar</button>
     </footer>
 </dialog>
+
+<%-- Ao mudar o tipo do condomínio, mostra só o campo certo: área (industrial) ou número de unidades (os outros) --%>
+<script>
+  (function () {
+    var tipo = document.querySelector('#modal-condominio select[name="idTipoCondominio"]');
+    var campoUnidades = document.getElementById('campo-unidades');
+    var campoArea = document.getElementById('campo-area');
+    if (!tipo || !campoUnidades || !campoArea) return;
+
+    // Mostra ou esconde o campo e, se escondido, não envia nem exige o valor
+    function mostrar(campo, visivel) {
+      var entrada = campo.querySelector('input');
+      campo.hidden = !visivel;
+      entrada.disabled = !visivel;
+      entrada.required = visivel;
+    }
+
+    function atualizar() {
+      var opcao = tipo.options[tipo.selectedIndex];
+      var escolheu = opcao && opcao.value !== '';
+      var industrial = escolheu && opcao.dataset.industrial === 'true';
+      mostrar(campoUnidades, escolheu && !industrial);
+      mostrar(campoArea, industrial);
+    }
+
+    tipo.addEventListener('change', atualizar);
+    atualizar();
+  })();
+</script>
 
 </body>
 </html>
