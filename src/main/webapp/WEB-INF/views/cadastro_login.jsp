@@ -270,52 +270,6 @@
             margin-bottom: 16px;
         }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            color: #717171;
-            font-size: 11px;
-            margin-bottom: 16px;
-        }
-
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .divider span {
-            padding: 0 10px;
-            position: relative;
-            top: -1px;
-        }
-
-        .botao-google {
-            width: 100%;
-            background-color: #ffffff;
-            border: 1px solid #ccc;
-            padding: 8px;
-            border-radius: 6px;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 12px;
-            color: #333;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .google-text-g { color: #4285F4; }
-        .google-text-o1 { color: #EA4335; }
-        .google-text-o2 { color: #FBBC05; }
-        .google-text-g2 { color: #4285F4; }
-        .google-text-l { color: #34A853; }
-        .google-text-e { color: #EA4335; }
-
         .botao-voltar {
             position: absolute;
             top: 24px;
@@ -1257,8 +1211,7 @@
                 font-size: 14px;
             }
 
-            .botao-submit,
-            .botao-google {
+            .botao-submit {
                 min-height: 44px;
             }
         }
@@ -1316,12 +1269,13 @@
 
     <div class="card-wrapper">
         <div class="container-login">
-
-            <c:set var="abrirCadastro" value="${param.aba == 'cadastro' or abaAtiva == 'cadastro'}" />
+            <%-- Quem chega por /login (inclusive "Fazer assinatura") abre direto a aba de login --%>
+            <c:set var="viaLogin" value="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}" />
+            <c:set var="abrirCadastro" value="${not viaLogin and (param.aba == 'cadastro' or abaAtiva == 'cadastro')}" />
             <input type="radio" name="aba" id="aba-login" class="aba-radio" ${not abrirCadastro ? 'checked' : ''}>
             <input type="radio" name="aba" id="aba-cadastro" class="aba-radio" ${abrirCadastro ? 'checked' : ''}>
 
-            <c:if test="${not (etapaCadastro == 'pag-dados' or etapaCadastro == 'pag-resumo' or etapaCadastro == 'pag-pagamento')}">
+            <c:if test="${not (etapaCadastro == 'plano' or etapaCadastro == 'pag-dados' or etapaCadastro == 'pag-resumo' or etapaCadastro == 'pag-pagamento')}">
                 <div class="tabs">
                     <label for="aba-login" class="tab-botao">Login</label>
                     <label for="aba-cadastro" class="tab-botao">Cadastro</label>
@@ -1333,12 +1287,10 @@
                 <div class="titulo-container">
                     <h3 class="titulo-padrao">Acesse sua conta</h3>
                 </div>
-                <p class="subtitulo">
-                    Bem-vindo de volta!<br>
-                    Continue gerenciando seus dados de onde parou.
-                </p>
+                <p class="subtitulo">${param.proximo == 'plano' ? 'Entre para fazer a assinatura.' : 'Bem-vindo de volta! Continue de onde parou.'}</p>
 
                 <form action="${pageContext.request.contextPath}/login" method="POST">
+                    <input type="hidden" name="proximo" value="<c:out value='${param.proximo}' />">
                     <div class="form-group">
                         <label for="email">E-mail ou usuário</label>
                         <div class="input-wrapper">
@@ -1367,28 +1319,14 @@
                         <p class="mensagem-erro"><c:out value="${erroLogin}" /></p>
                     </c:if>
 
-                    <button type="submit" class="botao-submit">Login</button>
-
-                    <div class="divider">
-                        <span>ou</span>
-                    </div>
-
-                    <button type="button" class="botao-google">
-                        Continuar com
-                        <span>
-                                <strong class="google-text-g">G</strong><strong class="google-text-o1">o</strong><strong class="google-text-o2">o</strong><strong class="google-text-g2">g</strong><strong class="google-text-l">l</strong><strong class="google-text-e">e</strong>
-                            </span>
-                    </button>
-                </form>
+                        <button type="submit" class="botao-submit">Entrar</button>
+                    </form>
 
             </div>
                 <c:set var="ctx" value="${pageContext.request.contextPath}" />
                 <c:set var="cad" value="${sessionScope.cadastroPendente}" />
                 <div class="painel painel-cadastro">
                     <c:choose>
-                        <c:when test="${requestScope['jakarta.servlet.forward.servlet_path'] == '/login'}">
-                            <%@ include file="cadastro/login.jsp" %>
-                        </c:when>
                         <c:when test="${etapaCadastro == 'pag-dados'}">
                             <%@ include file="cadastro/pag_dados.jsp" %>
                         </c:when>
