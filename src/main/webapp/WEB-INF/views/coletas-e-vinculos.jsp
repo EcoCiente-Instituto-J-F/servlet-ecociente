@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de vínculos do painel: parcerias entre condomínios e cooperativas --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="vinculos" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,10 +27,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,18 +49,23 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-vinculo"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Novo vínculo</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-vinculo"/></jsp:include>
+    <%-- Resumo: vínculos ativos e condomínios sem cooperativa --%>
     <section class="indicadores indicadores--tres" aria-label="Resumo">
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Vínculos ativos</h2><p class="indicador__valor">${vinculosAtivos}</p></article>
         <article class="cartao indicador indicador--simples"><h2 class="indicador__titulo">Sem cooperativa vinculada</h2><p class="indicador__valor">${semCooperativa} condomínios</p></article>
     </section>
     <div style="margin-top:39px"></div>
+    <%-- Tabela de vínculos --%>
     <section class="tabela-cartao">
       <c:if test="${empty vinculos and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela tabela--alta"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:30%"><col style="width:26%"><col style="width:23%"><col style="width:16%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="condominio">Condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cooperativa">Cooperativa</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="inicioIso">Início</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="fimIso">Fim</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+          <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="v" items="${vinculos}">
             <tr data-id="<c:out value="${v.idParceria}"/>" data-nome="<c:out value="${v.condominio}"/>" data-condominio="<c:out value="${v.condominio}"/>" data-cooperativa="<c:out value="${v.cooperativa}"/>" data-form-inicio="<c:out value="${v.inicioIso}"/>" data-form-fim="<c:out value="${v.fimIso}"/>" data-id-condominio="<c:out value="${v.idCondominio}"/>" data-id-cooperativa="<c:out value="${v.idCooperativa}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${v.idParceria}" aria-label="Selecionar linha"><span><c:out value="${v.condominio}"/></span></div></td>
@@ -66,20 +75,25 @@
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
+          <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
           <c:forEach begin="${fn:length(vinculos)}" end="7">
             <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
           </c:forEach>
         </tbody>
       </table>
+      <%-- Números das páginas --%>
       <jsp:include page="/WEB-INF/views/partes/paginacao.jsp"/>
     </section>
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-vinculo" style="--largura:649px" aria-labelledby="modal-vinculo-titulo">
+  <%-- Uma só rota para tudo: o campo id vazio cadastra e preenchido altera --%>
   <form action="${ctx}/vinculos" method="post">
     <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -89,9 +103,12 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
+        <%-- Condomínio e cooperativa vêm das listas enviadas pelo servidor --%>
         <label class="campo">Condomínio<select name="idCondominio" required data-por-rotulo="condominio"><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
         <label class="campo">Cooperativa<select name="idCooperativa" required data-por-rotulo="cooperativa"><option value="">Selecione</option><c:forEach var="o" items="${cooperativas}"><option value="${o.idCooperativa}"><c:out value="${o.nomeCooperativa}"/></option></c:forEach></select></label>
+        <%-- Datas da parceria; sem data de fim, o vínculo continua ativo --%>
         <label class="campo">Data de início<input type="date" name="inicio" required></label>
         <label class="campo">Data de fim (opcional)<input type="date" name="fim"></label>
       </div>

@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%-- Tela de login do administrador (dá acesso ao painel) --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -16,6 +17,7 @@
 </head>
 <body class="login-crud">
 
+<%-- Volta para a página inicial --%>
 <a href="${ctx}/inicio" class="login-crud__voltar" aria-label="Voltar para a página inicial">
   <span class="seta" aria-hidden="true">&larr;</span>
   <span>Voltar</span>
@@ -23,10 +25,12 @@
 
 <main class="login-crud__container">
 
+  <%-- Logo, à esquerda --%>
   <div class="login-crud__marca">
     <img src="${ctx}/assets/logotipo-login.svg" alt="EcoCiente - Dados que despertam consciência">
   </div>
 
+  <%-- Cartão de login, à direita --%>
   <div class="login-crud__moldura">
     <section class="login-crud__cartao">
 
@@ -36,6 +40,7 @@
         Continue gerenciando seus dados de onde parou.
       </p>
 
+      <%-- Envia e-mail e senha para o servidor; só administradores conseguem entrar --%>
       <form class="login-crud__form" action="${ctx}/login-crud" method="POST">
 
         <div class="login-crud__grupo">
@@ -64,6 +69,7 @@
           </div>
         </div>
 
+        <%-- Mensagem de erro do login (dados incorretos, conta sem permissão etc.) --%>
         <c:if test="${not empty erroLogin}">
           <p class="login-crud__erro" role="alert"><c:out value="${erroLogin}" /></p>
         </c:if>
@@ -76,6 +82,7 @@
 
 </main>
 
+<%-- Script do olho que mostra ou esconde a senha --%>
 <script src="${ctx}/js/login-crud.js"></script>
 </body>
 </html>

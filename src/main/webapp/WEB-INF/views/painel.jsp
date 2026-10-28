@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela inicial do painel do administrador: cartões e gráfico de cadastros --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="painel" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -23,12 +25,14 @@
   <script src="${ctx}/js/painel.js" defer></script>
 </head>
 <body>
+<%-- Estrutura da página: cabeçalho em cima, menu à esquerda e conteúdo ao lado --%>
 <div class="layout">
 
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página --%>
     <header class="cabecalho-pagina">
       <div>
         <p class="cabecalho-pagina__etiqueta">Visão geral</p>
@@ -43,6 +47,7 @@
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
 </body>

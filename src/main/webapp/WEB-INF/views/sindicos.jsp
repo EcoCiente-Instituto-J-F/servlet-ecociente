@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de síndicos do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="sindicos" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,19 +49,26 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-sindico"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-sindico"/></jsp:include>
+    <%-- Tabela de síndicos --%>
     <section class="tabela-cartao">
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela">
         <colgroup><col style="width:26%"><col style="width:19%"><col style="width:25%"><col style="width:17%"><col style="width:8%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c1">Nome do síndico</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c2">CPF</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c3">Condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c4">Início do mandato</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="c5">Status</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+        <%-- Data de hoje, para saber se o mandato ainda está ativo --%>
         <jsp:useBean id="agora" class="java.util.Date"/>
         <fmt:formatDate value="${agora}" pattern="yyyy-MM-dd" var="hojeIso"/>
+        <%-- Uma linha para cada item enviado pelo servidor --%>
         <c:forEach var="s" items="${sindicos}">
+          <%-- Prepara os valores da linha: datas (formato do banco e formato brasileiro), CPF com pontos e nome do condomínio --%>
           <c:set var="inicioIso" value="${empty s.dataInicioMandato ? '' : fn:substring(s.dataInicioMandato, 0, 10)}"/>
           <c:set var="fimIso" value="${empty s.dataFimMandato ? '' : fn:substring(s.dataFimMandato, 0, 10)}"/>
           <c:set var="inicioBr" value="${empty inicioIso ? '---' : fn:substring(inicioIso, 8, 10).concat('/').concat(fn:substring(inicioIso, 5, 7)).concat('/').concat(fn:substring(inicioIso, 0, 4))}"/>
           <c:set var="fimBr" value="${empty fimIso ? 'Atual' : fn:substring(fimIso, 8, 10).concat('/').concat(fn:substring(fimIso, 5, 7)).concat('/').concat(fn:substring(fimIso, 0, 4))}"/>
+          <%-- Mandato ativo = sem data de fim, ou com fim que ainda não passou --%>
           <c:set var="ativo" value="${empty fimIso or fimIso ge hojeIso}"/>
           <c:set var="cpfBr" value="${fn:length(s.cpf) == 11 ? fn:substring(s.cpf, 0, 3).concat('.').concat(fn:substring(s.cpf, 3, 6)).concat('.').concat(fn:substring(s.cpf, 6, 9)).concat('-').concat(fn:substring(s.cpf, 9, 11)) : s.cpf}"/>
           <c:set var="nomeCondominio" value="---"/>
@@ -71,6 +82,7 @@
             <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
           </tr>
         </c:forEach>
+        <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
         <c:forEach begin="${fn:length(sindicos)}" end="7">
           <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td><td></td></tr>
         </c:forEach>
@@ -80,9 +92,12 @@
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-sindico" style="--largura:640px" aria-labelledby="modal-sindico-titulo">
+  <%-- Cadastrar e editar usam rotas diferentes; o interacoes.js troca o destino conforme o modo --%>
   <form action="${ctx}/adicionarSindico" data-acao-novo="${ctx}/adicionarSindico" data-acao-editar="${ctx}/alterarSindico" method="post">
     <input type="hidden" name="idSindico" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -92,11 +107,15 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
+        <%-- O síndico é um usuário que já existe --%>
         <label class="campo">Usuário<select name="idUsuario" required data-por-rotulo="nome"><option value="">Selecione</option><c:forEach var="u" items="${usuarios}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
         <label class="campo">CPF (do usuário)<input type="text" name="cpf" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric"></label>
         <label class="campo">Início do mandato<input type="date" name="dataInicioMandato" placeholder="" required></label>
+        <%-- Sem data de fim = mandato em andamento --%>
         <label class="campo">Fim do mandato (opcional)<input type="date" name="dataFimMandato" placeholder=""></label>
+        <%-- Condomínio que o síndico administra --%>
         <label class="campo">Condomínio<select name="idCondominio" required><option value="">Selecione</option><c:forEach var="o" items="${condominios}"><option value="${o.idCondominio}"><c:out value="${o.nome}"/></option></c:forEach></select></label>
       </div>
     </div>
@@ -108,6 +127,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-sindico" data-ficha style="--largura:420px" aria-labelledby="ficha-sindico-titulo">
   <header class="modal__cabecalho">
     <p class="modal__etiqueta">Ficha do síndico</p>

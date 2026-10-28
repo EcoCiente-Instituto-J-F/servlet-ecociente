@@ -2,7 +2,9 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
+<%-- Tela de condomínios do painel: lista, ficha de detalhes e formulário de cadastro e edição --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" scope="request"/>
+<%-- Diz ao menu qual ícone deve ficar destacado --%>
 <c:set var="menuAtivo" value="condominios" scope="request"/>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -24,10 +26,12 @@
 <body>
 <div class="layout">
 
+  <%-- Cabeçalho e menu lateral, iguais em todas as telas do painel --%>
   <jsp:include page="/WEB-INF/views/partes/cabecalho.jsp"/>
   <jsp:include page="/WEB-INF/views/partes/menu.jsp"/>
 
   <main class="conteudo">
+    <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
         <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
@@ -45,13 +49,17 @@
         <a class="botao botao--primario" href="#" data-abrir-modal="modal-condominio"><img src="${ctx}/assets/icones/mais-branco.svg" alt="">Cadastrar</a>
       </div>
     </header>
+    <%-- Avisos de sucesso ou erro depois de cadastrar, alterar ou excluir --%>
     <jsp:include page="/WEB-INF/views/partes/avisos.jsp"><jsp:param name="reabrirModal" value="modal-condominio"/></jsp:include>
+    <%-- Tabela de condomínios --%>
     <section class="tabela-cartao">
       <c:if test="${empty condominios and not empty param.q}"><p class="aviso aviso--vazio" role="status">Nenhum resultado encontrado para “<c:out value="${param.q}"/>”.</p></c:if>
+      <%-- Cada linha guarda seus dados em atributos data-*; o interacoes.js usa isso para preencher a ficha e o formulário de edição --%>
       <table class="tabela"${ordenacaoServidor ? ' data-ordem-servidor' : ''}>
         <colgroup><col style="width:33%"><col style="width:26%"><col style="width:22%"><col style="width:14%"><col style="width:5%"></colgroup>
         <thead><tr><th scope="col"><button class="tabela__ordem" type="button" data-ordem="nome">Nome do condomínio</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="cnpj">CNPJ</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="tipo">Tipo</button></th><th scope="col"><button class="tabela__ordem" type="button" data-ordem="sindico">Síndico</button></th><th scope="col"><span class="somente-leitor">Ações</span></th></tr></thead>
         <tbody>
+          <%-- Uma linha para cada item enviado pelo servidor --%>
           <c:forEach var="c" items="${condominios}">
             <tr data-id="<c:out value="${c.idCondominio}"/>" data-nome="<c:out value="${c.nome}"/>" data-cnpj="<c:out value="${c.cnpj}"/>" data-tipo="<c:out value="${c.tipo}"/>" data-sindico="<c:out value="${c.sindico}"/>" data-endereco="<c:out value="${c.endereco}"/>" data-id-tipo-condominio="<c:out value="${c.idTipoCondominio}"/>" data-numero-unidades="<c:out value="${c.numeroUnidades}"/>" data-area-m2="<c:out value="${c.areaM2}"/>" data-iniciais="<c:out value="${c.iniciais}"/>" data-tag="<c:out value="${c.tipo}"/>" data-cep="<c:out value="${c.cep}"/>" data-cidade="<c:out value="${c.cidade}"/>" data-estado="<c:out value="${c.estado}"/>" data-bairro="<c:out value="${c.bairro}"/>" data-rua="<c:out value="${c.rua}"/>" data-numero="<c:out value="${c.numero}"/>" data-complemento="<c:out value="${c.complemento}"/>">
               <td><div class="celula-principal"><input class="tabela__selecionar" type="radio" name="linha" value="${c.idCondominio}" aria-label="Selecionar linha"><span><c:out value="${c.nome}"/></span></div></td>
@@ -61,19 +69,24 @@
               <td><button class="acoes-linha" type="button" aria-label="Mais ações"></button></td>
             </tr>
           </c:forEach>
+          <%-- Linhas vazias só de enfeite, para a tabela ter sempre 8 linhas --%>
           <c:forEach begin="${fn:length(condominios)}" end="7">
             <tr aria-hidden="true"><td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td><td></td><td></td><td></td><td></td></tr>
           </c:forEach>
         </tbody>
       </table>
+      <%-- Números das páginas --%>
       <jsp:include page="/WEB-INF/views/partes/paginacao.jsp"/>
     </section>
   </main>
 </div>
 
+<%-- Janelas compartilhadas: configurações, perfil, excluir e sair --%>
 <jsp:include page="/WEB-INF/views/partes/modais-comuns.jsp"/>
 
+<%-- Modal de cadastro e de edição: o mesmo formulário serve para os dois --%>
 <dialog class="modal" id="modal-condominio" style="--largura:640px" aria-labelledby="modal-condominio-titulo">
+  <%-- Uma só rota para tudo: o campo id vazio cadastra e preenchido altera --%>
   <form action="${ctx}/condominios" method="post">
     <input type="hidden" name="id" data-chave-id> <%-- vazio = cadastrar; preenchido = editar --%>
     <header class="modal__cabecalho">
@@ -83,12 +96,16 @@
     </header>
     <div class="modal__linha"></div>
     <div class="modal__corpo">
+      <%-- Campos do formulário: o name de cada um é o nome que o servidor lê --%>
       <div class="formulario">
         <label class="campo">Nome<input type="text" name="nome" placeholder="Nome do condomínio" required maxlength="100"></label>
         <label class="campo">CNPJ<input type="text" name="cnpj" placeholder="00.000.000/0001-00" required maxlength="18" inputmode="numeric"></label>
+        <%-- Os tipos vêm da lista tiposCondominio enviada pelo servidor --%>
         <label class="campo">Tipo<select name="idTipoCondominio" required><option value="">Selecione</option><c:forEach var="t" items="${tiposCondominio}"><option value="${t.id}"><c:out value="${t.nome}"/></option></c:forEach></select></label>
+        <%-- Unidades (residencial e comercial) ou área em m² (industrial): nunca os dois --%>
         <label class="campo">Nº de unidades (exceto industrial)<input type="number" name="numeroUnidades" placeholder="120" min="1"></label>
         <label class="campo">Área em m² (só industrial)<input type="number" name="areaM2" placeholder="1500.00" step="0.01" min="0.01"></label>
+        <%-- Endereço do condomínio: obrigatório --%>
         <label class="campo">CEP<input type="text" name="cep" placeholder="00000-000" maxlength="9" inputmode="numeric" autocomplete="postal-code" required></label>
         <label class="campo">Cidade<input type="text" name="cidade" placeholder="São Paulo" required></label>
         <label class="campo">Estado<input type="text" name="estado" placeholder="SP" maxlength="2" required></label>
@@ -106,6 +123,7 @@
   </form>
 </dialog>
 
+<%-- Ficha (detalhes) da linha marcada; os textos são preenchidos pelo interacoes.js --%>
 <dialog class="modal" id="ficha-condominio" data-ficha style="--largura:420px" aria-labelledby="ficha-condominio-titulo">
     <header class="modal__cabecalho">
       <p class="modal__etiqueta">Ficha do condomínio</p>
