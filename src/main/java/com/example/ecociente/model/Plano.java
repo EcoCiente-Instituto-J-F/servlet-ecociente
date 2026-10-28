@@ -57,6 +57,7 @@ public class Plano {
         return switch (unidade) {
             case "apartamento" -> "apartamentos";
             case "empresa" -> "empresas";
+            case "unidade" -> "unidades";
             default -> "m²";
         };
     }
@@ -65,6 +66,7 @@ public class Plano {
         return switch (unidade) {
             case "apartamento" -> "Número de apartamentos";
             case "empresa" -> "Número de empresas";
+            case "unidade" -> "Número de unidades";
             default -> "Área total em m²";
         };
     }
@@ -72,7 +74,7 @@ public class Plano {
     public String getIcone() {
         return switch (unidade) {
             case "apartamento" -> "icone-tipo-residencial.svg";
-            case "empresa" -> "icone-tipo-comercial.svg";
+            case "empresa", "unidade" -> "icone-tipo-comercial.svg";
             default -> "icone-tipo-industrial.svg";
         };
     }
