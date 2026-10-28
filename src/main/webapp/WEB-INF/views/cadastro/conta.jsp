@@ -55,4 +55,6 @@
         <button type="submit" class="botao-submit">Próximo</button>
         <a href="${ctx}/inicio" class="botao-submit botao-secundario">Voltar</a>
     </div>
+
+    <p class="link-entrar">Já tem uma conta? <label for="aba-login">Entrar</label></p>
 </form>
