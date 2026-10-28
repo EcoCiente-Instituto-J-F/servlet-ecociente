@@ -114,7 +114,7 @@
         <label class="campo">Rua<input type="text" name="rua" placeholder="Nome da rua" required></label>
         <label class="campo">Número<input type="number" name="numero" placeholder="123" min="0" required></label>
         <label class="campo">Complemento<input type="text" name="complemento" placeholder="Apto, bloco, casa (opcional)"></label>
-        <%-- Síndico (opcional): só aparece como escolha ao cadastrar; ao editar os campos ficam travados (data-somente-novo) --%>
+        <%-- Síndico (opcional): só aparece como escolha ao cadastrar; ao editar os campos ficam travados e escondidos (data-somente-novo) --%>
         <label class="campo">Síndico (opcional)<select name="idUsuarioSindico" data-somente-novo><option value="">Sem síndico por enquanto</option><c:forEach var="u" items="${usuariosSindico}"><option value="${u.idUsuario}"><c:out value="${u.nome}"/></option></c:forEach></select></label>
         <label class="campo">Início do mandato<input type="date" name="dataInicioMandato" data-somente-novo></label>
       </div>

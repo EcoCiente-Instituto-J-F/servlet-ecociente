@@ -99,8 +99,11 @@
       // A senha sempre volta a ficar escondida ao abrir o modal
       if (campo.type === 'password') campo.type = 'password';
       campo.setCustomValidity('');
-      // Campos só do cadastro (data-somente-novo) ficam travados ao editar
-      if (campo.hasAttribute('data-somente-novo')) campo.disabled = editando;
+      // Campos só do cadastro (data-somente-novo) ficam travados e escondidos ao editar
+      if (campo.hasAttribute('data-somente-novo')) {
+        campo.disabled = editando;
+        campo.closest('label').hidden = editando;
+      }
       if (!dados || campo.type === 'password' || campo.type === 'checkbox') return;
       // data-form-xxx tem prioridade (ex.: data ISO para <input type="date">)
       let valor = dados['form' + maiuscula(campo.name)] ?? dados[campo.name];
