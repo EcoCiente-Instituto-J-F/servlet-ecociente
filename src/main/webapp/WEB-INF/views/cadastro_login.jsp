@@ -1430,6 +1430,33 @@
         </div>
     </div>
 </div>
+                        <c:otherwise>
+                            <%@ include file="cadastro/conta.jsp" %>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // O "Voltar" do topo leva para a landing. Durante o cadastro ele passa a acionar o botão "Voltar" da etapa atual.
+    // Na primeira etapa (que não tem esse botão) e na aba Login, continua levando para a landing.
+    (function () {
+        var topo = document.querySelector('.botao-voltar');
+        var aba = document.getElementById('aba-cadastro');
+        var voltar = document.querySelector('.painel-cadastro button[name="acao"][value="voltar"]');
+        if (!topo || !voltar) return;
+        topo.addEventListener('click', function (e) {
+            if (aba && !aba.checked) return;
+            e.preventDefault();
+            voltar.form.requestSubmit(voltar);
+        });
+    })();
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
