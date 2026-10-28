@@ -69,3 +69,76 @@
     <c:set var="textoAvancar" value="Ir para o pagamento" />
     <%@ include file="_botoes.jsp" %>
 </form>
+
+<%-- Atualiza só o valor ao mexer na quantidade ou no ciclo, sem recarregar a página.
+     O servidor devolve a etapa inteira; o script troca apenas os blocos que mudam.
+     "Ir para o pagamento" e "Voltar" não estão em ACOES, então seguem o envio normal. --%>
+<script>
+(function () {
+    var form = document.querySelector('input[name="etapa"][value="pag-resumo"]').form;
+    var ACOES = ['recalcular', 'ciclo-mensal', 'ciclo-anual', 'mais', 'menos'];
+    var BLOCOS = ['.seletor-ciclo', '.quantidade', '.total', '.calculo-anual'];
+
+    // Envio normal que preserva a ação clicada (form.submit() não envia o botão)
+    function enviarNormal(acao) {
+        var campo = document.createElement('input');
+        campo.type = 'hidden';
+        campo.name = 'acao';
+        campo.value = acao;
+        form.appendChild(campo);
+        form.submit();
+    }
+
+    // Devolve o foco ao controle usado, já que o bloco original foi trocado
+    function restaurarFoco(botao) {
+        var alvo = botao.classList.contains('so-leitor')
+            ? form.querySelector('#cad-quantidade')
+            : form.querySelector('button[name="acao"][value="' + botao.value + '"]:not(.so-leitor)');
+        if (alvo) alvo.focus();
+    }
+
+    form.addEventListener('submit', function (e) {
+        var botao = e.submitter;
+        if (!botao || ACOES.indexOf(botao.value) === -1 || botao.name !== 'acao') return;
+
+        e.preventDefault();
+        if (form.getAttribute('aria-busy') === 'true') return;
+
+        var acao = botao.value;
+        var dados = new URLSearchParams(new FormData(form));
+        dados.set('acao', acao);
+
+        form.setAttribute('aria-busy', 'true');
+        fetch(form.action, {
+            method: 'POST',
+            body: dados,
+            credentials: 'same-origin'
+        })
+        .then(function (r) { return r.text(); })
+        .then(function (html) {
+            var doc = new DOMParser().parseFromString(html, 'text/html');
+            var campoEtapa = doc.querySelector('input[name="etapa"][value="pag-resumo"]');
+            if (!campoEtapa) { enviarNormal(acao); return; } // resposta inesperada (ex.: sessão expirou)
+            var formNovo = campoEtapa.form;
+
+            BLOCOS.forEach(function (seletor) {
+                var novo = formNovo.querySelector(seletor);
+                var atual = form.querySelector(seletor);
+                if (novo && atual) atual.replaceWith(novo);
+                else if (novo) form.querySelector('.total').insertAdjacentElement('afterend', novo); // .calculo-anual aparece no ciclo anual
+                else if (atual) atual.remove(); // .calculo-anual some no ciclo mensal
+            });
+
+            // Mensagem de erro (ex.: quantidade fora do limite): fica logo acima do formulário
+            var erroAtual = form.parentNode.querySelector('.mensagem-erro');
+            var erroNovo = formNovo.parentNode.querySelector('.mensagem-erro');
+            if (erroAtual) erroAtual.remove();
+            if (erroNovo) form.insertAdjacentElement('beforebegin', erroNovo);
+
+            restaurarFoco(botao);
+        })
+        .catch(function () { enviarNormal(acao); }) // sem rede: cai no envio normal
+        .finally(function () { form.removeAttribute('aria-busy'); });
+    });
+})();
+</script>
