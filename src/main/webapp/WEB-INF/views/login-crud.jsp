@@ -14,6 +14,15 @@
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="${ctx}/css/variaveis.css">
   <link rel="stylesheet" href="${ctx}/css/login-crud.css">
+  <%-- Estilo do botão Voltar (igual ao da tela de cadastro); fica aqui para aparecer mesmo se o css/ estiver em cache --%>
+  <style>
+    .login-crud__voltar { position: absolute; top: 24px; left: 24px; display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px;
+      border-radius: 50px; background-color: #fff; color: #064e3b; font-family: "Montserrat", sans-serif; font-weight: 600; font-size: 13px;
+      text-decoration: none; box-shadow: 0 4px 20px rgb(0 0 0 / 15%); transition: background-color .2s ease; }
+    .login-crud__voltar:hover { background-color: #dfeade; }
+    .login-crud__voltar:focus-visible { outline: 2px solid #e05282; outline-offset: 2px; }
+    .login-crud__voltar .seta { font-size: 18px; line-height: 1; }
+  </style>
 </head>
 <body class="login-crud">
 
