@@ -99,6 +99,11 @@
       // A senha sempre volta a ficar escondida ao abrir o modal
       if (campo.type === 'password') campo.type = 'password';
       campo.setCustomValidity('');
+      // Campos só do cadastro (data-somente-novo) ficam travados e escondidos ao editar
+      if (campo.hasAttribute('data-somente-novo')) {
+        campo.disabled = editando;
+        campo.closest('label').hidden = editando;
+      }
       if (!dados || campo.type === 'password' || campo.type === 'checkbox') return;
       // data-form-xxx tem prioridade (ex.: data ISO para <input type="date">)
       let valor = dados['form' + maiuscula(campo.name)] ?? dados[campo.name];
@@ -107,8 +112,13 @@
         const opcao = Array.from(campo.options).find((o) => o.text.trim() === dados[campo.dataset.porRotulo]);
         if (opcao) valor = opcao.value;
       }
-      if (valor !== undefined) campo.value = valor;
+      if (valor !== undefined) {
+        campo.value = valor;
+        campo.dispatchEvent(new Event('change', { bubbles: true }));   // avisa quem depende do campo (ex.: tipo do condomínio)
+      }
     });
+    // Também ao cadastrar (formulário limpo): as listas avisam que voltaram ao valor inicial
+    form.querySelectorAll('select').forEach((lista) => lista.dispatchEvent(new Event('change', { bubbles: true })));
   }
 
   /* ---------- EXCLUIR: um único modal de confirmação para todas as telas ---------- */
@@ -341,6 +351,7 @@
         modal.querySelectorAll('[name="' + item.dataset.nome + '"]').forEach((campo) => {
           if (campo.type !== 'password' && campo.type !== 'checkbox' && !campo.hasAttribute('data-chave-id')) {
             campo.value = item.dataset.valor;
+            campo.dispatchEvent(new Event('change', { bubbles: true }));
           }
         });
       });

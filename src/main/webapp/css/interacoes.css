@@ -41,6 +41,8 @@
 .formulario { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
 /* Cada campo do formulário: rótulo em cima e a caixa embaixo */
 .campo { display: grid; gap: 6px; font-size: 11px; font-weight: 600; color: var(--cor-texto-suave); }
+/* Campo escondido pelo JavaScript (ex.: unidades x área) */
+.campo[hidden] { display: none; }
 /* Campo que ocupa a linha inteira (as duas colunas) */
 .campo--largo { grid-column: 1 / -1; }
 .campo input, .campo select { width: 100%; height: 36px; padding: 0 14px; border: 1px solid var(--cor-borda-campo); border-radius: 12px;

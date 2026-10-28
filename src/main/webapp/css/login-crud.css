@@ -19,6 +19,41 @@
   color: var(--cor-texto, #000);
 }
 
+/* ---------- Botão Voltar, no canto da página (igual ao da tela de cadastro) ---------- */
+
+.login-crud__voltar {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 50px;
+  background-color: #fff;
+  color: #064e3b;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 15%);
+  transition: background-color .2s ease;
+}
+
+.login-crud__voltar:hover {
+  background-color: #dfeade;
+}
+
+.login-crud__voltar:focus-visible {
+  outline: 2px solid #e05282;
+  outline-offset: 2px;
+}
+
+.login-crud__voltar .seta {
+  font-size: 18px;
+  line-height: 1;
+}
+
 /* ---------- Layout: logo à esquerda, cartão à direita ---------- */
 
 .login-crud__container {
