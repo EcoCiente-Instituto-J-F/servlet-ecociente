@@ -243,6 +243,7 @@
       chaveDeOrdenacao(b.cells[indice]), 'pt-BR', { numeric: true, sensitivity: 'base' }) * (direcao === 'asc' ? 1 : -1));
     linhas.concat(vazias).forEach((linha) => corpo.append(linha));
     marcarOrdenacao(tabela, titulo, direcao);
+    if (tabela.mostrarPagina) tabela.mostrarPagina(1);   // depois de ordenar, volta para a primeira página
   }
 
   // Clique no título de uma coluna ordena a tabela
@@ -258,6 +259,76 @@
     const coluna = tabelaDoServidor.querySelector('.tabela__ordem[data-ordem="' + parametros.get('ordem') + '"]');
     if (coluna) marcarOrdenacao(tabelaDoServidor, coluna.closest('th'), parametros.get('dir'));
   }
+
+  /* ---------- PAGINAÇÃO NA TELA: 8 linhas por vez nas tabelas que o servidor não pagina ---------- */
+  // Usuários, condomínios, cooperativas e vínculos já vêm paginados do servidor (partes/paginacao.jsp).
+  // As demais tabelas recebem todas as linhas; aqui elas são divididas em páginas de 8, com o mesmo visual.
+  const LINHAS_POR_PAGINA = 8;
+
+  function paginarNaTela(tabela) {
+    const cartao = tabela.closest('.tabela-cartao');
+    if (!cartao || cartao.querySelector('.paginacao')) return;   // já paginada pelo servidor
+    const corpo = tabela.tBodies[0];
+    const linhas = Array.from(corpo.rows).filter((linha) => !linha.hasAttribute('aria-hidden'));
+    const totalPaginas = Math.ceil(linhas.length / LINHAS_POR_PAGINA);
+    if (totalPaginas <= 1) return;
+
+    // Linhas vazias de enfeite, para a última página também ter 8 linhas
+    const colunas = tabela.tHead.rows[0].cells.length;
+    const enfeites = [];
+    for (let i = 1; i < LINHAS_POR_PAGINA; i++) {
+      const enfeite = document.createElement('tr');
+      enfeite.setAttribute('aria-hidden', 'true');
+      enfeite.innerHTML = '<td><div class="celula-principal"><span class="tabela__selecionar"></span></div></td>' + '<td></td>'.repeat(colunas - 1);
+      corpo.append(enfeite);
+      enfeites.push(enfeite);
+    }
+
+    // Setas e números, iguais aos da paginação do servidor
+    const icones = document.querySelector('img[src*="/assets/icones/"]').getAttribute('src').replace(/[^/]*$/, '');
+    const nav = document.createElement('nav');
+    nav.className = 'paginacao';
+    nav.setAttribute('aria-label', 'Paginação');
+    cartao.append(nav);
+    let atual = 1;
+
+    function desenharNav() {
+      const link = (pagina, conteudo, rotulo) => '<a href="#" data-pagina="' + pagina + '"' + (rotulo ? ' aria-label="' + rotulo + '"' : '')
+        + (pagina === atual && !rotulo ? ' aria-current="page"' : '') + '>' + conteudo + '</a>';
+      let html = link(Math.max(atual - 1, 1), '<img src="' + icones + 'seta-esquerda.svg" alt="">', 'Página anterior');
+      for (let n = 1; n <= Math.min(totalPaginas, 4); n++) html += link(n, n);
+      if (totalPaginas > 4) html += '<span>...</span>' + link(totalPaginas, totalPaginas);
+      html += link(Math.min(atual + 1, totalPaginas), '<img src="' + icones + 'seta-direita.svg" alt="">', 'Próxima página');
+      nav.innerHTML = html;
+    }
+
+    tabela.mostrarPagina = (pagina) => {
+      atual = Math.min(Math.max(pagina, 1), totalPaginas);
+      // Mostra só as linhas da página; as demais ficam escondidas
+      const atuais = Array.from(corpo.rows).filter((linha) => !linha.hasAttribute('aria-hidden'));
+      const de = (atual - 1) * LINHAS_POR_PAGINA;
+      atuais.forEach((linha, i) => { linha.hidden = i < de || i >= de + LINHAS_POR_PAGINA; });
+      const faltam = LINHAS_POR_PAGINA - Math.min(LINHAS_POR_PAGINA, atuais.length - de);
+      enfeites.forEach((enfeite, i) => { enfeite.hidden = i >= faltam; });
+      // Linha marcada que ficou em outra página é desmarcada
+      if (bolinhaSelecionada && bolinhaSelecionada.closest('tr').hidden) {
+        bolinhaSelecionada.checked = false;
+        bolinhaSelecionada = null;
+        atualizarBotaoEditar();
+      }
+      desenharNav();
+    };
+
+    nav.addEventListener('click', (evento) => {
+      const alvo = evento.target.closest('a[data-pagina]');
+      if (!alvo) return;
+      evento.preventDefault();
+      tabela.mostrarPagina(Number(alvo.dataset.pagina));
+    });
+    tabela.mostrarPagina(1);
+  }
+
+  document.querySelectorAll('table.tabela').forEach(paginarNaTela);
 
   /* ---------- SENHA: mostrar/ocultar, confirmação e endereço opcional ---------- */
   // Clique no olho mostra ou esconde a senha do campo ao lado
