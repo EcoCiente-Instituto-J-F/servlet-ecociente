@@ -30,7 +30,6 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 
 @WebServlet(urlPatterns = {"/cadastro", "/cadastro/plano", "/usuarios"})
@@ -698,11 +697,7 @@ public class UsuarioServlet extends HttpServlet {
             idCondominio = sindicoDAO.cadastrarComCondominio(usuario, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), condominio, endereco);
 
             //A quantidade cobrada começa pelo que foi informado no condomínio (área arredondada para cima).
-            if (industrial) {
-                quantidade = condominio.getAreaM2() == null ? 1 : condominio.getAreaM2().setScale(0, RoundingMode.CEILING).intValue();
-            } else {
-                quantidade = condominio.getNumeroUnidades() == null ? 1 : condominio.getNumeroUnidades();
-            }
+            quantidade = Orcamento.quantidadeDoCondominio(condominio);
         } catch (RuntimeException e) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
             mostrarCadastro(request, response);
@@ -844,7 +839,7 @@ public class UsuarioServlet extends HttpServlet {
     //================ ASSINATURA: TELAS DE PAGAMENTO (só a navegação, depois do cadastro do síndico e da cooperativa) ================
     // Fluxo: pag-dados -> pag-resumo -> pag-pagamento
     // O plano é o do tipo do condomínio (tabela plano, codigo = residencial, comercial ou industrial) e o valor é sempre
-    // calculado aqui no servidor. "Ir para o pagamento" grava a assinatura como pendente.
+    // calculado aqui no servidor. A quantidade vem sempre do cadastro do condomínio (o síndico só escolhe o ciclo). "Ir para o pagamento" grava a assinatura como pendente.
     // TODO: sem gateway ainda: o último passo não cobra nada e a assinatura continua pendente.
 
     //Conta criada: guarda só o que as telas de pagamento aproveitam (nunca a senha) e segue direto para elas.
@@ -908,7 +903,11 @@ public class UsuarioServlet extends HttpServlet {
     //Orçamento com o preço atual do banco; null se o plano não existir ou estiver inativo.
     private Orcamento orcamento(CadastroPendente cad) {
         Plano plano = planoDAO.selecionarPorCodigo(cad.getPlano());
-        return plano == null ? null : new Orcamento(plano, "anual".equals(cad.getCiclo()), cad.getQuantidade());
+        Condominio condominio = condominioDAO.selecionarPorId(cad.getIdCondominio());
+        if (plano == null || condominio == null) return null;
+        //A quantidade é sempre a do condomínio cadastrado: nada vindo da sessão ou do formulário altera o valor.
+        cad.setQuantidade(Orcamento.quantidadeDoCondominio(condominio));
+        return new Orcamento(plano, "anual".equals(cad.getCiclo()), cad.getQuantidade());
     }
 
     //Resumo e pagamento mostram os valores do orçamento (orc nos JSPs).
@@ -1013,24 +1012,7 @@ public class UsuarioServlet extends HttpServlet {
         if (acao.equals("ciclo-mensal")) cad.setCiclo("mensal");
         if (acao.equals("ciclo-anual")) cad.setCiclo("anual");
 
-        //Quantidade digitada vem formatada ("1.250"): só os números valem.
-        String digitos = Formulario.digitos(request.getParameter("quantidade"));
-        int quantidade = digitos.isEmpty() || digitos.length() > 7 ? 0 : Integer.parseInt(digitos);
-        if (acao.equals("mais")) quantidade++;
-        if (acao.equals("menos")) quantidade--;
-        if (quantidade < 1 || quantidade > Orcamento.QUANTIDADE_MAXIMA) {
-            request.setAttribute("erroCadastro", "Informe uma quantidade entre 1 e 9.999.999.");
-            mostrarAssinatura(request, response, "pag-resumo");
-            return;
-        }
-        if (!Orcamento.podeAssinar(cad.getPlano(), quantidade)) {
-            request.setAttribute("erroCadastro", "A assinatura é para " + Orcamento.UNIDADES_MINIMAS + " unidades ou mais.");
-            mostrarAssinatura(request, response, "pag-resumo");
-            return;
-        }
-        cad.setQuantidade(quantidade);
-
-        //Só o botão principal (sem ação) segue para o pagamento; ciclo, +/- e "Atualizar valor" ficam no resumo.
+        //Só o botão principal (sem ação) segue para o pagamento; a troca de ciclo (e qualquer outra ação) só reexibe o resumo.
         if (!acao.isEmpty()) {
             mostrarAssinatura(request, response, "pag-resumo");
             return;
@@ -1043,7 +1025,12 @@ public class UsuarioServlet extends HttpServlet {
                 mostrarAssinatura(request, response, "pag-resumo"); //mostra o aviso de plano indisponível
                 return;
             }
-            Assinatura assinatura = new Assinatura(cad.getCiclo(), BigDecimal.valueOf(cad.getQuantidade()), orc.getValorCobrado(),
+            if (!Orcamento.podeAssinar(cad.getPlano(), orc.getQuantidade())) {
+                request.setAttribute("erroCadastro", "A assinatura é para " + Orcamento.UNIDADES_MINIMAS + " unidades ou mais.");
+                mostrarAssinatura(request, response, "pag-resumo");
+                return;
+            }
+            Assinatura assinatura = new Assinatura(cad.getCiclo(), BigDecimal.valueOf(orc.getQuantidade()), orc.getValorCobrado(),
                     cad.getIdUsuario(), cad.getIdCondominio(), orc.getPlano().getIdPlano());
             cad.setIdAssinatura(assinaturaDAO.salvarPendente(assinatura));
         } catch (RuntimeException e) {
