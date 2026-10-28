@@ -34,10 +34,6 @@
     <%-- Título da página e botões: Editar, Excluir, Detalhes e Cadastrar (os três primeiros só funcionam com uma linha marcada) --%>
     <header class="cabecalho-pagina">
       <div>
-        <a href="${ctx}/painel" class="botao-voltar" aria-label="Voltar para o painel">
-          <span class="seta" aria-hidden="true">&larr;</span>
-          <span>Voltar</span>
-        </a>
         <p class="cabecalho-pagina__etiqueta">Tabela: Cooperativa</p>
         <h1 class="cabecalho-pagina__titulo">Cooperativas</h1>
         <p class="cabecalho-pagina__descricao">Visíveis no mapa de ponto de coleta</p>
