@@ -19,6 +19,7 @@ public class Condominio {
     // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
     private String nomeTipo;
     private String nomeSindico;
+    private Integer idUsuarioSindico;
     private Endereco enderecoCompleto;
 
     //================ METODOS CONSTRUTORES ================
@@ -98,6 +99,10 @@ public class Condominio {
         this.status = status;
     }
 
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public void setIdEndereco(int idEndereco) {
         this.idEndereco = idEndereco;
     }
@@ -120,6 +125,10 @@ public class Condominio {
         this.enderecoCompleto = enderecoCompleto;
     }
 
+    public void setIdUsuarioSindico(Integer idUsuarioSindico) {
+        this.idUsuarioSindico = idUsuarioSindico;
+    }
+
 
 
     //================ EXIBICAO (usado pelas JSPs) ================
@@ -140,6 +149,10 @@ public class Condominio {
 
     public String getSindico() {
         return nomeSindico == null ? "" : nomeSindico;
+    }
+
+    public Integer getIdUsuarioSindico() {
+        return idUsuarioSindico;
     }
 
     public String getEndereco() {
