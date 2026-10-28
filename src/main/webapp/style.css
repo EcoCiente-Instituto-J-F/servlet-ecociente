@@ -73,7 +73,7 @@ h2, h3, h4 {
 .navbar {
     background-color: white;
     width: 90%;
-    padding: 12px 30px;
+    padding: 6px 30px;
     border-radius: 144px;
     display: flex;
     justify-content: space-between;
@@ -88,7 +88,7 @@ h2, h3, h4 {
 }
 
 .logotipo-navbar img {
-    height: 30px;
+    height: 26px;
 }
 
 .links-navbar {
@@ -122,8 +122,10 @@ h2, h3, h4 {
     gap: 8px;
     background-color: #D64573;
     color: #ffffff;
-    padding: 10px 24px;
+    padding: 8px 22px;
     border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 /* Botão hamburguer (só aparece no mobile) */
@@ -219,10 +221,10 @@ h2, h3, h4 {
     background-color: #D64573;
     color: #ffffff;
     font-family: 'Montserrat', 'Instrument Sans', sans-serif;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     text-decoration: none;
-    padding: 12px 34px;
+    padding: 8px 22px;
     border-radius: 50px;
     transition: opacity 0.2s;
 }
@@ -253,11 +255,16 @@ h2, h3, h4 {
 .oferece {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 40px;
+    column-gap: 40px;
+    row-gap: 0;
 }
 
 .card-oferece {
     padding: 0 20px;
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: span 3;
+    align-content: start;
 }
 
 .card-oferece:first-child {
@@ -269,7 +276,7 @@ h2, h3, h4 {
 }
 
 .card-oferece:not(:last-child) {
-    border-right: 2px solid #DFEADE;
+    border-right: 3px solid #DFEADE;
 }
 
 .titulo-card-oferece {
@@ -324,10 +331,10 @@ h2, h3, h4 {
 .lista-check li {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
     color: white;
     line-height: 1.4;
-    margin-bottom: 12px;
+    margin-bottom: 24px;
 }
 
 .item-vantagem {
@@ -342,7 +349,7 @@ h2, h3, h4 {
     display: inline-block;
     width: 30px;
     height: 30px;
-    background-image: url('assets/check.svg');
+    background-image: url('assets/check.svg?v=2');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -577,7 +584,7 @@ input[name="modo-card"] {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
+    border-right: 3px solid rgba(255, 255, 255, 0.9);
     padding-right: 12px;
 }
 
@@ -630,7 +637,6 @@ input[name="modo-card"] {
     flex-direction: column;
     position: relative;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
-    height: 100%;
 }
 
 .tag-destaque {
@@ -869,6 +875,8 @@ input[name="modo-card"] {
 }
 
 .acao-planos {
+    position: relative;
+    z-index: 1;
     max-width: 320px;
     margin: 30px auto 0;
 }
@@ -909,7 +917,7 @@ input[name="modo-card"] {
     border-radius: 50px;
     font-size: 14px;
     font-weight: 600;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
 }
 
 .icone-folha-badge {
@@ -923,7 +931,7 @@ input[name="modo-card"] {
     font-weight: 700;
     color: #064E3B;
     line-height: 1.2;
-    margin-bottom: 20px;
+    margin-bottom: 8px;
 }
 
 .descricao-cooperativa {
@@ -931,7 +939,7 @@ input[name="modo-card"] {
     line-height: 1.6;
     color: #717171;
     max-width: 420px;
-    margin-bottom: 35px;
+    margin-bottom: 28px;
     font-size: 16px;
     font-weight: 600;
 }
@@ -996,7 +1004,7 @@ input[name="modo-card"] {
     margin-top: var(--espaco-secao);
     display: flex;
     justify-content: center;
-    border-top: 2px solid #CFE0DB;
+    border-top: 3px solid rgba(6, 78, 59, 0.2);
     padding-top: 80px;
 }
 
@@ -1019,7 +1027,7 @@ input[name="modo-card"] {
     font-size: 14px;
     text-transform: uppercase;
     color: #717171;
-    margin-bottom: 16px;
+    margin-bottom: 6px;
 }
 
 .titulo-baixe {
@@ -1028,6 +1036,7 @@ input[name="modo-card"] {
     font-size: clamp(28px, 3.2vw, 38px);
     font-weight: 600;
     line-height: 1.15;
+    margin-bottom: 12px;
 }
 
 .descricao-baixe {
@@ -1134,6 +1143,7 @@ input[name="modo-card"] {
 .grid-estatisticas-missao {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    column-gap: 48px;
     width: 100%;
 }
 
@@ -1142,12 +1152,18 @@ input[name="modo-card"] {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 0 15px;
-    width: 100%;
+    position: relative;
+    min-width: 0;
 }
 
-.item-estatistica:not(:last-child) {
-    border-right: 1px solid #E5E5E5;
+.item-estatistica:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -25.5px;
+    width: 3px;
+    background-color: #DFEADE;
 }
 
 .icone-estatistica {
@@ -1158,11 +1174,14 @@ input[name="modo-card"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .icone-estatistica img {
-    max-width: 30px;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    max-width: none;
 }
 
 .numero-estatistica {
@@ -1170,14 +1189,14 @@ input[name="modo-card"] {
     font-size: 14px;
     font-weight: 600;
     color: #064E3B;
-    margin-bottom: 6px;
+    margin-bottom: 12px;
 }
 
 .texto-estatistica {
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     color: #717171;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 
 .imagem-missao {
@@ -1255,6 +1274,7 @@ input[name="modo-card"] {
 .grid-diferenciais-quem-somos {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    column-gap: 48px;
     width: 100%;
 }
 
@@ -1263,12 +1283,18 @@ input[name="modo-card"] {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    padding: 0 12px;
-    width: 100%;
+    position: relative;
+    min-width: 0;
 }
 
-.item-diferencial:not(:last-child) {
-    border-right: 1px solid #E5E5E5;
+.item-diferencial:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: -25.5px;
+    width: 3px;
+    background-color: #DFEADE;
 }
 
 .icone-diferencial {
@@ -1279,11 +1305,14 @@ input[name="modo-card"] {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .icone-diferencial img {
-    max-width: 30px;
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    max-width: none;
 }
 
 .titulo-diferencial {
@@ -1291,9 +1320,9 @@ input[name="modo-card"] {
     font-size: clamp(12px, 1.1vw, 15px);
     font-weight: 700;
     color: #064E3B;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     line-height: 1.2;
-    white-space: nowrap;
+    white-space: normal;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1332,11 +1361,10 @@ input[name="modo-card"] {
 }
 
 .item-duvida {
-    border-radius: 16px;
     border: 2px solid transparent;
-    border-image: linear-gradient(to right, #D64573, #064E3B) 1;
     border-radius: 16px;
-    background-origin: border-box;
+    background: linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(to right, #D64573, #064E3B) border-box;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     overflow: hidden;
     transition: all 0.3s ease;
@@ -1467,9 +1495,8 @@ input[name="modo-card"] {
 }
 
 .divisor-vertical {
-    width: 2px;
-    background-color: #ffffff;
-    opacity: 0.8;
+    width: 3px;
+    background-color: #DFEADE;
     align-self: stretch;
 }
 
@@ -1629,10 +1656,14 @@ input[name="modo-card"] {
         max-width: 480px;
     }
 
-    .item-estatistica,
-    .item-diferencial {
-        padding-left: 8px;
-        padding-right: 8px;
+    .grid-estatisticas-missao,
+    .grid-diferenciais-quem-somos {
+        column-gap: 32px;
+    }
+
+    .item-estatistica:not(:last-child)::after,
+    .item-diferencial:not(:last-child)::after {
+        right: -17.5px;
     }
 }
 
@@ -2245,10 +2276,19 @@ input[name="modo-card"] {
         padding: 0 0 18px;
     }
 
+    .grid-estatisticas-missao,
+    .grid-diferenciais-quem-somos {
+        column-gap: 0;
+    }
+
     .item-estatistica:not(:last-child),
     .item-diferencial:not(:last-child) {
-        border-right: none;
-        border-bottom: 1px solid #E5E5E5;
+        border-bottom: 2px solid #DFEADE;
+    }
+
+    .item-estatistica:not(:last-child)::after,
+    .item-diferencial:not(:last-child)::after {
+        display: none;
     }
 
     .item-estatistica:last-child,
