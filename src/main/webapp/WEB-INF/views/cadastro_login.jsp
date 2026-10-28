@@ -1430,14 +1430,6 @@
         </div>
     </div>
 </div>
-                        <c:otherwise>
-                            <%@ include file="cadastro/conta.jsp" %>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-        </div>
-    </div>
-</div>
 
 <script>
     // O "Voltar" do topo leva para a landing. Durante o cadastro ele passa a acionar o botão "Voltar" da etapa atual.
@@ -1454,9 +1446,6 @@
         });
     })();
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
