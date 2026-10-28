@@ -18,7 +18,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.math.RoundingMode;
 
 //Servlet responsavel pelos dois logins do sistema: usuario comum (/login) e painel administrativo (/login-crud).
 @WebServlet(urlPatterns = {"/login", "/login-crud", "/logout"})
@@ -124,12 +123,6 @@ public class LoginServlet extends HttpServlet {
             if (tipo.getId() == condominio.getIdTipoCondominio()) plano = tipo.getNome().toLowerCase();
         }
 
-        int quantidade;
-        if (condominio.getAreaM2() != null) {
-            quantidade = condominio.getAreaM2().setScale(0, RoundingMode.CEILING).intValue();
-        } else {
-            quantidade = condominio.getNumeroUnidades() == null ? 1 : condominio.getNumeroUnidades();
-        }
 
         CadastroPendente cad = new CadastroPendente();
         cad.setNome(usuario.getNome());
@@ -140,7 +133,7 @@ public class LoginServlet extends HttpServlet {
         cad.setIdUsuario(usuario.getIdUsuario());
         cad.setIdCondominio(condominio.getIdCondominio());
         cad.setPlano(plano);
-        cad.setQuantidade(Math.min(Math.max(quantidade, 1), Orcamento.QUANTIDADE_MAXIMA));
+        cad.setQuantidade(Orcamento.quantidadeDoCondominio(condominio));
         cad.setCiclo("mensal");
         return cad;
     }
