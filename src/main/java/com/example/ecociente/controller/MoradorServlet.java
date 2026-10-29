@@ -79,6 +79,16 @@ public class MoradorServlet extends HttpServlet {
                 0, numeroApartamento, torre, idCondominio
         ));
 
+        //Quem vira morador deixa de ser "Comum". Administrador, síndico e cooperativa mantêm o tipo.
+        if (adicionado) {
+            Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
+            int idTipoMorador = daoUsuarios.selecionarIdTipoPorNome("Morador");
+            if (usuario != null && idTipoMorador != 0 && usuario.getIdTipoUsuario() == daoUsuarios.selecionarIdTipoPorNome("Comum")) {
+                usuario.setTipoUsuario(idTipoMorador);
+                daoUsuarios.atualizar(usuario, null, null);
+            }
+        }
+
         request.setAttribute("adicionado", adicionado ? "true" : "false");
         mostrarSelects(request, response);
     }
