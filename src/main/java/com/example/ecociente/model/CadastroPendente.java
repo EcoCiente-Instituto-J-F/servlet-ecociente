@@ -42,6 +42,7 @@ public class CadastroPendente {
     private String docPagador;
     private String emailBoleto;
     private boolean contaCriada; // conta já gravada no banco: só falta (opcionalmente) a assinatura
+    private boolean origemLogin; // assinatura aberta pelo login ("Fazer assinatura"), não pelo cadastro novo
     private boolean dadosPagamentoOk; // dados de cobrança (pag-dados) preenchidos e validados
 
     // Assinatura (tabelas plano e assinatura)
@@ -74,6 +75,9 @@ public class CadastroPendente {
 
     public boolean isContaCriada() { return contaCriada; }
     public void setContaCriada(boolean contaCriada) { this.contaCriada = contaCriada; }
+
+    public boolean isOrigemLogin() { return origemLogin; }
+    public void setOrigemLogin(boolean origemLogin) { this.origemLogin = origemLogin; }
 
     public boolean isDadosPagamentoOk() { return dadosPagamentoOk; }
     public void setDadosPagamentoOk(boolean dadosPagamentoOk) { this.dadosPagamentoOk = dadosPagamentoOk; }
