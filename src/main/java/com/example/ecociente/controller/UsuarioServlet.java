@@ -230,7 +230,9 @@ public class UsuarioServlet extends HttpServlet {
         String erro = validarConta(email, senha, confirmaSenha);
         if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
             erro = "Este e-mail já está cadastrado.";
-            request.setAttribute("emailJaCadastrado", true); //conta.jsp oferece "Fazer assinatura" pelo login
+            request.setAttribute("emailJaCadastrado", true);
+            //Só o síndico assina: conta.jsp oferece "Fazer assinatura" a ele; para os demais, voltar à landing.
+            request.setAttribute("emailDeSindico", emailDeSindico(email.trim().toLowerCase()));
         }
         if (erro != null) {
             request.setAttribute("erroCadastro", erro);
@@ -247,6 +249,17 @@ public class UsuarioServlet extends HttpServlet {
         sessao.setAttribute("etapaCadastro", "perfil");
 
         mostrarCadastro(request, response);
+    }
+
+    //O e-mail é de um síndico (tem linha na tabela sindico, a mesma regra do login para assinar)?
+    //Sem usuário ou com erro de banco, vale "não": nesse caso a tela não oferece a assinatura.
+    private boolean emailDeSindico(String email) {
+        try {
+            Usuario usuario = usuarioDAO.selecionarPorEmail(email);
+            return usuario != null && sindicoDAO.buscarIdUsuario(usuario.getIdUsuario());
+        } catch (RuntimeException e) {
+            return false;
+        }
     }
 
     private String validarConta(String email, String senha, String confirmaSenha) {
