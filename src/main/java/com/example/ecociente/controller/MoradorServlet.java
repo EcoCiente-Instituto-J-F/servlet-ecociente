@@ -61,11 +61,10 @@ public class MoradorServlet extends HttpServlet {
     }
 
     private void adicionarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String numeroApartamento = request.getParameter("numeroApartamento");
-        String torre = request.getParameter("torre");
-        torre = (torre == null || torre.isBlank()) ? null : torre.trim(); //torre é opcional: vazia vira null
+        String numeroApartamento = textoOpcional(request.getParameter("numeroApartamento")); //apartamento é opcional: vazio vira null
+        String torre = textoOpcional(request.getParameter("torre")); //torre é opcional: vazia vira null
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-        int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
+        Integer idCondominio = lerIdCondominio(request);
 
         if (daoMoradores.buscarIdUsuario(idUsuario)) {
             request.setAttribute("erro", "Este usuário já está cadastrado como morador.");
@@ -95,15 +94,25 @@ public class MoradorServlet extends HttpServlet {
             mostrarSelects(request, response);
             return;
         }
-        morador.setNumeroApartamento(request.getParameter("numeroApartamento"));
-        String torre = request.getParameter("torre");
-        morador.setTorre((torre == null || torre.isBlank()) ? null : torre.trim());
-        morador.setIdCondominio(Integer.parseInt(request.getParameter("idCondominio")));
+        morador.setNumeroApartamento(textoOpcional(request.getParameter("numeroApartamento")));
+        morador.setTorre(textoOpcional(request.getParameter("torre")));
+        morador.setIdCondominio(lerIdCondominio(request));
 
         boolean alterado = daoMoradores.atualizar(morador);
 
         request.setAttribute("alterado", alterado ? "true" : "false");
         mostrarSelects(request, response);
+    }
+
+    //Vazio vira null; preenchido volta sem os espaços das pontas.
+    private String textoOpcional(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor.trim();
+    }
+
+    //O condomínio é opcional: o morador pode ainda não estar ligado a nenhum.
+    private Integer lerIdCondominio(HttpServletRequest request) {
+        String valor = request.getParameter("idCondominio");
+        return (valor == null || valor.isBlank()) ? null : Integer.valueOf(valor.trim());
     }
 
     private void deletarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
