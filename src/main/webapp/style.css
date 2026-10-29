@@ -1,4 +1,4 @@
-﻿﻿* {
+﻿* {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -8,7 +8,7 @@
     --espaco-pequeno: 16px;
     --espaco-medio: 32px;
     --espaco-grande: 64px;
-    --espaco-secao: 120px;
+    --espaco-secao: 220px;
     --margem-lateral: 200px;
 }
 
@@ -305,7 +305,7 @@ h2, h3, h4 {
 /* ---------- Card condomínio / cooperativa ---------- */
 
 .card-cond-coop {
-    margin-top: 120px;
+    margin-top: var(--espaco-secao);
     position: relative;
     border-radius: 24px;
     background-image: url(assets/prediosAvenida.png);
@@ -418,7 +418,7 @@ input[name="modo-card"] {
 
 .container-verde {
     position: relative;
-    margin-top: 120px;
+    margin-top: var(--espaco-secao);
     background-color: #064E3B;
     padding: 80px var(--margem-lateral);
     margin-left: calc(var(--margem-lateral) * -1);
@@ -504,7 +504,7 @@ input[name="modo-card"] {
 
 .beneficios {
     max-width: 1200px;
-    margin: 80px auto;
+    margin: var(--espaco-secao) auto;
     background: url('assets/imagemCasas.png') center/cover no-repeat;
     border-radius: 30px;
     padding: 60px;
@@ -1559,7 +1559,6 @@ input[name="modo-card"] {
 @media (max-width: 1200px) {
     :root {
         --margem-lateral: 40px;
-        --espaco-secao: 90px;
     }
 
     .navbar {
@@ -1683,12 +1682,7 @@ input[name="modo-card"] {
 
 
     :root {
-        --espaco-secao: 60px;
         --margem-lateral: 24px;
-    }
-
-    .container {
-        padding: var(--espaco-secao) var(--margem-lateral);
     }
 
     .navbar {
@@ -1814,12 +1808,10 @@ input[name="modo-card"] {
     }
 
     .card-cond-coop {
-        margin-top: 80px;
         padding: 55px 35px;
     }
 
     .container-verde {
-        margin-top: 80px;
         padding: 70px var(--margem-lateral);
         margin-left: calc(var(--margem-lateral) * -1);
         margin-right: calc(var(--margem-lateral) * -1);
@@ -1835,7 +1827,6 @@ input[name="modo-card"] {
     }
 
     .beneficios {
-        margin: 60px auto;
         padding: 50px 30px;
     }
 
@@ -1870,10 +1861,6 @@ input[name="modo-card"] {
 
     .cabecalho-card {
         min-height: auto;
-    }
-
-    .cooperativa {
-        margin-top: var(--espaco-secao);
     }
 
     .container-cooperativa {
@@ -1960,12 +1947,31 @@ input[name="modo-card"] {
     .titulo-quem-somos {
         font-size: 30px;
     }
+
+    /* Telas médias: botão do topo e textos de "Quem somos" e "Missão" ficam centralizados */
+    .botao-hero {
+        align-self: center;
+    }
+
+    .conteudo-missao,
+    .conteudo-quem-somos {
+        align-items: center;
+        text-align: center;
+    }
+
+    .titulo-missao,
+    .titulo-quem-somos,
+    .descricao-missao,
+    .descricao-quem-somos {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 @media (max-width: 700px) {
 
     :root {
-        --espaco-secao: 55px;
         --margem-lateral: 20px;
     }
 
@@ -2058,7 +2064,6 @@ input[name="modo-card"] {
     }
 
     .card-cond-coop {
-        margin-top: 65px;
         padding: 35px 20px;
         border-radius: 20px;
     }
@@ -2092,7 +2097,6 @@ input[name="modo-card"] {
     }
 
     .container-verde {
-        margin-top: 60px;
         padding: 55px var(--margem-lateral);
     }
 
@@ -2127,7 +2131,6 @@ input[name="modo-card"] {
     }
 
     .beneficios {
-        margin: 50px auto;
         padding: 35px 20px;
         border-radius: 22px;
     }
@@ -2160,7 +2163,6 @@ input[name="modo-card"] {
     }
 
     .planos {
-        margin: 60px auto;
         padding: 0;
     }
 
@@ -2215,10 +2217,6 @@ input[name="modo-card"] {
         max-width: 360px;
     }
 
-    .baixe-aqui {
-        margin-top: 65px;
-    }
-
     .titulo-baixe {
         font-size: 28px;
     }
@@ -2236,11 +2234,6 @@ input[name="modo-card"] {
 
     .mockup-baixe img {
         max-width: 300px;
-    }
-
-    .nossa-missao,
-    .quem-somos {
-        margin-top: 65px;
     }
 
     .container-missao,
@@ -2307,7 +2300,6 @@ input[name="modo-card"] {
 
     :root {
         --margem-lateral: 16px;
-        --espaco-secao: 45px;
     }
 
     .navbar {
@@ -2424,11 +2416,6 @@ input[name="modo-card"] {
 
     .mockup-baixe img {
         max-width: 270px;
-    }
-
-    .nossa-missao,
-    .quem-somos {
-        margin-top: 55px;
     }
 
     .container-missao,
@@ -2578,4 +2565,9 @@ input[name="modo-card"] {
     .item-icone-beneficio {
         align-items: center;
     }
+}
+
+/* ----- Link do acesso administrativo (quase invisível, no rodapé) ----- */
+.acesso-admin {
+    opacity: .05;
 }
