@@ -649,18 +649,6 @@
             margin-bottom: 6px;
         }
 
-        /* Texto só para leitores de tela (não aparece na tela) */
-        .so-leitor {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip: rect(0 0 0 0);
-            white-space: nowrap;
-            border: 0;
-            padding: 0;
-        }
-
         /* Pagamento: resumo do plano, ciclo de cobrança e quantidade */
         .plano-escolhido {
             display: flex;
@@ -743,13 +731,12 @@
             color: #ffffff;
         }
 
-        .seletor-ciclo button:focus-visible,
-        .stepper button:focus-visible {
+        .seletor-ciclo button:focus-visible {
             outline: 2px solid #E05282;
             outline-offset: 2px;
         }
 
-        /* Campo de quantidade com botões de mais e menos */
+        /* Quantidade cobrada (vem do cadastro do condomínio) */
         .quantidade {
             display: flex;
             align-items: center;
@@ -758,57 +745,25 @@
             margin-bottom: 14px;
         }
 
-        .quantidade label {
+        .quantidade-rotulo {
             display: block;
+            margin: 0;
             color: #064E3B;
             font-family: 'Montserrat', sans-serif;
             font-weight: 700;
             font-size: 13px;
         }
 
+        .quantidade-valor {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 18px;
+            color: #064E3B;
+            white-space: nowrap;
+        }
+
         .quantidade .dica-campo {
             margin-top: 2px;
-        }
-
-        .stepper {
-            display: flex;
-            align-items: stretch;
-            border: 1px solid #C7D6D1;
-            border-radius: 8px;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
-        .stepper button {
-            width: 34px;
-            border: none;
-            background: #ffffff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .stepper button:hover {
-            background-color: #ECF4F1;
-        }
-
-        .stepper input {
-            width: 64px;
-            border: none;
-            border-left: 1px solid #C7D6D1;
-            border-right: 1px solid #C7D6D1;
-            text-align: center;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 600;
-            font-size: 14px;
-            color: #064E3B;
-            padding: 8px 4px;
-            outline: none;
-        }
-
-        .stepper input:focus {
-            background-color: #ECF4F1;
         }
 
         .quantidade-campo {
@@ -817,23 +772,6 @@
             align-items: flex-end;
             gap: 6px;
             flex-shrink: 0;
-        }
-
-        .atualizar {
-            border: none;
-            background: none;
-            padding: 0;
-            font-family: 'Instrument Sans', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            color: #064E3B;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        .atualizar:focus-visible {
-            outline: 2px solid #E05282;
-            outline-offset: 2px;
         }
 
         /* Quadro "como chegamos nesse valor" do plano anual */
@@ -1274,10 +1212,6 @@
                 align-items: flex-start;
             }
 
-            .stepper button {
-                width: 44px;
-            }
-
             .quantidade-campo {
                 align-items: flex-start;
             }
@@ -1289,10 +1223,6 @@
 
             .calculo-anual dd {
                 text-align: left;
-            }
-
-            .stepper input {
-                font-size: 16px;
             }
         }
     </style>
