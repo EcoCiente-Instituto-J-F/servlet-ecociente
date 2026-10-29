@@ -130,6 +130,7 @@ public class LoginServlet extends HttpServlet {
         cad.setCpf(sindico.getCpf());
         cad.setDocumento(sindico.getCpf());
         cad.setContaCriada(true);
+        cad.setOrigemLogin(true);
         cad.setIdUsuario(usuario.getIdUsuario());
         cad.setIdCondominio(condominio.getIdCondominio());
         cad.setPlano(plano);

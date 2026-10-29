@@ -32,6 +32,8 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet(urlPatterns = {"/cadastro", "/cadastro/plano", "/usuarios"})
 public class UsuarioServlet extends HttpServlet {
@@ -1025,8 +1027,33 @@ public class UsuarioServlet extends HttpServlet {
     }
 
     //Depois da tela de pagamento: limpa a sessão do cadastro e mostra a tela de sucesso com o código do condomínio.
+    //Quem veio pelo login ("Fazer assinatura") vê o resultado do pagamento no lugar da tela de conta criada.
     private void concluirAssinatura(HttpServletRequest request, HttpServletResponse response, CadastroPendente cad) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
+
+        if (cad.isOrigemLogin()) {
+            //O orçamento usa o cadastro, então é montado antes de limpar a sessão.
+            Map<String, String> pagamento = new HashMap<>();
+            pagamento.put("status", "pendente"); //TODO: com o gateway, o status vem do retorno dele
+            try {
+                Orcamento orc = orcamento(cad);
+                if (orc != null) {
+                    pagamento.put("plano", orc.getPlano().getNome());
+                    pagamento.put("valor", orc.getTotal());
+                }
+            } catch (RuntimeException e) {
+                //sem o orçamento a tela mostra só o status
+            }
+            pagamento.put("forma", textoMetodo(cad.getMetodo()));
+
+            sessao.removeAttribute("cadastroPendente");
+            sessao.removeAttribute("etapaCadastro");
+            sessao.removeAttribute("abaAtiva");
+            request.setAttribute("pagamento", pagamento);
+            request.getRequestDispatcher("/WEB-INF/views/cadastro/pagamento_resultado.jsp").forward(request, response);
+            return;
+        }
+
         sessao.removeAttribute("cadastroPendente");
         sessao.removeAttribute("etapaCadastro");
         sessao.removeAttribute("abaAtiva");
@@ -1041,6 +1068,13 @@ public class UsuarioServlet extends HttpServlet {
         }
         request.setAttribute("perfilCriado", cad.getPlano());
         request.getRequestDispatcher("/WEB-INF/views/cadastro/cadastro_sucesso.jsp").forward(request, response);
+    }
+
+    //Texto da forma de pagamento para a tela de resultado (nunca o código cru).
+    private String textoMetodo(String metodo) {
+        if ("pix".equals(metodo)) return "Pix";
+        if ("boleto".equals(metodo)) return "Boleto";
+        return "Cartão de crédito";
     }
 
     //Cadastro que já tem conta criada no banco; null se não houver.
