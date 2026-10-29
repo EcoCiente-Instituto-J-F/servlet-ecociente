@@ -158,6 +158,9 @@ public class UsuarioServlet extends HttpServlet {
         Endereco endereco = Formulario.endereco(request, false);
         String cpf = Formulario.cpf(request.getParameter("cpf"), false);
 
+        if (tipoComTabelaPropria(idTipoUsuario)) {
+            throw new DadoInvalido("Para criar este tipo de usuário use a tela própria (Síndicos, Moradores ou Cooperativas).");
+        }
         if (usuarioDAO.existeEmail(email, 0)) {
             throw new DadoInvalido("Este e-mail já está cadastrado.");
         }
@@ -183,6 +186,10 @@ public class UsuarioServlet extends HttpServlet {
         Endereco endereco = Formulario.endereco(request, false);
         String cpf = Formulario.cpf(request.getParameter("cpf"), false);
 
+        Object logado = request.getSession().getAttribute("idUsuarioLogado");
+        if (logado != null && (Integer) logado == id && idTipoUsuario != LoginServlet.TIPO_ADMINISTRADOR) {
+            throw new DadoInvalido("Você não pode tirar o próprio acesso de administrador.");
+        }
         if (usuarioDAO.existeEmail(email, id)) {
             throw new DadoInvalido("Este e-mail já está cadastrado.");
         }
@@ -193,6 +200,10 @@ public class UsuarioServlet extends HttpServlet {
         //Busca no banco e troca só o que veio do formulário (senha vazia mantém a atual).
         Usuario usuario = usuarioDAO.selecionarUsuarioPorId(id);
         if (usuario == null) return false;
+        if (usuario.getIdTipoUsuario() != idTipoUsuario
+                && (tipoComTabelaPropria(idTipoUsuario) || tipoComTabelaPropria(usuario.getIdTipoUsuario()))) {
+            throw new DadoInvalido("O tipo Síndico, Morador ou Cooperativa só muda pela tela própria.");
+        }
         usuario.setNome(nome);
         usuario.setEmail(email);
         usuario.setTipoUsuario(idTipoUsuario);
@@ -202,6 +213,13 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         return usuarioDAO.atualizar(usuario, telefone, endereco);
+    }
+
+    //Síndico, Morador e Cooperativa dependem de uma linha na tabela própria, então o tipo deles não se escolhe no painel de usuários.
+    private boolean tipoComTabelaPropria(int idTipo) {
+        return idTipo != 0 && (idTipo == usuarioDAO.selecionarIdTipoPorNome("Sindico")
+                || idTipo == usuarioDAO.selecionarIdTipoPorNome("Morador")
+                || idTipo == usuarioDAO.selecionarIdTipoPorNome("Cooperativa"));
     }
 
     private boolean deletarUsuarioPainel(HttpServletRequest request, int id) {
@@ -1248,9 +1266,10 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         //Não lê nem guarda dados de cartão: sem gateway, nada é cobrado nem gerado.
-        //TODO: com o gateway, ativar a assinatura (status ativa, data_inicio e proxima_cobranca) quando o pagamento for confirmado.
+        //Sem gateway, a assinatura já fica ativa; com o gateway, ativar só quando o pagamento for confirmado.
         String metodo = request.getParameter("metodo");
         cad.setMetodo("pix".equals(metodo) || "boleto".equals(metodo) ? metodo : "cartao");
+        assinaturaDAO.ativar(cad.getIdAssinatura());
         concluirAssinatura(request, response, cad);
     }
 }
