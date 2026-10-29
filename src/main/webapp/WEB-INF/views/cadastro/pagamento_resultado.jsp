@@ -1,6 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%-- Resultado do pagamento: aprovado, boleto gerado ou não aprovado (conforme pagamento.status) --%>
+<%-- Resultado do pagamento: pendente, aprovado, boleto gerado ou não aprovado (conforme pagamento.status) --%>
 <c:set var="ctx" value="${pageContext.request.contextPath}" />
 <%-- Situação do pagamento enviada pelo servidor --%>
 <c:set var="st" value="${pagamento.status}" />
@@ -9,7 +9,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EcoCiente - ${st == 'aprovado' ? 'Pagamento confirmado' : (st == 'boleto' ? 'Boleto gerado' : 'Pagamento não aprovado')}</title>
+    <title>EcoCiente - ${st == 'pendente' ? 'Assinatura registrada' : (st == 'aprovado' ? 'Pagamento confirmado' : (st == 'boleto' ? 'Boleto gerado' : 'Pagamento não aprovado'))}</title>
     <link rel="icon" href="${ctx}/assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -241,6 +241,24 @@
         <section class="card-resultado" aria-labelledby="titulo-resultado">
             <c:choose>
 
+                <%-- ===== Assinatura registrada, pagamento ainda não confirmado ===== --%>
+                <c:when test="${st == 'pendente'}">
+                    <img class="icone-status" src="${ctx}/assets/status-aguardando.svg" width="80" height="80" alt="">
+                    <p class="situacao">Aguardando confirmação</p>
+                    <h1 class="titulo-resultado" id="titulo-resultado">Assinatura registrada!</h1>
+                    <p class="texto-resultado">Seu pagamento ainda está sendo processado. Avisaremos por e-mail quando a assinatura for ativada.</p>
+
+                    <dl class="detalhes">
+                        <div><dt>Plano</dt><dd><c:out value="${pagamento.plano}" /></dd></div>
+                        <div><dt>Valor</dt><dd><c:out value="${pagamento.valor}" /></dd></div>
+                        <div><dt>Forma de pagamento</dt><dd><c:out value="${pagamento.forma}" /></dd></div>
+                    </dl>
+
+                    <div class="botoes">
+                        <a href="${ctx}/inicio" class="botao botao-principal">Voltar para o início</a>
+                    </div>
+                </c:when>
+
                 <%-- ===== Pagamento aprovado ===== --%>
                 <c:when test="${st == 'aprovado'}">
                     <img class="icone-status" src="${ctx}/assets/status-aprovado.svg" width="80" height="80" alt="">
@@ -256,7 +274,7 @@
                     </dl>
 
                     <div class="botoes">
-                        <a href="${ctx}/inicio" class="botao botao-principal">Ir para o início</a>
+                        <a href="${ctx}/inicio" class="botao botao-principal">Voltar para o início</a>
                     </div>
                 </c:when>
 
@@ -277,7 +295,7 @@
 
                     <div class="botoes">
                         <span class="botao botao-secundario" aria-disabled="true" title="Disponível quando o gateway de pagamento estiver integrado">Baixar boleto (PDF)</span>
-                        <a href="${ctx}/inicio" class="botao botao-principal">Ir para o início</a>
+                        <a href="${ctx}/inicio" class="botao botao-principal">Voltar para o início</a>
                     </div>
                 </c:when>
 
