@@ -74,4 +74,24 @@ public class AssinaturaDAO {
             throw new RuntimeException(sqle.getMessage());
         }
     }
+
+    // Marca a assinatura pendente como ativa: começa hoje e a próxima cobrança vem um ciclo depois.
+    public boolean ativar(int idAssinatura) {
+
+        String sql = """
+                UPDATE assinatura
+                SET status = 'ativa', data_inicio = CURRENT_DATE,
+                    proxima_cobranca = (CASE ciclo WHEN 'mensal' THEN CURRENT_DATE + INTERVAL '1 month'
+                                                   ELSE CURRENT_DATE + INTERVAL '1 year' END)::date
+                WHERE id_assinatura = ? AND status = 'pendente'
+                """;
+
+        try (Connection conexao = ConexaoBD.conectar();
+             PreparedStatement ps = conexao.prepareStatement(sql)) {
+            ps.setInt(1, idAssinatura);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
 }
