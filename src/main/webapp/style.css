@@ -1,14 +1,23 @@
-﻿﻿* {
+﻿*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 :root {
     --espaco-pequeno: 16px;
     --espaco-medio: 32px;
     --espaco-grande: 64px;
-    --espaco-secao: 120px;
+    --espaco-secao: 80px;
     --margem-lateral: 200px;
 }
 
@@ -63,7 +72,7 @@ h2, h3, h4 {
 
 .header {
     position: fixed;
-    top: 20px;
+    top: 14px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -73,7 +82,7 @@ h2, h3, h4 {
 .navbar {
     background-color: white;
     width: 90%;
-    padding: 6px 30px;
+    padding: 10px 30px;
     border-radius: 144px;
     display: flex;
     justify-content: space-between;
@@ -88,7 +97,7 @@ h2, h3, h4 {
 }
 
 .logotipo-navbar img {
-    height: 26px;
+    height: 36px;
 }
 
 .links-navbar {
@@ -122,9 +131,9 @@ h2, h3, h4 {
     gap: 8px;
     background-color: #D64573;
     color: #ffffff;
-    padding: 8px 22px;
+    padding: 6px 18px;
     border-radius: 50px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
 }
 
@@ -170,7 +179,19 @@ h2, h3, h4 {
     box-sizing: border-box;
 }
 
+/* Sombra sobre a foto de fundo: escurece a esquerda (texto) e a base */
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+            linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.45) 40%, rgba(0, 0, 0, 0) 75%),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 45%);
+    pointer-events: none;
+}
+
 .container-hero {
+    position: relative;
     max-width: 1200px;
     width: 100%;
     display: grid;
@@ -186,7 +207,7 @@ h2, h3, h4 {
 }
 
 .logotipo-hero img {
-    height: 35px;
+    height: 44px;
     width: auto;
 }
 
@@ -305,13 +326,42 @@ h2, h3, h4 {
 /* ---------- Card condomínio / cooperativa ---------- */
 
 .card-cond-coop {
-    margin-top: 120px;
+    margin-top: var(--espaco-secao);
     position: relative;
     border-radius: 24px;
-    background-image: url(assets/prediosAvenida.png);
+    padding: 80px;
+    overflow: hidden;
+}
+
+/* Camada da foto com filtro (tira o verde e escurece) */
+.card-cond-coop::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    /* se a foto nova não estiver na pasta assets, usa a antiga como reserva */
+    background-image: url(assets/prediosAvenida-original.jpg?v=2), url(assets/prediosAvenida.png);
     background-size: cover;
     background-position: center;
-    padding: 80px;
+    filter: grayscale(0.6) brightness(0.85);
+    pointer-events: none;
+}
+
+/* Sombra escura por cima da foto (mesmo estilo do hero) */
+.card-cond-coop::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background:
+            linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.28) 30%, rgba(0, 0, 0, 0) 60%),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0) 35%);
+    pointer-events: none;
+}
+
+.card-cond-coop > * {
+    position: relative;
+    z-index: 1;
 }
 
 .titulo-cond-coop {
@@ -408,17 +458,16 @@ input[name="modo-card"] {
     flex-direction: column;
 }
 
-.card-cond-coop:has(#entrada-abas-cooperativa:checked) {
+.card-cond-coop:has(#entrada-abas-cooperativa:checked)::before {
     background-image: url('assets/imagemCatadores.png');
-    background-size: cover;
-    background-position: center;
+    filter: grayscale(0.6) brightness(0.85);
 }
 
 /* ---------- Funcionalidades (faixa verde) ---------- */
 
 .container-verde {
     position: relative;
-    margin-top: 120px;
+    margin-top: var(--espaco-secao);
     background-color: #064E3B;
     padding: 80px var(--margem-lateral);
     margin-left: calc(var(--margem-lateral) * -1);
@@ -504,7 +553,7 @@ input[name="modo-card"] {
 
 .beneficios {
     max-width: 1200px;
-    margin: 80px auto;
+    margin: var(--espaco-secao) auto;
     background: url('assets/imagemCasas.png') center/cover no-repeat;
     border-radius: 30px;
     padding: 60px;
@@ -1110,6 +1159,8 @@ input[name="modo-card"] {
 .nossa-missao {
     width: 100%;
     margin-top: var(--espaco-secao);
+    border-top: 3px solid rgba(6, 78, 59, 0.2);
+    padding-top: 80px;
 }
 
 .container-missao {
@@ -1559,12 +1610,12 @@ input[name="modo-card"] {
 @media (max-width: 1200px) {
     :root {
         --margem-lateral: 40px;
-        --espaco-secao: 90px;
+        --espaco-secao: 64px;
     }
 
     .navbar {
         width: 94%;
-        padding: 12px 24px;
+        padding: 10px 24px;
     }
 
     .logotipo-navbar {
@@ -1683,12 +1734,8 @@ input[name="modo-card"] {
 
 
     :root {
-        --espaco-secao: 60px;
         --margem-lateral: 24px;
-    }
-
-    .container {
-        padding: var(--espaco-secao) var(--margem-lateral);
+        --espaco-secao: 52px;
     }
 
     .navbar {
@@ -1761,7 +1808,7 @@ input[name="modo-card"] {
     }
 
     .logotipo-hero img {
-        height: 32px;
+        height: 40px;
     }
 
     .titulo-rosa,
@@ -1814,12 +1861,10 @@ input[name="modo-card"] {
     }
 
     .card-cond-coop {
-        margin-top: 80px;
         padding: 55px 35px;
     }
 
     .container-verde {
-        margin-top: 80px;
         padding: 70px var(--margem-lateral);
         margin-left: calc(var(--margem-lateral) * -1);
         margin-right: calc(var(--margem-lateral) * -1);
@@ -1835,7 +1880,6 @@ input[name="modo-card"] {
     }
 
     .beneficios {
-        margin: 60px auto;
         padding: 50px 30px;
     }
 
@@ -1870,10 +1914,6 @@ input[name="modo-card"] {
 
     .cabecalho-card {
         min-height: auto;
-    }
-
-    .cooperativa {
-        margin-top: var(--espaco-secao);
     }
 
     .container-cooperativa {
@@ -1960,12 +2000,31 @@ input[name="modo-card"] {
     .titulo-quem-somos {
         font-size: 30px;
     }
+
+    /* Telas médias: botão do topo e textos de "Quem somos" e "Missão" ficam centralizados */
+    .botao-hero {
+        align-self: center;
+    }
+
+    .conteudo-missao,
+    .conteudo-quem-somos {
+        align-items: center;
+        text-align: center;
+    }
+
+    .titulo-missao,
+    .titulo-quem-somos,
+    .descricao-missao,
+    .descricao-quem-somos {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
 
 @media (max-width: 700px) {
 
     :root {
-        --espaco-secao: 55px;
         --margem-lateral: 20px;
     }
 
@@ -2006,7 +2065,7 @@ input[name="modo-card"] {
     }
 
     .logotipo-hero img {
-        height: 28px;
+        height: 34px;
         max-width: 100%;
     }
 
@@ -2058,7 +2117,6 @@ input[name="modo-card"] {
     }
 
     .card-cond-coop {
-        margin-top: 65px;
         padding: 35px 20px;
         border-radius: 20px;
     }
@@ -2092,7 +2150,6 @@ input[name="modo-card"] {
     }
 
     .container-verde {
-        margin-top: 60px;
         padding: 55px var(--margem-lateral);
     }
 
@@ -2127,7 +2184,6 @@ input[name="modo-card"] {
     }
 
     .beneficios {
-        margin: 50px auto;
         padding: 35px 20px;
         border-radius: 22px;
     }
@@ -2160,7 +2216,6 @@ input[name="modo-card"] {
     }
 
     .planos {
-        margin: 60px auto;
         padding: 0;
     }
 
@@ -2215,10 +2270,6 @@ input[name="modo-card"] {
         max-width: 360px;
     }
 
-    .baixe-aqui {
-        margin-top: 65px;
-    }
-
     .titulo-baixe {
         font-size: 28px;
     }
@@ -2236,11 +2287,6 @@ input[name="modo-card"] {
 
     .mockup-baixe img {
         max-width: 300px;
-    }
-
-    .nossa-missao,
-    .quem-somos {
-        margin-top: 65px;
     }
 
     .container-missao,
@@ -2307,7 +2353,6 @@ input[name="modo-card"] {
 
     :root {
         --margem-lateral: 16px;
-        --espaco-secao: 45px;
     }
 
     .navbar {
@@ -2424,11 +2469,6 @@ input[name="modo-card"] {
 
     .mockup-baixe img {
         max-width: 270px;
-    }
-
-    .nossa-missao,
-    .quem-somos {
-        margin-top: 55px;
     }
 
     .container-missao,
@@ -2578,4 +2618,9 @@ input[name="modo-card"] {
     .item-icone-beneficio {
         align-items: center;
     }
+}
+
+/* ----- Link do acesso administrativo (quase invisível, no rodapé) ----- */
+.acesso-admin {
+    opacity: .05;
 }

@@ -59,7 +59,7 @@
                 </a>
             </div>
             <div class="mockups-hero">
-                <img src="${pageContext.request.contextPath}/assets/celularesHero.png" alt="Aplicativo EcoCiente em celulares">
+                <img src="${pageContext.request.contextPath}/assets/celulares-hero-novo.png" alt="Aplicativo EcoCiente em celulares">
             </div>
         </div>
     </section>
@@ -354,7 +354,7 @@
         <section class="baixe-aqui">
             <div class="container-baixe">
                 <div class="mockup-baixe">
-                    <img src="${pageContext.request.contextPath}/assets/celularesHero.png" alt="Aplicativo EcoCiente em celulares">
+                    <img src="${pageContext.request.contextPath}/assets/celularesBaixe.png" alt="Telas do aplicativo EcoCiente: início do morador e conteúdos salvos, cercadas de folhas">
                 </div>
                 <div class="conteudo-baixe">
                     <span class="etiqueta-baixe">Tudo na palma da sua mão</span>
@@ -535,7 +535,7 @@
                 <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
             </div>
             <p class="copyright">2026 EcoCiente. Todos os direitos reservados</p>
-            <a href="${pageContext.request.contextPath}/login-crud" style="opacity:.05" aria-label="Acesso administrativo">.</a>
+            <a href="${pageContext.request.contextPath}/login-crud" class="acesso-admin" aria-label="Acesso administrativo">.</a>
         </div>
 
         <div class="divisor-vertical"></div>
