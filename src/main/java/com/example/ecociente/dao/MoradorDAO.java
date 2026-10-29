@@ -1,13 +1,17 @@
 package com.example.ecociente.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 
 import com.example.ecociente.conexao.ConexaoBD;
+import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Morador;
+import com.example.ecociente.model.Usuario;
 
 public class MoradorDAO {
 
@@ -27,11 +31,65 @@ public class MoradorDAO {
             ps.setString(1, m.getNumeroApartamento());
             ps.setString(2, m.getTorre());
             ps.setInt(3, m.getIdUsuario());
-            ps.setInt(4, m.getIdCondominio());
+            ps.setObject(4, m.getIdCondominio(), Types.INTEGER);
 
             ps.executeUpdate();
             return true;
 
+        } catch (SQLException sqle) {
+            throw new RuntimeException(sqle.getMessage());
+        }
+    }
+
+    // Cadastro público do morador: grava o endereço (se veio), o usuário, o telefone e o morador na mesma transação.
+    // Apartamento, torre e condomínio podem ser nulos: quem ainda não tem o código do condomínio fica sem vínculo.
+    public boolean cadastrarComUsuario(Usuario usuario, String telefone, Endereco endereco, String numeroApartamento, String torre, Integer idCondominio) {
+
+        try (Connection conexao = ConexaoBD.conectar()) {
+            conexao.setAutoCommit(false);
+            try {
+                Integer idEndereco = endereco == null ? null : EnderecoDAO.inserirNaTransacao(conexao, endereco);
+
+                int idUsuario;
+                String sqlUsuario = """
+                        INSERT INTO usuario (nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario, cpf)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                        RETURNING id_usuario
+                        """;
+                try (PreparedStatement ps = conexao.prepareStatement(sqlUsuario)) {
+                    ps.setString(1, usuario.getNome());
+                    ps.setString(2, usuario.getEmail());
+                    ps.setString(3, usuario.getSenhaHash());
+                    ps.setDate(4, Date.valueOf(usuario.getDataCadastro()));
+                    ps.setBoolean(5, usuario.isStatus());
+                    ps.setObject(6, idEndereco, Types.INTEGER);
+                    ps.setInt(7, usuario.getIdTipoUsuario());
+                    ps.setString(8, usuario.getCpf());
+                    try (ResultSet rs = ps.executeQuery()) {
+                        rs.next();
+                        idUsuario = rs.getInt(1);
+                    }
+                }
+                TelefoneDAO.salvarNaTransacao(conexao, idUsuario, telefone);
+
+                String sqlMorador = """
+                        INSERT INTO morador (numero_apartamento, torre, id_usuario, id_condominio)
+                        VALUES (?, ?, ?, ?)
+                        """;
+                try (PreparedStatement ps = conexao.prepareStatement(sqlMorador)) {
+                    ps.setString(1, numeroApartamento);
+                    ps.setString(2, torre);
+                    ps.setInt(3, idUsuario);
+                    ps.setObject(4, idCondominio, Types.INTEGER);
+                    ps.executeUpdate();
+                }
+
+                conexao.commit();
+                return true;
+            } catch (SQLException sqle) {
+                conexao.rollback();
+                throw sqle;
+            }
         } catch (SQLException sqle) {
             throw new RuntimeException(sqle.getMessage());
         }
@@ -80,7 +138,7 @@ public class MoradorDAO {
                             rs.getInt(9),
                             rs.getString(10),
                             rs.getString(11),
-                            rs.getInt(12)
+                            rs.getObject(12, Integer.class)
                     );
                 }
             }
@@ -156,7 +214,7 @@ public class MoradorDAO {
                         rs.getInt(9),
                         rs.getString(10),
                         rs.getString(11),
-                        rs.getInt(12)
+                        rs.getObject(12, Integer.class)
                 ));
             }
 
@@ -186,7 +244,7 @@ public class MoradorDAO {
             ps.setString(1, m.getNumeroApartamento());
             ps.setString(2, m.getTorre());
             ps.setInt(3, m.getIdUsuario());
-            ps.setInt(4, m.getIdCondominio());
+            ps.setObject(4, m.getIdCondominio(), Types.INTEGER);
             ps.setInt(5, m.getIdMorador());
 
             return ps.executeUpdate() == 1;
