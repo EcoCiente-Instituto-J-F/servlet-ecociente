@@ -257,21 +257,6 @@
             padding-right: 24px;
         }
 
-        /* Link "Esqueceu sua senha?" */
-        .forgot-password {
-            display: block;
-            text-align: right;
-            font-size: 11px;
-            color: #064E3B;
-            font-weight: 600;
-            text-decoration: none;
-            margin-top: 6px;
-        }
-
-        .forgot-password:hover {
-            text-decoration: underline;
-        }
-
         /* Botão principal de cada etapa */
         .botao-submit {
             width: 100%;
@@ -1290,7 +1275,6 @@
                                 </svg>
                             </label>
                         </div>
-                        <a href="#" class="forgot-password">Esqueceu sua senha?</a>
                     </div>
 
                     <%-- Mensagem de erro do login --%>
