@@ -156,6 +156,41 @@ public class CondominioDAO{
         return condominioEncontrado;
     } // Metodo que seleciona um condomínio por id
 
+    // Procura o condomínio pelo código (token) de 6 caracteres; null se nenhum tem esse código
+    public Condominio selecionarPorToken(String token){
+        String sql = """
+                SELECT id_condominio, nome, cnpj, status, token, id_endereco, id_tipo_condominio, numero_unidades, area_m2
+                FROM condominio
+                WHERE token = ?
+                """;
+        try(
+                Connection conexao = ConexaoBD.conectar();
+                PreparedStatement ps = conexao.prepareStatement(sql)
+        ){
+            ps.setString(1, token);
+            try(ResultSet rs = ps.executeQuery()){
+                if(rs.next()){
+                    Condominio condominio = new Condominio(
+                            rs.getInt(1),
+                            rs.getString(2),
+                            rs.getString(3),
+                            rs.getBoolean(4),
+                            rs.getString(5),
+                            rs.getInt(6),
+                            rs.getInt(7)
+                    );
+                    condominio.setNumeroUnidades(rs.getObject(8, Integer.class));
+                    condominio.setAreaM2(rs.getBigDecimal(9));
+                    return condominio;
+                }
+            }
+        }
+        catch(SQLException sqle){
+            throw new RuntimeException(sqle.getMessage());
+        }
+        return null;
+    } // Metodo que seleciona um condomínio pelo código (token)
+
     //=======================MÉTODOS UPDATE=======================\\
     public boolean atualizarCondominio(Condominio condominio){
         boolean retorno = false;
