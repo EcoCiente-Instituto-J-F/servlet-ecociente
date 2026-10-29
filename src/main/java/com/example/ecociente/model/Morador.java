@@ -9,13 +9,13 @@ public class Morador extends Usuario{
     private int idMorador;
     private String numeroApartamento;
     private String torre;
-    private int idCondominio;
+    private Integer idCondominio; //null quando o morador ainda não está ligado a um condomínio
 
     //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
 
-    public Morador(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idMorador, String numeroApartamento, String torre, int idCondominio) {
+    public Morador(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idMorador, String numeroApartamento, String torre, Integer idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idMorador = idMorador;
         this.numeroApartamento = numeroApartamento;
@@ -37,7 +37,7 @@ public class Morador extends Usuario{
         return torre;
     }
 
-    public int getIdCondominio() {
+    public Integer getIdCondominio() {
         return idCondominio;
     }
 
@@ -51,7 +51,7 @@ public class Morador extends Usuario{
         this.torre = torre;
     }
 
-    public void setIdCondominio(int idCondominio) {
+    public void setIdCondominio(Integer idCondominio) {
         this.idCondominio = idCondominio;
     }
 
@@ -60,7 +60,7 @@ public class Morador extends Usuario{
 
     public String toString(){
         return """
-                Morador {id: %d | numero do ap: %s | torre: %s | id do condominio: %d }
+                Morador {id: %d | numero do ap: %s | torre: %s | id do condominio: %s }
                 """.formatted(this.idMorador, this.numeroApartamento, this.torre, this.idCondominio);
     }
 

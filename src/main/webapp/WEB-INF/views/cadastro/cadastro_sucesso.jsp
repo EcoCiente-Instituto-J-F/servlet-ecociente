@@ -227,6 +227,7 @@
                 <c:choose>
                     <c:when test="${perfilCriado == 'residencial'}">Agora é só convidar os moradores e acompanhar os dados do condomínio.</c:when>
                     <c:when test="${perfilCriado == 'comercial'}">Agora é só convidar as empresas e acompanhar os dados do condomínio.</c:when>
+                    <c:when test="${perfilCriado == 'residencial-comercial'}">Agora é só convidar os moradores e as empresas e acompanhar os dados do condomínio.</c:when>
                     <c:when test="${perfilCriado == 'industrial'}">Agora é só acompanhar os resíduos e indicadores do condomínio.</c:when>
                     <c:when test="${perfilCriado == 'morador'}">Agora é só separar, descartar e acompanhar o seu impacto.</c:when>
                     <c:otherwise>Agora é só aproveitar as vantagens que o EcoCiente tem a oferecer.</c:otherwise>

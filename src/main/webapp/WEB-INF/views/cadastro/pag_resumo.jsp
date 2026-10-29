@@ -1,14 +1,13 @@
 <%@ page pageEncoding="UTF-8" %>
-<%-- Pagamento (etapa 1 de 2): resumo do plano, ciclo de cobrança e quantidade --%>
+<%-- Pagamento (etapa 1 de 2): resumo do plano, ciclo de cobrança --%>
 <c:set var="rotuloEtapa" value="Etapa 1 de 2 · Plano" />
 <c:set var="tituloEtapa" value="Resumo do plano" />
-<c:set var="subtituloEtapa" value="Confira o plano escolhido antes de seguir para o pagamento." />
+<c:set var="subtituloEtapa" value="Confira o plano e o ciclo de cobrança antes de seguir para o pagamento." />
 <%@ include file="_cabecalho.jsp" %>
 
 <%-- O campo escondido "etapa" diz ao servidor qual etapa do cadastro está sendo enviada --%>
 <form action="${ctx}/cadastro" method="POST">
     <input type="hidden" name="etapa" value="pag-resumo">
-    <button type="submit" name="acao" value="recalcular" class="so-leitor" tabindex="-1" aria-hidden="true">Recalcular</button>
 
     <%-- Plano escolhido --%>
     <div class="plano-escolhido">
@@ -29,22 +28,15 @@
         </div>
     </fieldset>
 
+    <%-- Quantidade só para leitura: vem do cadastro do condomínio --%>
     <div class="quantidade">
         <div>
-            <label for="cad-quantidade"><c:out value="${orc.plano.rotuloQuantidade}" /></label>
-            <span class="dica-campo" id="dica-quantidade"><c:out value="${orc.precoUnitario}" /></span>
+            <p class="quantidade-rotulo"><c:out value="${orc.plano.rotuloQuantidade}" /></p>
+            <span class="dica-campo"><c:out value="${orc.precoUnitario}" /></span>
         </div>
         <div class="quantidade-campo">
-            <div class="stepper">
-                <button type="submit" name="acao" value="menos" aria-label="Diminuir" formnovalidate>
-                    <img src="${ctx}/assets/icone-menos.svg" width="14" height="2" alt="">
-                </button>
-                <input type="text" id="cad-quantidade" name="quantidade" value="${orc.quantidadeFormatada}" inputmode="numeric" required pattern="[0-9.]{1,10}" title="Digite somente números" aria-describedby="dica-quantidade">
-                <button type="submit" name="acao" value="mais" aria-label="Aumentar" formnovalidate>
-                    <img src="${ctx}/assets/icone-mais.svg" width="14" height="14" alt="">
-                </button>
-            </div>
-            <button type="submit" name="acao" value="recalcular" class="atualizar" formnovalidate>Atualizar valor</button>
+            <strong class="quantidade-valor"><c:out value="${orc.quantidadeFormatada}" /></strong>
+            <span class="dica-campo">Informada no cadastro do condomínio.</span>
         </div>
     </div>
 
@@ -75,13 +67,13 @@
     <%@ include file="_botoes.jsp" %>
 </form>
 
-<%-- Atualiza só o valor ao mexer na quantidade ou no ciclo, sem recarregar a página.
+<%-- Atualiza só o valor ao mudar o ciclo, sem recarregar a página.
      O servidor devolve a etapa inteira; o script troca apenas os blocos que mudam.
      "Ir para o pagamento" e "Voltar" não estão em ACOES, então seguem o envio normal. --%>
 <script>
 (function () {
     var form = document.querySelector('input[name="etapa"][value="pag-resumo"]').form;
-    var ACOES = ['recalcular', 'ciclo-mensal', 'ciclo-anual', 'mais', 'menos'];
+    var ACOES = ['ciclo-mensal', 'ciclo-anual'];
     var BLOCOS = ['.seletor-ciclo', '.quantidade', '.total', '.calculo-anual'];
 
     // Envio normal que preserva a ação clicada (form.submit() não envia o botão)
@@ -96,9 +88,7 @@
 
     // Devolve o foco ao controle usado, já que o bloco original foi trocado
     function restaurarFoco(botao) {
-        var alvo = botao.classList.contains('so-leitor')
-            ? form.querySelector('#cad-quantidade')
-            : form.querySelector('button[name="acao"][value="' + botao.value + '"]:not(.so-leitor)');
+        var alvo = form.querySelector('button[name="acao"][value="' + botao.value + '"]');
         if (alvo) alvo.focus();
     }
 
@@ -134,7 +124,7 @@
                 else if (atual) atual.remove(); // .calculo-anual some no ciclo mensal
             });
 
-            // Mensagem de erro (ex.: quantidade fora do limite): fica logo acima do formulário
+            // Mensagem de erro (ex.: plano indisponível): fica logo acima do formulário
             var erroAtual = form.parentNode.querySelector('.mensagem-erro');
             var erroNovo = formNovo.parentNode.querySelector('.mensagem-erro');
             if (erroAtual) erroAtual.remove();
