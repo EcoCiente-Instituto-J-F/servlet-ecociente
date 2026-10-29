@@ -1,3 +1,4 @@
+/* Reset: tira a margem branca padrão do navegador e evita barra horizontal */
 *,
 *::before,
 *::after {
@@ -185,8 +186,8 @@ h2, h3, h4 {
     position: absolute;
     inset: 0;
     background:
-            linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.45) 40%, rgba(0, 0, 0, 0) 75%),
-            linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 45%);
+            linear-gradient(90deg, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0.25) 40%, rgba(0, 0, 0, 0) 75%),
+            linear-gradient(0deg, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 45%);
     pointer-events: none;
 }
 
