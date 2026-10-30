@@ -5,6 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%-- A página só tem tema claro: evita que o navegador do celular escureça à força e estrague logo e imagens --%>
+    <meta name="color-scheme" content="only light">
     <title>EcoCiente</title>
     <link rel="icon" href="${pageContext.request.contextPath}/assets/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
