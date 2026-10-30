@@ -74,6 +74,16 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
+        //Só o síndico usa o login comum (para assinar o plano). Morador, comum e cooperativa não precisam entrar.
+        int idSindico = daoUsuarios.selecionarIdTipoPorNome("Sindico");
+        if (!telaAdmin && idSindico != 0
+                && usuario.getIdTipoUsuario() != idSindico
+                && usuario.getIdTipoUsuario() != TIPO_ADMINISTRADOR) {
+            request.setAttribute("erroLogin", "Você não precisa fazer login. O login é só para síndicos que vão assinar um plano.");
+            mostrarTela(request, response);
+            return;
+        }
+
         //"Fazer assinatura" (proximo=plano): só o síndico assina, pelo condomínio dele
         CadastroPendente assinatura = null;
         if (!telaAdmin && "plano".equals(request.getParameter("proximo"))) {
