@@ -16,14 +16,19 @@ public class ConexaoBD {
 
     static {
         try (InputStream input = ConexaoBD.class.getClassLoader().getResourceAsStream(".env")) {
-            if (input == null) {
-                throw new RuntimeException("Arquivo .env não encontrado em src/main/resources");
+            if (input != null) {
+                env.load(input);
             }
-            env.load(input);
         } catch (IOException ioe) {
             throw new RuntimeException("Erro ao carregar o .env", ioe);
         }
         Runtime.getRuntime().addShutdownHook(new Thread(ConexaoBD::encerrar));
+    }
+
+    //Variável de ambiente (usada na nuvem) tem prioridade sobre o .env (usado no computador local).
+    private static String configuracao(String nome) {
+        String valor = System.getenv(nome);
+        return (valor != null && !valor.isBlank()) ? valor : env.getProperty(nome);
     }
 
     public static Connection conectar() throws SQLException {
@@ -38,9 +43,9 @@ public class ConexaoBD {
         if (pool == null) {
             HikariConfig config = new HikariConfig();
             config.setDriverClassName("org.postgresql.Driver");
-            config.setJdbcUrl(env.getProperty("DB_URL"));
-            config.setUsername(env.getProperty("DB_USER"));
-            config.setPassword(env.getProperty("DB_PASSWORD"));
+            config.setJdbcUrl(configuracao("DB_URL"));
+            config.setUsername(configuracao("DB_USER"));
+            config.setPassword(configuracao("DB_PASSWORD"));
             config.setMaximumPoolSize(3);
             config.setMinimumIdle(1);
             config.setConnectionTimeout(10000);
