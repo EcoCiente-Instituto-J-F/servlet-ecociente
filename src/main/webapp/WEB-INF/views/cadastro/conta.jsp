@@ -3,10 +3,21 @@
 <c:set var="tituloEtapa" value="Crie sua conta" />
 <c:set var="subtituloEtapa" value="Comece cadastrando seu e-mail e uma senha." />
 <%@ include file="_cabecalho.jsp" %>
-<%-- Se o e-mail já tem conta, oferece entrar para fazer a assinatura --%>
+<%-- Se o e-mail já tem conta: síndico entra para assinar; os demais voltam para a landing --%>
 <c:if test="${emailJaCadastrado}">
     <div class="botoes">
-        <a href="${ctx}/login?proximo=plano&amp;email=<c:out value='${param.email}' />" class="botao-submit botao-secundario">Fazer assinatura</a>
+        <c:choose>
+            <c:when test="${emailDeSindico}">
+                <c:url var="urlAssinar" value="/login">
+                    <c:param name="proximo" value="plano" />
+                    <c:param name="email" value="${param.email}" />
+                </c:url>
+                <a href="${urlAssinar}" class="botao-submit botao-secundario">Fazer assinatura</a>
+            </c:when>
+            <c:otherwise>
+                <a href="${ctx}/inicio" class="botao-submit botao-secundario">Voltar para a landing</a>
+            </c:otherwise>
+        </c:choose>
     </div>
 </c:if>
 
