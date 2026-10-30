@@ -100,6 +100,15 @@
             max-width: 400px;
         }
 
+        /* Aviso de que morador e cooperativa não precisam de login */
+        .aviso-login {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            background-color: #F4F8F5;
+            color: #064E3B;
+        }
+
         .botoes {
             display: flex;
             gap: 12px;
@@ -233,6 +242,11 @@
                     <c:otherwise>Agora é só aproveitar as vantagens que o EcoCiente tem a oferecer.</c:otherwise>
                 </c:choose>
             </p>
+
+            <%-- Morador e cooperativa não assinam plano: avisa que não precisam de login --%>
+            <c:if test="${perfilCriado == 'morador' or perfilCriado == 'cooperativa'}">
+                <p class="texto-sucesso aviso-login" role="note"><strong>Você não precisa fazer login.</strong> O login é só para síndicos que vão assinar um plano.</p>
+            </c:if>
 
             <c:if test="${not empty tokenCondominio}">
                 <div class="bloco-token">
