@@ -128,9 +128,22 @@ public class MoradorServlet extends HttpServlet {
     private void deletarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idMorador"));
 
+        Morador morador = daoMoradores.buscarPorId(id);
         boolean deletado = daoMoradores.deletar(id);
+        if (deletado && morador != null) acertarTipoAposExcluir(morador.getIdUsuario());
 
         request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
+    }
+
+    //Quem deixa de ser morador volta a ser Comum. Síndico, cooperativa e administrador ficam como estão.
+    private void acertarTipoAposExcluir(int idUsuario) {
+        Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
+        if (usuario == null || usuario.getIdTipoUsuario() != daoUsuarios.selecionarIdTipoPorNome("Morador")) return;
+
+        int idComum = daoUsuarios.selecionarIdTipoPorNome("Comum");
+        if (idComum == 0) return;
+        usuario.setTipoUsuario(idComum);
+        daoUsuarios.atualizar(usuario, null, null);
     }
 }

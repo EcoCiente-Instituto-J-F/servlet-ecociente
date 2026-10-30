@@ -1,6 +1,7 @@
 package com.example.ecociente.controller;
 
 import com.example.ecociente.dao.CondominioDAO;
+import com.example.ecociente.dao.MoradorDAO;
 import com.example.ecociente.dao.SindicoDAO;
 import com.example.ecociente.dao.UsuarioDAO;
 import com.example.ecociente.model.Condominio;
@@ -22,6 +23,7 @@ public class SindicoServlet extends HttpServlet {
     SindicoDAO daoSindicos = new SindicoDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
+    MoradorDAO daoMoradores = new MoradorDAO();
 
     //Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000).
     private static final String REGEX_CPF = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11}";
@@ -161,10 +163,23 @@ public class SindicoServlet extends HttpServlet {
     private void deletarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idSindico"));
 
+        Sindico sindico = daoSindicos.buscarPorId(id);
         boolean deletado = daoSindicos.deletar(id);
+        if (deletado && sindico != null) acertarTipoAposExcluir(sindico.getIdUsuario());
 
         request.setAttribute("deletado", deletado ? "true" : "false");
         mostrarSelects(request, response);
+    }
+
+    //Quem deixa de ser síndico volta a ser Morador (se ainda mora num condomínio) ou Comum. Outros tipos ficam como estão.
+    private void acertarTipoAposExcluir(int idUsuario) {
+        Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
+        if (usuario == null || usuario.getIdTipoUsuario() != daoUsuarios.selecionarIdTipoPorNome("Sindico")) return;
+
+        int idTipo = daoUsuarios.selecionarIdTipoPorNome(daoMoradores.buscarIdUsuario(idUsuario) ? "Morador" : "Comum");
+        if (idTipo == 0) return;
+        usuario.setTipoUsuario(idTipo);
+        daoUsuarios.atualizar(usuario, null, null);
     }
 
     private String validarMandato(LocalDate inicio, LocalDate fim) {
