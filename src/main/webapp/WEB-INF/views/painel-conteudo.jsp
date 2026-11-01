@@ -10,7 +10,6 @@
         <article class="cartao indicador">
           <h2 class="indicador__titulo"><c:out value="${k.titulo}"/></h2><span class="indicador__icone"><img src="${ctx}/assets/icones/${k.icone}.svg" alt=""></span>
           <p class="indicador__valor"><c:out value="${k.valor}"/></p>
-          <p class="indicador__variacao ${k.tendencia == 'baixa' ? 'indicador__variacao--negativa' : ''}"><img src="${ctx}/assets/icones/tendencia-${k.tendencia}.svg" alt=""><c:out value="${k.variacao}"/></p>
         </article>
       </c:forEach>
     </section>
