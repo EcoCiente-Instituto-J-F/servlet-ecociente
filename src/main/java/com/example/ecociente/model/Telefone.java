@@ -1,5 +1,6 @@
 package com.example.ecociente.model;
 
+// Telefone de um usuário (cada usuário pode ter vários), lido da tabela telefone
 public class Telefone {
 
     //================ ATRIBUTOS ================
@@ -17,7 +18,7 @@ public class Telefone {
         this.idUsuario = idUsuario;
     }
 
-    // Construtor sem usuario
+    // Construtor sem usuário
     public Telefone(int idTelefone, String numero) {
         this.idTelefone = idTelefone;
         this.numero = numero;
@@ -48,9 +49,9 @@ public class Telefone {
     }
 
 
-    // ================ EXIBICAO ================
+    //================ EXIBICAO (usado pelas JSPs) ================
 
-    // 11 digitos viram (11) 91234-5678 e 10 viram (11) 1234-5678
+    // 11 dígitos viram (11) 91234-5678 e 10 viram (11) 1234-5678
     public static String formatar(String digitos) {
         if (digitos == null) return "";
         if (digitos.length() == 11) {
