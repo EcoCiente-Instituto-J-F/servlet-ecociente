@@ -11,18 +11,23 @@ import java.time.format.DateTimeParseException;
 // Leitura e validação dos campos que vêm dos formulários (usado pelos servlets do CRUD de admin)
 public class Formulario {
 
+    //================ CONSTANTES ================
+
     private static final String REGEX_EMAIL = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$";
 
+    // Quantidade de linhas por página nas tabelas do painel
     public static final int POR_PAGINA = 8;
 
-    //Recorta a lista na pagina pedida (?pagina=) e manda paginaAtual/totalPaginas para a JSP de paginacao.
+    //================ PAGINACAO ================
+
+    // Recorta a lista na página pedida (?pagina=) e manda paginaAtual/totalPaginas para a JSP de paginação
     public static <T> List<T> paginar(HttpServletRequest request, List<T> linhas) {
         int total = Math.max(1, (int) Math.ceil(linhas.size() / (double) POR_PAGINA));
         int pagina = 1;
         try {
             pagina = Integer.parseInt(request.getParameter("pagina"));
         } catch (NumberFormatException e) {
-            //sem pagina valida fica na primeira
+            // Sem página válida fica na primeira
         }
         pagina = Math.min(Math.max(pagina, 1), total);
 
@@ -32,21 +37,29 @@ public class Formulario {
         return linhas.subList(de, Math.min(de + POR_PAGINA, linhas.size()));
     }
 
+    //================ LEITURA DOS CAMPOS ================
+
+    // Lê um parâmetro do formulário sem espaços nas pontas; campo ausente vira texto vazio
     public static String texto(HttpServletRequest request, String nome) {
         String valor = request.getParameter(nome);
         return valor == null ? "" : valor.trim();
     }
 
+    // Tira tudo que não for dígito (máscara de CPF, CNPJ, CEP e telefone)
     public static String digitos(String valor) {
         return valor == null ? "" : valor.replaceAll("\\D", "");
     }
 
+    //================ VALIDACOES ================
+
+    // Campo obrigatório: não pode ficar vazio nem passar do tamanho máximo
     public static String exigir(String valor, String rotulo, int maximo) {
         if (valor == null || valor.isBlank()) throw new DadoInvalido("Informe " + rotulo + ".");
         if (valor.length() > maximo) throw new DadoInvalido(rotulo.substring(0, 1).toUpperCase() + rotulo.substring(1) + " pode ter no máximo " + maximo + " caracteres.");
         return valor;
     }
 
+    // Converte o identificador recebido do formulário em número inteiro
     public static int id(String valor, String rotulo) {
         try {
             return Integer.parseInt(valor.trim());
@@ -55,12 +68,14 @@ public class Formulario {
         }
     }
 
+    // E-mail obrigatório, no formato válido, devolvido em minúsculas
     public static String email(String valor) {
         exigir(valor, "o e-mail", 150);
         if (!valor.matches(REGEX_EMAIL)) throw new DadoInvalido("Informe um e-mail válido.");
         return valor.toLowerCase();
     }
 
+    // CNPJ obrigatório: devolve só os 14 dígitos
     public static String cnpj(String valor) {
         String digitos = digitos(valor);
         if (digitos.length() != 14) throw new DadoInvalido("CNPJ inválido. Informe os 14 dígitos.");
@@ -112,6 +127,7 @@ public class Formulario {
         return digitos;
     }
 
+    // Opcional: vazio vira null; preenchido precisa estar no formato aaaa-mm-dd
     public static LocalDate data(String valor, String rotulo) {
         if (valor == null || valor.isBlank()) return null;
         try {
@@ -121,7 +137,9 @@ public class Formulario {
         }
     }
 
-    // Lê cep, cidade, estado, bairro, rua, numero e complemento. Tudo vazio: null (se não obrigatório).
+    //================ ENDERECO ================
+
+    // Lê cep, cidade, estado, bairro, rua, número e complemento. Tudo vazio: null (se não obrigatório)
     public static Endereco endereco(HttpServletRequest request, boolean obrigatorio) {
         String cep = digitos(request.getParameter("cep"));
         String cidade = texto(request, "cidade");
