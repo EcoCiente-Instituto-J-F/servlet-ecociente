@@ -420,7 +420,7 @@
         <section class="quem-somos" id="quem-somos">
             <div class="container-quem-somos">
                 <div class="imagem-quem-somos">
-                    <img src="${pageContext.request.contextPath}/assets/equipe-prototipo.svg" alt="Estudantes idealizadores do EcoCiente">
+                    <img src="${pageContext.request.contextPath}/assets/equipe.jpg" alt="Estudantes idealizadores do EcoCiente">
                 </div>
 
                 <div class="conteudo-quem-somos">
