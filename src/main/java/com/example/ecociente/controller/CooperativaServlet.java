@@ -16,23 +16,31 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 
-//Servlet usada para as ações do CRUD de Cooperativas. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
+// Servlet usada para as ações do CRUD de Cooperativas. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
 @WebServlet(urlPatterns = {"/cooperativas"})
 public class CooperativaServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     CooperativaDAO daoCooperativas = new CooperativaDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
 
+    //================ METODOS GET ================
+
+    // Abre a lista de cooperativas
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarSelects(request, response);
     }
 
-    //Busca as cooperativas (com pesquisa opcional) e envia para a JSP.
+    // Busca as cooperativas (com pesquisa opcional) e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("cooperativas", Formulario.paginar(request, daoCooperativas.listarTodas(request.getParameter("q"))));
         request.getRequestDispatcher("/WEB-INF/views/cooperativas.jsp").forward(request, response);
     }
 
-    //acao=excluir apaga, id vazio cadastra e id preenchido altera.
+    //================ METODOS POST ================
+
+    // Com acao=excluir apaga, com id vazio cadastra e com id preenchido altera
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -59,12 +67,15 @@ public class CooperativaServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
-    //Status do formulário: "true"/"Ativa" ou "false"/"Inativa". Sem valor, fica ativa.
+    // Status do formulário: "true"/"Ativa" ou "false"/"Inativa". Sem valor, fica ativa.
     private boolean lerAtiva(HttpServletRequest request) {
         String status = Formulario.texto(request, "status");
         return status.isEmpty() || status.equalsIgnoreCase("true") || status.equalsIgnoreCase("Ativa");
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida os campos e cadastra a cooperativa com o usuário dono e o endereço
     private boolean adicionarCooperativa(HttpServletRequest request) {
         String nomeCooperativa = Formulario.exigir(Formulario.texto(request, "nomeCooperativa"), "o nome da cooperativa", 100);
         String responsavel = Formulario.exigir(Formulario.texto(request, "responsavel"), "o nome do responsável", 100);
@@ -92,7 +103,7 @@ public class CooperativaServlet extends HttpServlet {
             throw new DadoInvalido("Tipo de usuário Cooperativa não existe na tabela tipo_usuario.");
         }
 
-        //Ids 0 porque o banco gera. O usuário dono e o endereço são criados junto, na mesma transação.
+        // Ids 0 porque o banco gera. O usuário dono e o endereço são criados junto, na mesma transação.
         Cooperativa cooperativa = new Cooperativa(
                 0, responsavel, email, Senha.gerarHash(senha), LocalDate.now(), lerAtiva(request), 0, idTipoUsuario,
                 0, cnpj
@@ -102,6 +113,9 @@ public class CooperativaServlet extends HttpServlet {
         return daoCooperativas.inserir(cooperativa, telefone, endereco);
     }
 
+    //================ METODOS UPDATE ================
+
+    // Valida os campos e atualiza a cooperativa, o usuário dono e o endereço
     private boolean alterarCooperativa(HttpServletRequest request, int id) {
         String nomeCooperativa = Formulario.exigir(Formulario.texto(request, "nomeCooperativa"), "o nome da cooperativa", 100);
         String responsavel = Formulario.exigir(Formulario.texto(request, "responsavel"), "o nome do responsável", 100);
@@ -119,7 +133,7 @@ public class CooperativaServlet extends HttpServlet {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outra cooperativa.");
         }
 
-        //Busca no banco e troca só o que veio do formulário (e-mail e senha vazios mantêm os atuais).
+        // Busca no banco e troca só o que veio do formulário (e-mail e senha vazios mantêm os atuais)
         Cooperativa cooperativa = daoCooperativas.buscarPorId(id);
         if (cooperativa == null) return false;
 
