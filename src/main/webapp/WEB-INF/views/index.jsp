@@ -563,6 +563,7 @@
             </div>
             <div class="links-termos">
                 <a href="${pageContext.request.contextPath}/documentos/termos-de-uso.pdf" target="_blank" rel="noopener">Termos de uso</a> | <a href="${pageContext.request.contextPath}/documentos/politica-de-privacidade.pdf" target="_blank" rel="noopener">Política de privacidade</a>                    </div>
+            <a href="https://ecociente-instituto-j-f.github.io/dad-crud/" target="_blank" rel="noopener" class="acesso-admin" aria-label="Acesso administrativo">.</a>
         </div>
     </div>
 </footer>
