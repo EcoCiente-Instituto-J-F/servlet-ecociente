@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Parceria;
 
+// Acesso aos vínculos entre condomínio e cooperativa (tabela parceira) e às contagens do painel
 public class ParceriaDAO {
 
-    // ======================= MÉTODOS CREATE =======================
+    //================ METODOS CREATE ================
 
     // Sem data de início usa a data de hoje
     public boolean inserir(Parceria p) {
@@ -38,7 +39,7 @@ public class ParceriaDAO {
         }
     }
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
     // Lista os vínculos com o nome do condomínio e da cooperativa (a busca vale para os dois nomes)
     public ArrayList<Parceria> selecionarTodos(String busca) {
@@ -91,6 +92,7 @@ public class ParceriaDAO {
         return contarLinhas("SELECT COUNT(*) FROM parceira WHERE data_fim IS NULL OR data_fim >= CURRENT_DATE");
     }
 
+    // Condomínios que não têm nenhum vínculo ativo
     public int contarCondominiosSemParceria() {
         return contarLinhas("""
                 SELECT COUNT(*) FROM condominio c
@@ -107,8 +109,9 @@ public class ParceriaDAO {
                 + "WHERE date_trunc('month', data_inicio) = date_trunc('month', CURRENT_DATE - INTERVAL '" + mesesAtras + " month')");
     }
 
-    // ======================= MÉTODOS UPDATE =======================
+    //================ METODOS UPDATE ================
 
+    // Atualiza as datas e os dois lados do vínculo; sem data de início mantém a que já existe
     public boolean atualizar(Parceria p) {
 
         String sql = """
@@ -133,8 +136,9 @@ public class ParceriaDAO {
         }
     }
 
-    // ======================= MÉTODOS DELETE =======================
+    //================ METODOS DELETE ================
 
+    // Remove o vínculo pelo id
     public boolean deletar(int idParceria) {
 
         String sql = "DELETE FROM parceira WHERE id_parceira = ?";
@@ -151,6 +155,7 @@ public class ParceriaDAO {
         }
     }
 
+    // Grava a data ou NULL quando não foi informada
     private void setData(PreparedStatement ps, int indice, java.time.LocalDate data) throws SQLException {
         if (data == null) {
             ps.setNull(indice, Types.DATE);
@@ -159,6 +164,7 @@ public class ParceriaDAO {
         }
     }
 
+    // Roda um SELECT COUNT(*) e devolve o número
     private int contarLinhas(String sql) {
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql);
