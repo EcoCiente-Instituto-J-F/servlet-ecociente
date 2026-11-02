@@ -10,9 +10,11 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+// Acesso à tabela condominio e às telas de condomínios do painel (endereço, síndico, token e tipos)
 public class CondominioDAO{
 
-    //=======================MÉTODOS CREATE=======================\\
+    //================ METODOS CREATE ================
+    // Grava um condomínio novo
     public boolean inserir(Condominio condominio){
         boolean retorno = false;
         String sql = """
@@ -37,10 +39,11 @@ public class CondominioDAO{
             sqle.printStackTrace();
         }
         return retorno;
-    } // Metodo que insere um condomínio
+    }
 
 
-    //=======================MÉTODOS READ=======================\\
+    //================ METODOS READ ================
+    // Confere se já existe um condomínio com esse CNPJ
     public boolean selecionarCnpj(String cnpj){
         boolean retorno = false;
         String sql = """
@@ -62,8 +65,9 @@ public class CondominioDAO{
             sqle.printStackTrace();
         }
         return retorno;
-    } // Metodo que retorna se o cnpj já está sendo usado
+    }
 
+    // Lista todos os condomínios
     public ArrayList<Condominio> selecionarTodos(){
         ArrayList<Condominio> condominios = new ArrayList<>();
         String sql = """
@@ -91,8 +95,9 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return condominios;
-    } // Metodo que seleciona todos os condomínios
+    }
 
+    // Lista os condomínios cujo nome contém o texto buscado
     public ArrayList<Condominio> selecionarPorNomeCondominio(String procura){
         ArrayList<Condominio> condominios = new ArrayList<>();
         String sql = """
@@ -122,8 +127,9 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return condominios;
-    } // Metodo que seleciona os condomínios por nome
+    }
 
+    // Busca o condomínio pelo id (null se não existir)
     public Condominio selecionarPorId(int id_condominio){
         Condominio condominioEncontrado = null;
         String sql = """
@@ -154,7 +160,7 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return condominioEncontrado;
-    } // Metodo que seleciona um condomínio por id
+    }
 
     // Procura o condomínio pelo código (token) de 6 caracteres; null se nenhum tem esse código
     public Condominio selecionarPorToken(String token){
@@ -189,9 +195,10 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return null;
-    } // Metodo que seleciona um condomínio pelo código (token)
+    }
 
-    //=======================MÉTODOS UPDATE=======================\\
+    //================ METODOS UPDATE ================
+    // Atualiza os dados do condomínio, sem mexer no endereço
     public boolean atualizarCondominio(Condominio condominio){
         boolean retorno = false;
         String sql = """
@@ -215,8 +222,9 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return retorno;
-    } // Metodo que atualiza os dados do condomínio por id
+    }
 
+    // Ativa ou desativa o condomínio
     public boolean atualizarStatus(int id, boolean status){
         boolean retorno = false;
         String sql = """
@@ -234,9 +242,10 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return retorno;
-    } // Metodo que ativa ou desativa o condomínio por id
+    }
 
-    //=======================MÉTODOS DELETE=======================\\
+    //================ METODOS DELETE ================
+    // Remove o condomínio pelo id
     public boolean deletar(int id){
         boolean retorno = false;
         String sql = """
@@ -253,9 +262,9 @@ public class CondominioDAO{
             throw new RuntimeException(sqle.getMessage());
         }
         return retorno;
-    } // Metodo que deleta um condomínio por id
+    }
 
-    //=======================MÉTODOS DO CRUD DE ADMIN (JOIN e transação)=======================\\
+    //================ METODOS DO CRUD DE ADMIN (JOIN e transação) ================
 
     // Lista para a tela de condomínios: traz o nome do tipo, o nome do síndico e o endereço
     public ArrayList<Condominio> selecionarTodos(String busca){
@@ -376,6 +385,7 @@ public class CondominioDAO{
         }
     }
 
+    // Uma tentativa de cadastro; quem chama repete se o token sorteado já existir
     private boolean inserirUmaVez(Condominio condominio, Endereco endereco, Integer idUsuarioSindico, int idTipoSindico, LocalDate inicioMandato){
         try(Connection conexao = ConexaoBD.conectar()){
             conexao.setAutoCommit(false);
@@ -508,6 +518,7 @@ public class CondominioDAO{
         }
     }
 
+    // Total de condomínios cadastrados
     public int contar(){
         String sql = "SELECT COUNT(*) FROM condominio";
         try(
