@@ -19,14 +19,20 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-//Servlet responsavel pelos dois logins do sistema: usuario comum (/login) e painel administrativo (/login-crud).
+// Servlet dos logins do sistema (comum em /login e painel administrativo em /login-crud) e da saída (/logout)
 @WebServlet(urlPatterns = {"/login", "/login-crud", "/logout"})
 public class LoginServlet extends HttpServlet {
-    //id 5 = Administrador. So a tela do painel exige esse tipo.
+
+    //================ ATRIBUTOS ================
+
+    // Id 5 = Administrador. Só a tela do painel exige esse tipo
     public static final int TIPO_ADMINISTRADOR = 5;
 
     UsuarioDAO daoUsuarios = new UsuarioDAO();
 
+    //================ METODOS GET ================
+
+    // /logout encerra a sessão; nos outros caminhos abre a tela de login (admin já logado vai direto ao painel)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/logout")) {
             HttpSession sessao = request.getSession(false);
@@ -35,7 +41,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        //admin ja logado nao precisa ver o login de novo
+        // Admin já logado não precisa ver o login de novo
         if (request.getServletPath().equals("/login-crud")) {
             HttpSession sessao = request.getSession(false);
             if (sessao != null && sessao.getAttribute("idUsuarioLogado") != null
@@ -47,6 +53,9 @@ public class LoginServlet extends HttpServlet {
         mostrarTela(request, response);
     }
 
+    //================ METODOS POST ================
+
+    // Confere e-mail e senha, aplica as regras de cada tela de login e abre a sessão do usuário
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -74,7 +83,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        //Só o síndico usa o login comum (para assinar o plano). Morador, comum e cooperativa não precisam entrar.
+        // Só o síndico usa o login comum (para assinar o plano). Morador, comum e cooperativa não precisam entrar.
         int idSindico = daoUsuarios.selecionarIdTipoPorNome("Sindico");
         if (!telaAdmin && idSindico != 0
                 && usuario.getIdTipoUsuario() != idSindico
@@ -84,7 +93,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        //"Fazer assinatura" (proximo=plano): só o síndico assina, pelo condomínio dele
+        // "Fazer assinatura" (proximo=plano): só o síndico assina, pelo condomínio dele
         CadastroPendente assinatura = null;
         if (!telaAdmin && "plano".equals(request.getParameter("proximo"))) {
             assinatura = assinaturaDoSindico(usuario);
@@ -100,7 +109,7 @@ public class LoginServlet extends HttpServlet {
             }
         }
 
-        //sessao nova a cada login (evita aproveitar uma sessao antiga)
+        // Sessão nova a cada login (evita aproveitar uma sessão antiga)
         HttpSession antiga = request.getSession(false);
         if (antiga != null) antiga.invalidate();
         HttpSession sessao = request.getSession(true);
@@ -118,8 +127,10 @@ public class LoginServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + (telaAdmin ? "/painel" : "/inicio"));
     }
 
-    //Monta o que as telas de pagamento usam (o mesmo que o UsuarioServlet guarda ao criar a conta do síndico).
-    //null se o usuário não for síndico.
+    //================ METODOS AUXILIARES ================
+
+    // Monta o que as telas de pagamento usam (o mesmo que o UsuarioServlet guarda ao criar a conta do síndico).
+    // Null se o usuário não for síndico.
     private CadastroPendente assinaturaDoSindico(Usuario usuario) {
         Sindico sindico = new SindicoDAO().buscarPorUsuario(usuario.getIdUsuario());
         if (sindico == null) return null;
@@ -127,7 +138,7 @@ public class LoginServlet extends HttpServlet {
         Condominio condominio = condominioDAO.selecionarPorId(sindico.getIdCondominio());
         if (condominio == null) return null;
 
-        //O código do plano vem do nome do tipo do condomínio (residencial, comercial, residencial/comercial ou industrial)
+        // O código do plano vem do nome do tipo do condomínio (residencial, comercial, residencial/comercial ou industrial)
         String plano = null;
         for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
             if (tipo.getId() == condominio.getIdTipoCondominio()) plano = tipo.getNome().trim().toLowerCase().replace("/", "-").replace(" ", "");
@@ -149,7 +160,7 @@ public class LoginServlet extends HttpServlet {
         return cad;
     }
 
-    //hash invalido no banco nao pode derrubar o login
+    // Hash inválido no banco não pode derrubar o login
     private boolean senhaConfere(String senha, String hash) {
         if (senha == null || hash == null) return false;
         try {
@@ -159,6 +170,7 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
+    // Iniciais do nome, mostradas no avatar do painel
     private String iniciais(String nome) {
         if (nome == null || nome.isBlank()) return "?";
         String[] partes = nome.trim().split("\\s+");
@@ -166,6 +178,7 @@ public class LoginServlet extends HttpServlet {
         return (partes[0].substring(0, 1) + ultima).toUpperCase();
     }
 
+    // Abre a tela de login do painel ou a do login comum, conforme o caminho
     private void mostrarTela(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String pagina = request.getServletPath().equals("/login-crud")
                 ? "/WEB-INF/views/login-crud.jsp"
