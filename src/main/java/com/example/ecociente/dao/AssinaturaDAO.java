@@ -10,9 +10,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+// Acesso à tabela assinatura: grava a assinatura pendente e ativa depois do pagamento
 public class AssinaturaDAO {
 
-    // ======================= MÉTODOS CREATE / UPDATE =======================
+    //================ METODOS CREATE / UPDATE ================
 
     // Grava a assinatura como pendente e devolve o id. Se a pessoa voltou e mudou ciclo ou quantidade,
     // atualiza a pendente que já existe (o banco só aceita uma pendente ou ativa por condomínio ou por usuário sem condomínio).
@@ -75,7 +76,7 @@ public class AssinaturaDAO {
         }
     }
 
-    // Marca a assinatura pendente como ativa: começa hoje e a próxima cobrança vem um ciclo depois.
+    // Marca a assinatura pendente como ativa: começa hoje e a próxima cobrança vem um ciclo depois
     public boolean ativar(int idAssinatura) {
 
         String sql = """
