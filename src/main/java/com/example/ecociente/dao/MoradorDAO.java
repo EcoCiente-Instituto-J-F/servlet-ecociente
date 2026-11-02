@@ -13,10 +13,12 @@ import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Morador;
 import com.example.ecociente.model.Usuario;
 
+// Acesso à tabela morador (apartamento, torre e condomínio de cada morador)
 public class MoradorDAO {
 
-    // ======================= MÉTODOS CREATE =======================
+    //================ METODOS CREATE ================
 
+    // Grava um morador para um usuário que já existe (usado pelo CRUD de admin)
     public boolean inserir(Morador m) {
         String sql = """
                 INSERT INTO morador
@@ -95,9 +97,9 @@ public class MoradorDAO {
         }
     }
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
-    // Buscar morador pelo ID
+    // Busca o morador pelo id (null se não existir)
     public Morador buscarPorId(int idMorador) {
 
         String sql = """
@@ -150,7 +152,7 @@ public class MoradorDAO {
         return null;
     }
 
-    // Verificar se o usuário já está vinculado a um morador
+    // Confere se o usuário já está vinculado a um morador
     public boolean buscarIdUsuario(int idUsuario) {
 
         String sql = """
@@ -173,7 +175,7 @@ public class MoradorDAO {
         }
     }
 
-    // Listar todos os moradores
+    // Lista todos os moradores, com os dados de exibição do usuário
     public ArrayList<Morador> listarTodos() {
 
         ArrayList<Morador> moradores = new ArrayList<>();
@@ -225,8 +227,9 @@ public class MoradorDAO {
         return moradores;
     }
 
-    // ======================= MÉTODOS UPDATE =======================
+    //================ METODOS UPDATE ================
 
+    // Atualiza apartamento, torre, usuário e condomínio do morador
     public boolean atualizar(Morador m) {
 
         String sql = """
@@ -254,8 +257,9 @@ public class MoradorDAO {
         }
     }
 
-    // ======================= MÉTODOS DELETE =======================
+    //================ METODOS DELETE ================
 
+    // Remove o morador pelo id
     public boolean deletar(int idMorador) {
 
         String sql = """
