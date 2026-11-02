@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-//Bloqueia as telas e os CRUDs do painel administrativo: exige login e que o usuario seja administrador.
+// Bloqueia as telas e os CRUDs do painel administrativo: exige login e que o usuário seja administrador
 @WebFilter(urlPatterns = {
         "/painel", "/painel/conteudo", "/usuarios", "/condominios", "/cooperativas", "/vinculos", "/coletas-e-vinculos",
         "/moradores", "/adicionarMorador", "/alterarMorador", "/deletarMorador",
@@ -19,25 +19,28 @@ import java.io.IOException;
 })
 public class AutenticacaoFilter implements Filter {
 
+    //================ FILTRO ================
+
+    // Sem login volta para o login-crud; logado sem ser administrador recebe 403; administrador segue para o servlet
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        HttpSession sessao = req.getSession(false); //false = nao cria sessao nova so para checar
+        HttpSession sessao = req.getSession(false); // false = não cria sessão nova só para checar
 
         if (sessao == null || sessao.getAttribute("idUsuarioLogado") == null) {
             resp.sendRedirect(req.getContextPath() + "/login-crud");
-            return; //interrompe -- nao deixa a requisicao seguir pro servlet de destino
+            return; // interrompe: não deixa a requisição seguir para o servlet de destino
         }
 
-        //logado como usuario comum nao entra no painel
+        // Logado como usuário comum não entra no painel
         Object tipo = sessao.getAttribute("tipoUsuarioLogado");
         if (tipo == null || (Integer) tipo != LoginServlet.TIPO_ADMINISTRADOR) {
             resp.sendError(HttpServletResponse.SC_FORBIDDEN, "Acesso restrito a administradores.");
             return;
         }
 
-        chain.doFilter(request, response); //e administrador, pode passar
+        chain.doFilter(request, response); // É administrador, pode passar
     }
 }
