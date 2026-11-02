@@ -2,6 +2,7 @@ package com.example.ecociente.model;
 
 import java.math.BigDecimal;
 
+// Condomínio, lido da tabela condominio. O token de 6 caracteres é o código que o morador usa para entrar
 public class Condominio {
 
     //================ ATRIBUTOS ================
@@ -16,7 +17,7 @@ public class Condominio {
     private Integer numeroUnidades;
     private BigDecimal areaM2;
 
-    // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
+    // Dados só de exibição, preenchidos pelas listagens que fazem JOIN
     private String nomeTipo;
     private String nomeSindico;
     private Integer idUsuarioSindico;
@@ -119,6 +120,7 @@ public class Condominio {
         this.areaM2 = areaM2;
     }
 
+    // Guarda os dados que vêm dos JOINs e só servem para mostrar na tela
     public void setDadosExibicao(String nomeTipo, String nomeSindico, Endereco enderecoCompleto) {
         this.nomeTipo = nomeTipo;
         this.nomeSindico = nomeSindico;
@@ -143,10 +145,12 @@ public class Condominio {
         return cnpj.substring(0, 2) + "." + cnpj.substring(2, 5) + "." + cnpj.substring(5, 8) + "/" + cnpj.substring(8, 12) + "-" + cnpj.substring(12);
     }
 
+    // Iniciais do nome, mostradas no avatar da linha
     public String getIniciais() {
         return Usuario.iniciaisDe(nome);
     }
 
+    // Nome do síndico que administra o condomínio
     public String getSindico() {
         return nomeSindico == null ? "" : nomeSindico;
     }
@@ -155,6 +159,7 @@ public class Condominio {
         return idUsuarioSindico;
     }
 
+    // Endereço em uma linha e, abaixo, cada parte separada para os campos de edição
     public String getEndereco() {
         return enderecoCompleto == null ? "" : enderecoCompleto.getTextoCompleto();
     }
