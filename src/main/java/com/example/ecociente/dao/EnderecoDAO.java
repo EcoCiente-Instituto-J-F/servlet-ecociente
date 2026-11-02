@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.sql.Statement;
 
 
+// Acesso à tabela endereco, usado por usuários e condomínios
 public class EnderecoDAO {
-    //=======================MÉTODOS CREATE=======================\\
+    //================ METODOS CREATE ================
 
+    // Grava um endereço novo
     public boolean inserir(Endereco endereco){
         String sql = """
                 INSERT INTO endereco 
@@ -48,6 +50,7 @@ public class EnderecoDAO {
         }
     }
 
+    // Grava um endereço novo e devolve o id gerado
     public int inserirERetornarId(Endereco endereco){
         String sql = """
             INSERT INTO endereco (cep, cidade, estado, bairro, rua, numero, complemento)
@@ -77,7 +80,8 @@ public class EnderecoDAO {
         }
     }
 
-    //=======================MÉTODOS READ=======================\
+    //================ METODOS READ ================
+    // Busca o endereço pelo id (null se não existir)
     public Endereco selecionarPorId(int id){
         String sql = """
             SELECT id_endereco, cep, cidade, estado, bairro, rua, numero, complemento
@@ -116,7 +120,7 @@ public class EnderecoDAO {
 
     }
 
-    // seleciona todos
+    // Lista todos os endereços
     public ArrayList<Endereco> selecionarTodos(){
         ArrayList<Endereco> todosEnderecos = new ArrayList<>();
         String sql = """
@@ -152,8 +156,9 @@ public class EnderecoDAO {
         }
     }
 
-    //=======================MÉTODOS UPDATE=======================\
+    //================ METODOS UPDATE ================
 
+    // Atualiza todos os campos do endereço
     public boolean atualizar(Endereco endereco){
         String sql = """
                 UPDATE endereco
@@ -186,7 +191,7 @@ public class EnderecoDAO {
 
     }
 
-    // Conta usuarios e condominios que usam o endereco
+    // Conta usuários e condomínios que usam o endereço
     public int contarVinculos(int idEndereco){
         String sql = """
                 SELECT (SELECT COUNT(*) FROM usuario WHERE id_endereco = ?)
@@ -209,7 +214,8 @@ public class EnderecoDAO {
         }
     }
 
-    //=======================MÉTODOS DELETE=======================\
+    //================ METODOS DELETE ================
+    // Remove o endereço; devolve false se ele ainda estiver em uso ou der erro
     public boolean deletar(Endereco endereco){
         String sql = """
                 DELETE FROM endereco
@@ -237,8 +243,9 @@ public class EnderecoDAO {
 
     }
 
-    //=======================MÉTODOS PARA TRANSAÇÃO (recebem a conexão aberta)=======================\\
+    //================ METODOS PARA TRANSACAO (recebem a conexão aberta) ================
 
+    // Grava o endereço dentro de uma transação aberta e devolve o id gerado
     public static int inserirNaTransacao(Connection conexao, Endereco endereco) throws SQLException {
         String sql = """
                 INSERT INTO endereco (cep, cidade, estado, bairro, rua, numero, complemento)
@@ -260,6 +267,7 @@ public class EnderecoDAO {
         }
     }
 
+    // Atualiza o endereço dentro de uma transação aberta
     public static void atualizarNaTransacao(Connection conexao, int idEndereco, Endereco endereco) throws SQLException {
         String sql = """
                 UPDATE endereco
