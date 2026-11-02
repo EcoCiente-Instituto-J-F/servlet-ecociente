@@ -8,12 +8,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+// Acesso à tabela plano: busca o plano ativo usado na contratação
 public class PlanoDAO {
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
     // O banco tem 2 planos: "empresarial" (condomínios residenciais e comerciais) e "industrial".
-    // Buscar o plano ativo do tipo do condomínio (residencial-comercial ou industrial; residencial e comercial continuam aceitos)
+    // Busca o plano ativo do tipo do condomínio (residencial-comercial ou industrial; residencial e comercial continuam aceitos)
     public Plano selecionarPorCodigo(String tipoCondominio) {
 
         if (tipoCondominio == null) return null;
