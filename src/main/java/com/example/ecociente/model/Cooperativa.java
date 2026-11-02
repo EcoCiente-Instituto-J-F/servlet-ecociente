@@ -2,15 +2,19 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
+// Cooperativa de reciclagem: um usuário com os dados próprios da tabela cooperativa
 public class Cooperativa extends Usuario{
 
     //================ ATRIBUTOS ================
+
     private int idCooperativa;
     private String nomeCooperativa;
     private String cnpj;
+
+    // Dado só de exibição, preenchido pela listagem
     private int condominiosVinculados;
 
-    //================ METODO CONSTRUTOR ================
+    //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
     public Cooperativa(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idCooperativa, String cnpj) {
@@ -19,7 +23,7 @@ public class Cooperativa extends Usuario{
         this.cnpj = cnpj;
     }
 
-    // ================ METODOS GETTERS ================
+    //================ METODOS GETTERS ================
 
     public int getIdCooperativa() {
         return idCooperativa;
@@ -33,7 +37,7 @@ public class Cooperativa extends Usuario{
         return cnpj;
     }
 
-    // ================ METODOS SETTERS ================
+    //================ METODOS SETTERS ================
 
     public void setNomeCooperativa(String nomeCooperativa) {
         this.nomeCooperativa = nomeCooperativa;
@@ -44,12 +48,14 @@ public class Cooperativa extends Usuario{
     }
 
 
-    // ================ EXIBICAO (usado pelas JSPs) ================
+    //================ EXIBICAO (usado pelas JSPs) ================
 
+    // O nome do usuário é o do responsável pela cooperativa
     public String getResponsavel() {
         return getNome();
     }
 
+    // Etiqueta da tabela: mostra se a cooperativa está ativa
     @Override
     public String getTag() {
         return isStatus() ? "Ativa" : "Inativa";
@@ -63,7 +69,7 @@ public class Cooperativa extends Usuario{
         this.condominiosVinculados = condominiosVinculados;
     }
 
-    // ================ TO STRING ================
+    //================ TO STRING ================
     @Override
 
     public String toString(){

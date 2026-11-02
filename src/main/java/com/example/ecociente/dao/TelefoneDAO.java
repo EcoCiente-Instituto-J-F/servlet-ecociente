@@ -9,10 +9,12 @@ import java.util.ArrayList;
 import com.example.ecociente.conexao.ConexaoBD;
 import com.example.ecociente.model.Telefone;
 
+// Acesso à tabela telefone (um usuário pode ter vários telefones)
 public class TelefoneDAO {
 
-    // ======================= MÉTODOS CREATE =======================
+    //================ METODOS CREATE ================
 
+    // Grava um telefone novo para o usuário
     public boolean inserir(Telefone t) {
         String sql = """
                 INSERT INTO telefone
@@ -35,9 +37,9 @@ public class TelefoneDAO {
         }
     }
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
-    // Buscar telefone pelo ID
+    // Busca o telefone pelo id (null se não existir)
     public Telefone buscarPorId(int idTelefone) {
 
         String sql = """
@@ -69,7 +71,7 @@ public class TelefoneDAO {
         return null;
     }
 
-    // Buscar telefone pelo número
+    // Confere se já existe um telefone com esse número
     public boolean buscarPorNumero(String numero) {
 
         String sql = """
@@ -92,7 +94,7 @@ public class TelefoneDAO {
         }
     }
 
-    // Listar todos os telefones
+    // Lista todos os telefones
     public ArrayList<Telefone> listarTodos() {
 
         ArrayList<Telefone> telefones = new ArrayList<>();
@@ -121,8 +123,9 @@ public class TelefoneDAO {
         return telefones;
     }
 
-    // ======================= MÉTODOS UPDATE =======================
+    //================ METODOS UPDATE ================
 
+    // Atualiza número e dono do telefone; devolve false se der erro
     public boolean atualizar(Telefone t) {
 
         String sql = """
@@ -148,8 +151,9 @@ public class TelefoneDAO {
         }
     }
 
-    // ======================= MÉTODOS DELETE =======================
+    //================ METODOS DELETE ================
 
+    // Remove o telefone pelo id; devolve false se der erro
     public boolean deletar(int idTelefone) {
 
         String sql = """
@@ -171,7 +175,7 @@ public class TelefoneDAO {
         }
     }
 
-    //=======================MÉTODO PARA TRANSAÇÃO (recebe a conexão aberta)=======================\\
+    //================ METODOS PARA TRANSACAO (recebem a conexão aberta) ================
 
     // Atualiza o primeiro telefone do usuário ou cria um se ele ainda não tem nenhum
     public static void salvarNaTransacao(Connection conexao, int idUsuario, String digitos) throws SQLException {

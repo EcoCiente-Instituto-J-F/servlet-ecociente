@@ -2,7 +2,9 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
+// Parceria entre um condomínio e uma cooperativa, com o período em que a coleta é atendida
 public class Parceria {
+
     //================ ATRIBUTOS ================
 
     private int idParceria;
@@ -11,7 +13,7 @@ public class Parceria {
     private int idCondominio;
     private int idCooperativa;
 
-    // Dados so de exibicao, preenchidos pela listagem com JOIN
+    // Dados só de exibição, preenchidos pela listagem com JOIN
     private String nomeCondominio;
     private String nomeCooperativa;
 
@@ -26,7 +28,7 @@ public class Parceria {
         this.idCooperativa = idCooperativa;
     }
 
-    //Construtor sem data de fim
+    // Construtor sem data de fim
     public Parceria(int idParceria, LocalDate dataInicio, int idCondominio, int idCooperativa) {
         this.idParceria = idParceria;
         this.dataInicio = dataInicio;
@@ -34,7 +36,7 @@ public class Parceria {
         this.idCooperativa = idCooperativa;
     }
 
-    // ================ METODOS GETTERS ================
+    //================ METODOS GETTERS ================
 
     public int getIdParceria() {
         return idParceria;
@@ -56,7 +58,7 @@ public class Parceria {
         return idCooperativa;
     }
 
-    // ================ METODOS SETTERS ================
+    //================ METODOS SETTERS ================
 
     public void setDataInicio(LocalDate dataInicio) {
         this.dataInicio = dataInicio;
@@ -75,8 +77,9 @@ public class Parceria {
     }
 
 
-    // ================ EXIBICAO (usado pelas JSPs) ================
+    //================ EXIBICAO (usado pelas JSPs) ================
 
+    // Guarda os nomes que vêm do JOIN e só servem para mostrar na tela
     public void setDadosExibicao(String nomeCondominio, String nomeCooperativa) {
         this.nomeCondominio = nomeCondominio;
         this.nomeCooperativa = nomeCooperativa;
@@ -90,6 +93,7 @@ public class Parceria {
         return nomeCooperativa;
     }
 
+    // Datas no formato dd/MM/aaaa para a tabela (vazio quando não há data)
     public String getInicio() {
         return dataInicio == null ? "" : dataInicio.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
@@ -98,6 +102,7 @@ public class Parceria {
         return dataFim == null ? "" : dataFim.format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
+    // Datas no formato aaaa-mm-dd, o que o campo de data do formulário de edição espera
     public String getInicioIso() {
         return dataInicio == null ? "" : dataInicio.toString();
     }

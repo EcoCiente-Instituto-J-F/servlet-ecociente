@@ -35,8 +35,12 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+// Servlet do cadastro em etapas (/cadastro), da assinatura (/cadastro/plano) e do CRUD de usuários do painel (/usuarios)
 @WebServlet(urlPatterns = {"/cadastro", "/cadastro/plano", "/usuarios"})
 public class UsuarioServlet extends HttpServlet {
+
+
+    //================ ATRIBUTOS ================
 
     private UsuarioDAO usuarioDAO;
     private CooperativaDAO cooperativaDAO;
@@ -46,9 +50,12 @@ public class UsuarioServlet extends HttpServlet {
     private PlanoDAO planoDAO;
     private AssinaturaDAO assinaturaDAO;
 
-    //Depois disso a sessão não tenta mais o código do condomínio (o código tem 6 caracteres e dá para chutar).
+    // Depois disso a sessão não tenta mais o código do condomínio (o código tem 6 caracteres e dá para chutar)
     private static final int MAXIMO_TENTATIVAS_CODIGO = 5;
 
+    //================ METODOS CONSTRUTORES ================
+
+    // Cria os DAOs usados pelo servlet
     @Override
     public void init() {
         usuarioDAO = new UsuarioDAO();
@@ -60,6 +67,9 @@ public class UsuarioServlet extends HttpServlet {
         assinaturaDAO = new AssinaturaDAO();
     }
 
+    //================ METODOS GET ================
+
+    // /usuarios abre a lista do painel; /cadastro/plano retoma a assinatura; /cadastro volta para a aba de cadastro
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String caminho = request.getServletPath();
@@ -73,6 +83,9 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
+    //================ METODOS POST ================
+
+    // /usuarios trata o CRUD do painel; /cadastro encaminha para a etapa indicada no parâmetro etapa
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -111,7 +124,9 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
-    //Busca os usuarios (com pesquisa opcional) e os tipos (para o select) e envia para a JSP do painel.
+    //================ CRUD DO PAINEL (/usuarios) ================
+
+    // Busca os usuários (com pesquisa opcional) e os tipos (para o select) e envia para a JSP do painel
     private void mostrarUsuarios(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String busca = request.getParameter("q");
         if (busca == null) busca = request.getParameter("search");
@@ -121,7 +136,7 @@ public class UsuarioServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/usuarios.jsp").forward(request, response);
     }
 
-    //POST /usuarios do painel: acao=excluir apaga, id vazio cadastra e id preenchido altera.
+    // POST /usuarios do painel: acao=excluir apaga, id vazio cadastra e id preenchido altera
     private void tratarPainel(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String acao = Formulario.texto(request, "acao");
         String id = Formulario.texto(request, "id");
@@ -146,6 +161,7 @@ public class UsuarioServlet extends HttpServlet {
         mostrarUsuarios(request, response);
     }
 
+    // Valida os campos e cadastra o usuário com endereço e telefone (se vieram)
     private boolean adicionarUsuarioPainel(HttpServletRequest request) {
         String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
         String email = Formulario.email(Formulario.texto(request, "email"));
@@ -168,12 +184,13 @@ public class UsuarioServlet extends HttpServlet {
             throw new DadoInvalido("Este CPF já está cadastrado.");
         }
 
-        //Id 0 porque o banco gera. Endereço e telefone são criados junto, na mesma transação.
+        // Id 0 porque o banco gera. Endereço e telefone são criados junto, na mesma transação.
         Usuario usuario = new Usuario(0, nome, email, Senha.gerarHash(senha), LocalDate.now(), true, 0, idTipoUsuario);
         usuario.setCpf(cpf);
         return usuarioDAO.inserir(usuario, telefone, endereco);
     }
 
+    // Valida os campos e atualiza o usuário, o endereço e o telefone
     private boolean alterarUsuarioPainel(HttpServletRequest request, int id) {
         String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
         String email = Formulario.email(Formulario.texto(request, "email"));
@@ -197,7 +214,7 @@ public class UsuarioServlet extends HttpServlet {
             throw new DadoInvalido("Este CPF já está cadastrado.");
         }
 
-        //Busca no banco e troca só o que veio do formulário (senha vazia mantém a atual).
+        // Busca no banco e troca só o que veio do formulário (senha vazia mantém a atual)
         Usuario usuario = usuarioDAO.selecionarUsuarioPorId(id);
         if (usuario == null) return false;
         if (usuario.getIdTipoUsuario() != idTipoUsuario
@@ -215,13 +232,14 @@ public class UsuarioServlet extends HttpServlet {
         return usuarioDAO.atualizar(usuario, telefone, endereco);
     }
 
-    //Síndico, Morador e Cooperativa dependem de uma linha na tabela própria, então o tipo deles não se escolhe no painel de usuários.
+    // Síndico, Morador e Cooperativa dependem de uma linha na tabela própria, então o tipo deles não se escolhe no painel de usuários
     private boolean tipoComTabelaPropria(int idTipo) {
         return idTipo != 0 && (idTipo == usuarioDAO.selecionarIdTipoPorNome("Sindico")
                 || idTipo == usuarioDAO.selecionarIdTipoPorNome("Morador")
                 || idTipo == usuarioDAO.selecionarIdTipoPorNome("Cooperativa"));
     }
 
+    // Apaga o usuário escolhido; o administrador logado não pode apagar a própria conta
     private boolean deletarUsuarioPainel(HttpServletRequest request, int id) {
         Object logado = request.getSession().getAttribute("idUsuarioLogado");
         if (logado != null && (Integer) logado == id) {
@@ -233,6 +251,9 @@ public class UsuarioServlet extends HttpServlet {
         return usuarioDAO.deletar(usuario);
     }
 
+    //================ CADASTRO EM ETAPAS ================
+
+    // Abre a tela de cadastro na aba de cadastro
     private void mostrarCadastro(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.getSession().setAttribute("abaAtiva", "cadastro");
         request.getRequestDispatcher("/WEB-INF/views/cadastro_login.jsp").forward(request, response);
@@ -240,6 +261,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ ETAPA 1: CONTA (email + senha) ================
 
+    // Valida e-mail e senha e guarda a conta na sessão; e-mail repetido de síndico ganha o botão Fazer assinatura
     private void processarEtapaConta(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String email = request.getParameter("email");
         String senha = request.getParameter("senha");
@@ -249,7 +271,7 @@ public class UsuarioServlet extends HttpServlet {
         if (erro == null && usuarioDAO.existeEmail(email.trim().toLowerCase())) {
             erro = "Este e-mail já está cadastrado.";
             request.setAttribute("emailJaCadastrado", true);
-            //Só o síndico assina: conta.jsp oferece "Fazer assinatura" a ele; para os demais, voltar à landing.
+            // Só o síndico assina: conta.jsp oferece "Fazer assinatura" a ele; para os demais, voltar à landing
             request.setAttribute("emailDeSindico", emailDeSindico(email.trim().toLowerCase()));
         }
         if (erro != null) {
@@ -269,8 +291,8 @@ public class UsuarioServlet extends HttpServlet {
         mostrarCadastro(request, response);
     }
 
-    //O e-mail é de um síndico (tem linha na tabela sindico, a mesma regra do login para assinar)?
-    //Sem usuário ou com erro de banco, vale "não": nesse caso a tela não oferece a assinatura.
+    // O e-mail é de um síndico (tem linha na tabela sindico, a mesma regra do login para assinar)?
+    // Sem usuário ou com erro de banco, vale "não": nesse caso a tela não oferece a assinatura.
     private boolean emailDeSindico(String email) {
         try {
             Usuario usuario = usuarioDAO.selecionarPorEmail(email);
@@ -280,6 +302,7 @@ public class UsuarioServlet extends HttpServlet {
         }
     }
 
+    // Devolve a mensagem de erro de e-mail ou senha; null se estiver tudo certo
     private String validarConta(String email, String senha, String confirmaSenha) {
         if (email == null || !email.trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*\\.[A-Za-z]{2,}$")) return "Informe um e-mail válido.";
         if (senha == null || senha.length() < 8) return "A senha precisa ter pelo menos 8 caracteres.";
@@ -289,6 +312,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ ETAPA 2: PERFIL ================
 
+    // Guarda o perfil escolhido (morador, síndico ou cooperativa) e abre a próxima tela
     private void processarEtapaPerfil(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -321,13 +345,14 @@ public class UsuarioServlet extends HttpServlet {
         cad.setPerfil(perfil);
         sessao.setAttribute("cadastroPendente", cad);
 
-        // Morador escolhe a moradia primeiro; cooperativa e síndico vão direto para os dados pessoais.
+        // Morador escolhe a moradia primeiro; cooperativa e síndico vão direto para os dados pessoais
         sessao.setAttribute("etapaCadastro", "morador".equals(perfil) ? "moradia" : perfil + "-dados");
         mostrarCadastro(request, response);
     }
 
     //================ ETAPA 3: MORADIA (condominio ou casa) ================
 
+    // Guarda se o morador mora em condomínio ou em casa
     private void processarEtapaMoradia(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -352,7 +377,7 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         cad.setMoradia(moradia);
-        //Quem muda para "casa" não usa código, bloco nem apartamento: limpa o que digitou antes.
+        // Quem muda para "casa" não usa código, bloco nem apartamento: limpa o que digitou antes
         if (!"condominio".equals(moradia)) {
             cad.setToken(null);
             cad.setBloco(null);
@@ -366,6 +391,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ ETAPA 4: DADOS PESSOAIS (nome, telefone, cpf, nascimento) - todos os perfis ================
 
+    // Valida nome, telefone, CPF e nascimento e abre a tela seguinte do perfil
     private void processarEtapaDados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -430,7 +456,7 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        // Próxima tela depende do perfil.
+        // Próxima tela depende do perfil
         String proxima;
         if ("cooperativa".equals(cad.getPerfil())) {
             proxima = "cooperativa-endereco";
@@ -445,6 +471,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ COOPERATIVA: ENDERECO (finaliza o cadastro) ================
 
+    // Valida os dados da cooperativa e o endereço e grava o cadastro
     private void processarEtapaEnderecoCooperativa(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -530,7 +557,7 @@ public class UsuarioServlet extends HttpServlet {
                 complemento == null || complemento.isBlank() ? null : complemento.trim());
 
         try {
-            //Ids 0 porque o banco gera. Endereço, usuário dono, cooperativa e telefone são gravados na mesma transação.
+            // Ids 0 porque o banco gera. Endereço, usuário dono, cooperativa e telefone são gravados na mesma transação.
             Cooperativa cooperativa = new Cooperativa(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(),
                     LocalDate.now(), true, 0, idTipoUsuario, 0, cnpjLimpo);
             cooperativa.setNomeCooperativa(nomeCooperativa.trim());
@@ -542,12 +569,13 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        //Nenhum plano do banco serve para cooperativa (plano.unidade só aceita apartamento, empresa ou m2): termina sem assinatura.
+        // Nenhum plano do banco serve para cooperativa (plano.unidade só aceita apartamento, empresa ou m2): termina sem assinatura
         concluirCadastro(request, response, sessao, "cooperativa");
     }
 
     //================ SINDICO: TIPO DO CONDOMINIO ================
 
+    // Guarda o tipo de condomínio escolhido pelo síndico
     private void processarEtapaTipo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -565,7 +593,7 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         String tipoCondominio = request.getParameter("tipoCondominio");
-        //Residencial e comercial têm o mesmo plano: "residencial" e "comercial" (cliente ou sessão antiga) viram residencial-comercial.
+        // Residencial e comercial têm o mesmo plano: "residencial" e "comercial" (cliente ou sessão antiga) viram residencial-comercial
         if ("residencial".equals(tipoCondominio) || "comercial".equals(tipoCondominio)) tipoCondominio = "residencial-comercial";
         if (!"residencial-comercial".equals(tipoCondominio) && !"industrial".equals(tipoCondominio)) {
             request.setAttribute("erroCadastro", "Selecione o tipo do condomínio.");
@@ -581,6 +609,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ SINDICO: DADOS DO CONDOMINIO ================
 
+    // Valida nome, CNPJ, telefone e unidades (ou área, no industrial) do condomínio
     private void processarEtapaCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -608,12 +637,12 @@ public class UsuarioServlet extends HttpServlet {
         cad.setNomeCondominio(nomeCondominio);
         cad.setRazaoSocial(razaoSocial);
         cad.setCnpj(cnpj);
-        if (telefone != null && !telefone.isBlank()) cad.setTelefone(telefone); //industrial não pede telefone: fica o da etapa de dados
+        if (telefone != null && !telefone.isBlank()) cad.setTelefone(telefone); // Industrial não pede telefone: fica o da etapa de dados
         cad.setNumeroUnidades(numeroUnidades);
         cad.setAreaM2(areaM2);
         sessao.setAttribute("cadastroPendente", cad);
 
-        //Residencial / comercial usa o nome do condomínio; industrial usa a razão social.
+        // Residencial / comercial usa o nome do condomínio; industrial usa a razão social
         String nome = "industrial".equals(cad.getTipoCondominio()) ? razaoSocial : nomeCondominio;
         if (nome == null || nome.isBlank() || nome.trim().length() > 100) {
             request.setAttribute("erroCadastro", "Informe o nome do condomínio, com até 100 caracteres.");
@@ -631,7 +660,7 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        //Industrial informa a área em m²; os outros tipos informam o número de unidades.
+        // Industrial informa a área em m²; os outros tipos informam o número de unidades
         try {
             Integer unidades = Formulario.inteiroPositivoOpcional(numeroUnidades, "o número de unidades");
             BigDecimal area = Formulario.decimalPositivoOpcional(areaM2, "a área");
@@ -650,6 +679,7 @@ public class UsuarioServlet extends HttpServlet {
 
     //================ SINDICO: ENDERECO DO CONDOMINIO (finaliza o cadastro e gera o token) ================
 
+    // Valida o endereço do condomínio e grava síndico, condomínio e código na mesma transação
     private void processarEtapaEnderecoCondominio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -709,7 +739,7 @@ public class UsuarioServlet extends HttpServlet {
         int idTipoUsuario = usuarioDAO.selecionarIdTipoPorNome("Sindico");
         int idTipoCondominio = 0;
         for (TipoCondominio tipo : condominioDAO.selecionarTipos()) {
-            //O nome no banco ("Residencial/Comercial") vira o código do tipo ("residencial-comercial").
+            // O nome no banco ("Residencial/Comercial") vira o código do tipo ("residencial-comercial")
             if (tipo.getNome().trim().replace("/", "-").replace(" ", "").equalsIgnoreCase(cad.getTipoCondominio())) idTipoCondominio = tipo.getId();
         }
         if (idTipoUsuario == 0 || idTipoCondominio == 0) {
@@ -727,10 +757,10 @@ public class UsuarioServlet extends HttpServlet {
             boolean industrial = "industrial".equals(cad.getTipoCondominio());
             String nome = "industrial".equals(cad.getTipoCondominio()) ? cad.getRazaoSocial() : cad.getNomeCondominio();
 
-            //O token é gerado na assinatura, junto com a gravação do condomínio.
+            // O token é gerado na assinatura, junto com a gravação do condomínio
             String token = condominioDAO.gerarTokenUnico();
 
-            //Ids 0 porque o banco gera. Usuário, telefone, endereço, condomínio e síndico são gravados na mesma transação.
+            // Ids 0 porque o banco gera. Usuário, telefone, endereço, condomínio e síndico são gravados na mesma transação.
             Usuario usuario = new Usuario(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(), LocalDate.now(), true, 0, idTipoUsuario);
             usuario.setCpf(Formulario.cpf(cad.getCpf(), true));
 
@@ -741,10 +771,10 @@ public class UsuarioServlet extends HttpServlet {
                 condominio.setNumeroUnidades(Formulario.inteiroPositivoOpcional(cad.getNumeroUnidades(), "o número de unidades"));
             }
 
-            //O código do condomínio só aparece depois da tela de pagamento.
+            // O código do condomínio só aparece depois da tela de pagamento
             idCondominio = sindicoDAO.cadastrarComCondominio(usuario, cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", ""), condominio, endereco);
 
-            //A quantidade cobrada começa pelo que foi informado no condomínio (área arredondada para cima).
+            // A quantidade cobrada começa pelo que foi informado no condomínio (área arredondada para cima)
             quantidade = Orcamento.quantidadeDoCondominio(condominio);
         } catch (RuntimeException e) {
             request.setAttribute("erroCadastro", "Não foi possível concluir o cadastro. Tente novamente.");
@@ -755,7 +785,7 @@ public class UsuarioServlet extends HttpServlet {
         seguirParaAssinatura(request, response, sessao, cad, idCondominio, quantidade);
     }
 
-    //Limpa o cadastro da sessao e mostra a tela de cadastro concluido.
+    // Limpa o cadastro da sessão e mostra a tela de cadastro concluído
     private void concluirCadastro(HttpServletRequest request, HttpServletResponse response, HttpSession sessao, String perfilCriado) throws ServletException, IOException {
         sessao.removeAttribute("cadastroPendente");
         sessao.removeAttribute("etapaCadastro");
@@ -766,9 +796,10 @@ public class UsuarioServlet extends HttpServlet {
     }
 
     //================ MORADOR EM CONDOMÍNIO: CÓDIGO, BLOCO E APARTAMENTO ================
-    //Com o código do condomínio, a conta já nasce ligada a ele. Sem o código (o condomínio pode não assinar o app),
-    //guarda o bloco e o apartamento e segue para o endereço; o vínculo com o condomínio fica para depois.
+    // Com o código do condomínio, a conta já nasce ligada a ele. Sem o código (o condomínio pode não assinar o app),
+    // guarda o bloco e o apartamento e segue para o endereço; o vínculo com o condomínio fica para depois.
 
+    // Confere o código do condomínio (até 5 tentativas por sessão) e guarda bloco e apartamento
     private void processarEtapaToken(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
@@ -805,7 +836,7 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
 
-        //Sem código: o condomínio dela pode não assinar o app. Segue para o endereço.
+        // Sem código: o condomínio dela pode não assinar o app. Segue para o endereço.
         if (token.isEmpty()) {
             sessao.setAttribute("etapaCadastro", "morador-endereco");
             mostrarCadastro(request, response);
@@ -849,7 +880,7 @@ public class UsuarioServlet extends HttpServlet {
         }
 
         try {
-            //Id 0 porque o banco gera. O morador não tem endereço próprio: vale o do condomínio.
+            // Id 0 porque o banco gera. O morador não tem endereço próprio: vale o do condomínio.
             Usuario usuario = new Usuario(0, cad.getNome().trim(), cad.getEmail(), cad.getSenhaHash(), LocalDate.now(), true, 0, idTipoMorador);
             usuario.setCpf(Formulario.cpf(cad.getCpf(), false));
 
@@ -869,18 +900,19 @@ public class UsuarioServlet extends HttpServlet {
         concluirCadastro(request, response, sessao, "morador");
     }
 
-    //Telefone do cadastro só com os números (ou null se não veio).
+    // Telefone do cadastro só com os números (ou null se não veio)
     private String telefoneSomenteNumeros(CadastroPendente cad) {
         return cad.getTelefone() == null ? null : cad.getTelefone().replaceAll("\\D", "");
     }
 
     //================ ETAPA 5: ENDERECO (finaliza o cadastro) ================
 
+    // Valida o endereço do morador e grava o cadastro
     private void processarEtapaMoradorEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
         if ("voltar".equals(request.getParameter("acao"))) {
-            //Quem mora em condomínio passou pela tela do código: volta para ela.
+            // Quem mora em condomínio passou pela tela do código: volta para ela
             CadastroPendente atual = (CadastroPendente) sessao.getAttribute("cadastroPendente");
             boolean passouPeloCodigo = atual != null && "condominio".equals(atual.getMoradia());
             sessao.setAttribute("etapaCadastro", passouPeloCodigo ? "token" : "morador-dados");
@@ -903,7 +935,7 @@ public class UsuarioServlet extends HttpServlet {
         String bairro = request.getParameter("bairro");
         String complementoDigitado = request.getParameter("complemento");
 
-        //O bloco e o apartamento vêm da tela do código e já estão no cadastro; esta tela não os envia.
+        // O bloco e o apartamento vêm da tela do código e já estão no cadastro; esta tela não os envia
         cad.setCep(cep);
         cad.setUf(uf);
         cad.setCidade(cidade);
@@ -944,8 +976,8 @@ public class UsuarioServlet extends HttpServlet {
 
         Endereco endereco = new Endereco(0, cep.replaceAll("\\D", ""), cidade.trim(), uf.trim(), bairro.trim(), rua.trim(), numero, complemento);
 
-        //Mora em condomínio e não informou o código: vira morador sem condomínio. O apartamento e a torre ficam
-        //guardados para ligar ao condomínio quando ele passar a usar o app.
+        // Mora em condomínio e não informou o código: vira morador sem condomínio. O apartamento e a torre ficam
+        // guardados para ligar ao condomínio quando ele passar a usar o app.
         if ("condominio".equals(cad.getMoradia())) {
             concluirMoradorSemCondominio(request, response, sessao, cad, endereco);
             return;
@@ -979,7 +1011,7 @@ public class UsuarioServlet extends HttpServlet {
         concluirCadastro(request, response, sessao, "morador");
     }
 
-    //Grava a conta do morador (tipo Morador) com endereço próprio, apartamento e torre, mas sem condomínio.
+    // Grava a conta do morador (tipo Morador) com endereço próprio, apartamento e torre, mas sem condomínio
     private void concluirMoradorSemCondominio(HttpServletRequest request, HttpServletResponse response, HttpSession sessao,
                                               CadastroPendente cad, Endereco endereco) throws ServletException, IOException {
         int idTipoMorador;
@@ -1013,7 +1045,7 @@ public class UsuarioServlet extends HttpServlet {
         concluirCadastro(request, response, sessao, "morador");
     }
 
-    //Vazio vira null; preenchido volta sem os espaços das pontas.
+    // Vazio vira null; preenchido volta sem os espaços das pontas
     private String vazioParaNulo(String valor) {
         return (valor == null || valor.isBlank()) ? null : valor.trim();
     }
@@ -1024,8 +1056,8 @@ public class UsuarioServlet extends HttpServlet {
     // calculado aqui no servidor. A quantidade vem sempre do cadastro do condomínio (o síndico só escolhe o ciclo). "Ir para o pagamento" grava a assinatura como pendente.
     // TODO: sem gateway ainda: o último passo não cobra nada e a assinatura continua pendente.
 
-    //Conta criada: guarda só o que as telas de pagamento aproveitam (nunca a senha) e segue direto para elas.
-    //A tela de sucesso (com o código do condomínio) só aparece no fim, depois do pagamento.
+    // Conta criada: guarda só o que as telas de pagamento aproveitam (nunca a senha) e segue direto para elas.
+    // A tela de sucesso (com o código do condomínio) só aparece no fim, depois do pagamento.
     private void seguirParaAssinatura(HttpServletRequest request, HttpServletResponse response, HttpSession sessao, CadastroPendente cad,
                                       int idCondominio, int quantidade) throws ServletException, IOException {
         Usuario criado = usuarioDAO.selecionarPorEmail(cad.getEmail());
@@ -1043,7 +1075,7 @@ public class UsuarioServlet extends HttpServlet {
         assinatura.setQuantidade(Math.min(Math.max(quantidade, 1), Orcamento.QUANTIDADE_MAXIMA));
         assinatura.setCiclo("mensal");
 
-        //Menos de 100 unidades não assina: pula plano e pagamento e mostra o código do condomínio.
+        // Menos de 100 unidades não assina: pula plano e pagamento e mostra o código do condomínio
         if (!Orcamento.podeAssinar(cad.getTipoCondominio(), quantidade)) {
             concluirAssinatura(request, response, assinatura);
             return;
@@ -1053,19 +1085,19 @@ public class UsuarioServlet extends HttpServlet {
         sessao.removeAttribute("etapaCadastro");
         sessao.removeAttribute("abaAtiva");
 
-        //Redirect: atualizar a página não reenvia o endereço (o que gravaria o condomínio de novo).
+        // Redirect: atualizar a página não reenvia o endereço (o que gravaria o condomínio de novo)
         response.sendRedirect(request.getContextPath() + "/cadastro/plano");
     }
 
-    //Depois da tela de pagamento: limpa a sessão do cadastro e mostra a tela de sucesso com o código do condomínio.
-    //Quem veio pelo login ("Fazer assinatura") vê o resultado do pagamento no lugar da tela de conta criada.
+    // Depois da tela de pagamento: limpa a sessão do cadastro e mostra a tela de sucesso com o código do condomínio.
+    // Quem veio pelo login ("Fazer assinatura") vê o resultado do pagamento no lugar da tela de conta criada.
     private void concluirAssinatura(HttpServletRequest request, HttpServletResponse response, CadastroPendente cad) throws ServletException, IOException {
         HttpSession sessao = request.getSession();
 
         if (cad.isOrigemLogin()) {
-            //O orçamento usa o cadastro, então é montado antes de limpar a sessão.
+            // O orçamento usa o cadastro, então é montado antes de limpar a sessão
             Map<String, String> pagamento = new HashMap<>();
-            pagamento.put("status", "pendente"); //TODO: com o gateway, o status vem do retorno dele
+            pagamento.put("status", "pendente"); // TODO: com o gateway, o status vem do retorno dele
             try {
                 Orcamento orc = orcamento(cad);
                 if (orc != null) {
@@ -1073,7 +1105,7 @@ public class UsuarioServlet extends HttpServlet {
                     pagamento.put("valor", orc.getTotal());
                 }
             } catch (RuntimeException e) {
-                //sem o orçamento a tela mostra só o status
+                // Sem o orçamento a tela mostra só o status
             }
             pagamento.put("forma", textoMetodo(cad.getMetodo()));
 
@@ -1094,37 +1126,37 @@ public class UsuarioServlet extends HttpServlet {
                 Condominio condominio = condominioDAO.selecionarPorId(cad.getIdCondominio());
                 if (condominio != null) request.setAttribute("tokenCondominio", condominio.getToken());
             } catch (RuntimeException e) {
-                //sem o código a tela de sucesso aparece do mesmo jeito
+                // Sem o código a tela de sucesso aparece do mesmo jeito
             }
         }
         request.setAttribute("perfilCriado", cad.getPlano());
         request.getRequestDispatcher("/WEB-INF/views/cadastro/cadastro_sucesso.jsp").forward(request, response);
     }
 
-    //Texto da forma de pagamento para a tela de resultado (nunca o código cru).
+    // Texto da forma de pagamento para a tela de resultado (nunca o código cru)
     private String textoMetodo(String metodo) {
         if ("pix".equals(metodo)) return "Pix";
         if ("boleto".equals(metodo)) return "Boleto";
         return "Cartão de crédito";
     }
 
-    //Cadastro que já tem conta criada no banco; null se não houver.
+    // Cadastro que já tem conta criada no banco; null se não houver
     private CadastroPendente cadastroDaAssinatura(HttpServletRequest request) {
         CadastroPendente cad = (CadastroPendente) request.getSession().getAttribute("cadastroPendente");
         return cad != null && cad.isContaCriada() ? cad : null;
     }
 
-    //Orçamento com o preço atual do banco; null se o plano não existir ou estiver inativo.
+    // Orçamento com o preço atual do banco; null se o plano não existir ou estiver inativo
     private Orcamento orcamento(CadastroPendente cad) {
         Plano plano = planoDAO.selecionarPorCodigo(cad.getPlano());
         Condominio condominio = condominioDAO.selecionarPorId(cad.getIdCondominio());
         if (plano == null || condominio == null) return null;
-        //A quantidade é sempre a do condomínio cadastrado: nada vindo da sessão ou do formulário altera o valor.
+        // A quantidade é sempre a do condomínio cadastrado: nada vindo da sessão ou do formulário altera o valor
         cad.setQuantidade(Orcamento.quantidadeDoCondominio(condominio));
         return new Orcamento(plano, "anual".equals(cad.getCiclo()), cad.getQuantidade());
     }
 
-    //Resumo e pagamento mostram os valores do orçamento (orc nos JSPs).
+    // Resumo e pagamento mostram os valores do orçamento (orc nos JSPs)
     private void mostrarAssinatura(HttpServletRequest request, HttpServletResponse response, String etapa) throws ServletException, IOException {
         if (etapa.equals("pag-resumo") || etapa.equals("pag-pagamento")) {
             Orcamento orc;
@@ -1144,7 +1176,7 @@ public class UsuarioServlet extends HttpServlet {
         mostrarCadastro(request, response);
     }
 
-    //GET /cadastro/plano: botão "Escolher meu plano" da tela de conta criada.
+    // GET /cadastro/plano: botão "Escolher meu plano" da tela de conta criada
     private void iniciarAssinatura(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CadastroPendente cad = cadastroDaAssinatura(request);
         if (cad == null) {
@@ -1154,12 +1186,12 @@ public class UsuarioServlet extends HttpServlet {
         mostrarAssinatura(request, response, cad.isDadosPagamentoOk() ? "pag-resumo" : "pag-dados");
     }
 
-    //Sem conta criada na sessão: volta para o início do cadastro.
+    // Sem conta criada na sessão: volta para o início do cadastro
     private void voltarParaInicio(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarAssinatura(request, response, "conta");
     }
 
-    //----- Dados de cobrança -----
+    //================ ASSINATURA: DADOS DE COBRANCA ================
 
     private void processarEtapaPagDados(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CadastroPendente cad = cadastroDaAssinatura(request);
@@ -1167,8 +1199,8 @@ public class UsuarioServlet extends HttpServlet {
             voltarParaInicio(request, response);
             return;
         }
-        //A conta já está gravada: não há etapa anterior para editar. Sai para o início; o cadastro fica na sessão
-        //e /cadastro/plano retoma daqui.
+        // A conta já está gravada: não há etapa anterior para editar. Sai para o início; o cadastro fica na sessão
+        // e /cadastro/plano retoma daqui.
         if ("voltar".equals(request.getParameter("acao"))) {
             response.sendRedirect(request.getContextPath() + "/inicio");
             return;
@@ -1204,7 +1236,7 @@ public class UsuarioServlet extends HttpServlet {
         mostrarAssinatura(request, response, "pag-resumo");
     }
 
-    //----- Resumo -----
+    //================ ASSINATURA: RESUMO ================
 
     private void processarEtapaPagResumo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CadastroPendente cad = cadastroDaAssinatura(request);
@@ -1226,17 +1258,17 @@ public class UsuarioServlet extends HttpServlet {
         if (acao.equals("ciclo-mensal")) cad.setCiclo("mensal");
         if (acao.equals("ciclo-anual")) cad.setCiclo("anual");
 
-        //Só o botão principal (sem ação) segue para o pagamento; a troca de ciclo (e qualquer outra ação) só reexibe o resumo.
+        // Só o botão principal (sem ação) segue para o pagamento; a troca de ciclo (e qualquer outra ação) só reexibe o resumo
         if (!acao.isEmpty()) {
             mostrarAssinatura(request, response, "pag-resumo");
             return;
         }
 
-        //Grava (ou atualiza) a assinatura pendente com o valor calculado aqui, nunca com valor vindo do formulário.
+        // Grava (ou atualiza) a assinatura pendente com o valor calculado aqui, nunca com valor vindo do formulário
         try {
             Orcamento orc = orcamento(cad);
             if (orc == null) {
-                mostrarAssinatura(request, response, "pag-resumo"); //mostra o aviso de plano indisponível
+                mostrarAssinatura(request, response, "pag-resumo"); // Mostra o aviso de plano indisponível
                 return;
             }
             if (!Orcamento.podeAssinar(cad.getPlano(), orc.getQuantidade())) {
@@ -1256,7 +1288,7 @@ public class UsuarioServlet extends HttpServlet {
         mostrarAssinatura(request, response, "pag-pagamento");
     }
 
-    //----- Forma de pagamento (sem cobrança) -----
+    //================ ASSINATURA: FORMA DE PAGAMENTO (sem cobrança) ================
 
     private void processarEtapaPagPagamento(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         CadastroPendente cad = cadastroDaAssinatura(request);
@@ -1274,12 +1306,12 @@ public class UsuarioServlet extends HttpServlet {
             return;
         }
         if (cad.getIdAssinatura() == 0) {
-            mostrarAssinatura(request, response, "pag-resumo"); //a assinatura pendente é gravada no resumo
+            mostrarAssinatura(request, response, "pag-resumo"); // A assinatura pendente é gravada no resumo
             return;
         }
 
-        //Não lê nem guarda dados de cartão: sem gateway, nada é cobrado nem gerado.
-        //Sem gateway, a assinatura já fica ativa; com o gateway, ativar só quando o pagamento for confirmado.
+        // Não lê nem guarda dados de cartão: sem gateway, nada é cobrado nem gerado.
+        // Sem gateway, a assinatura já fica ativa; com o gateway, ativar só quando o pagamento for confirmado.
         String metodo = request.getParameter("metodo");
         cad.setMetodo("pix".equals(metodo) || "boleto".equals(metodo) ? metodo : "cartao");
         assinaturaDAO.ativar(cad.getIdAssinatura());

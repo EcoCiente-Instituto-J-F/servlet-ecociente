@@ -17,17 +17,23 @@ import java.util.List;
 
 @WebServlet(urlPatterns = {"/selectEndereco", "/adicionarEndereco", "/alterarEndereco", "/deletarEndereco"})
 public class EnderecoServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     EnderecoDAO daoEnderecos = new EnderecoDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
 
+    //================ METODOS GET ================
+
+    // Abre a lista de endereços (rota /selectEndereco)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/selectEndereco")) {
             mostrarSelects(request, response);
         }
     }
 
-    //Busca os enderecos e envia para a JSP.
+    // Busca os endereços e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Endereco> enderecos = daoEnderecos.selecionarTodos();
 
@@ -36,7 +42,9 @@ public class EnderecoServlet extends HttpServlet {
 
     }
 
-    //Liga o endereco recem-criado ao dono certo (usuario ou condominio).
+    //================ METODOS AUXILIARES ================
+
+    // Liga o endereço recém-criado ao dono certo (usuário ou condomínio)
     private boolean vincularEndereco(String tipoDono, int idDono, int idEndereco) {
         if ("condominio".equals(tipoDono)) {
             Condominio condominio = daoCondominios.selecionarPorId(idDono);
@@ -44,7 +52,7 @@ public class EnderecoServlet extends HttpServlet {
             condominio.setIdEndereco(idEndereco);
             return daoCondominios.atualizarCondominio(condominio);
         }
-        // cobre usuario, morador, sindico e cooperativa -- todos herdam id_endereco de usuario
+        // Cobre usuário, morador, síndico e cooperativa: todos herdam o id_endereco de usuario
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idDono);
 
         if (usuario == null) return false;
@@ -52,8 +60,11 @@ public class EnderecoServlet extends HttpServlet {
         return daoUsuarios.atualizar(usuario);
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida os campos e grava o endereço; se veio um dono, já liga o endereço a ele
     private void adicionarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String cep = request.getParameter("cep").replaceAll("\\D", ""); //banco guarda só os 8 dígitos
+        String cep = request.getParameter("cep").replaceAll("\\D", ""); // Banco guarda só os 8 dígitos
         String cidade = request.getParameter("cidade");
         String estado = request.getParameter("estado");
         String bairro = request.getParameter("bairro");
@@ -61,7 +72,7 @@ public class EnderecoServlet extends HttpServlet {
         int numero = Integer.parseInt(request.getParameter("numero"));
         String complemento = request.getParameter("complemento");
 
-        //Id 0 porque o banco gera.
+        // Id 0 porque o banco gera
         boolean adicionado = daoEnderecos.inserir(
                 new Endereco(0, cep, cidade, estado, bairro, rua, numero, complemento)
         );
@@ -70,6 +81,9 @@ public class EnderecoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS UPDATE ================
+
+    // Valida os campos e atualiza o endereço
     private void alterarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idEndereco"));
 
@@ -94,6 +108,9 @@ public class EnderecoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS DELETE ================
+
+    // Remove o endereço escolhido
     private void deletarEndereco(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idEndereco"));
 
@@ -105,7 +122,7 @@ public class EnderecoServlet extends HttpServlet {
             return;
         }
 
-        //Não deixa apagar endereço que ainda é usado por usuário ou condomínio.
+        // Não deixa apagar endereço que ainda é usado por usuário ou condomínio
         if (daoEnderecos.contarVinculos(id) != 0) {
             request.setAttribute("deletado", "false");
             request.setAttribute("erro", "Endereço vinculado a um usuário ou condomínio. Desvincule antes de excluir.");
@@ -119,6 +136,9 @@ public class EnderecoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS POST ================
+
+    // Encaminha cada rota (adicionar, alterar ou deletar) para o método certo
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 

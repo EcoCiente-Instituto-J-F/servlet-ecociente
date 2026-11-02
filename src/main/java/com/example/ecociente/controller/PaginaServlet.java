@@ -12,6 +12,9 @@ import java.io.IOException;
 @WebServlet(urlPatterns = {"/inicio", "/login-cadastro"})
 public class PaginaServlet extends HttpServlet {
 
+    //================ METODOS GET ================
+
+    // /login-cadastro abre a tela de login/cadastro; qualquer outro caminho abre a landing page
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String caminho = request.getServletPath();

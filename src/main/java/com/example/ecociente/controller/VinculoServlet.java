@@ -15,18 +15,24 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
 
-//Servlet usada para o CRUD de vínculos (parcerias entre condomínios e cooperativas). Tudo pela mesma rota.
+// Servlet usada para o CRUD de vínculos (parcerias entre condomínios e cooperativas). Tudo pela mesma rota.
 @WebServlet(urlPatterns = {"/vinculos", "/coletas-e-vinculos"})
 public class VinculoServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     ParceriaDAO daoParcerias = new ParceriaDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
     CooperativaDAO daoCooperativas = new CooperativaDAO();
 
+    //================ METODOS GET ================
+
+    // Abre a tela de vínculos entre condomínios e cooperativas
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarSelects(request, response);
     }
 
-    //Busca os vínculos (com pesquisa opcional), os condomínios e as cooperativas (para os selects) e os números dos cards.
+    // Busca os vínculos (com pesquisa opcional), os condomínios e as cooperativas (para os selects) e os números dos cards
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("vinculos", Formulario.paginar(request, daoParcerias.selecionarTodos(request.getParameter("q"))));
         request.setAttribute("condominios", daoCondominios.selecionarTodos());
@@ -36,7 +42,9 @@ public class VinculoServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/coletas-e-vinculos.jsp").forward(request, response);
     }
 
-    //acao=excluir apaga, id vazio cadastra e id preenchido altera.
+    //================ METODOS POST ================
+
+    // Com acao=excluir apaga, com id vazio cadastra e com id preenchido altera
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -61,6 +69,9 @@ public class VinculoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS CREATE / UPDATE ================
+
+    // Valida os campos e cadastra (id vazio) ou altera (id preenchido) o vínculo
     private boolean salvarVinculo(HttpServletRequest request, String id) {
         int idCondominio = Formulario.id(Formulario.texto(request, "idCondominio"), "condomínio");
         int idCooperativa = Formulario.id(Formulario.texto(request, "idCooperativa"), "cooperativa");
@@ -71,7 +82,7 @@ public class VinculoServlet extends HttpServlet {
             throw new DadoInvalido("A data de fim não pode ser anterior à data de início.");
         }
 
-        //Id 0 porque o banco gera. Sem data de início, o banco usa a data de hoje.
+        // Id 0 porque o banco gera. Sem data de início, o banco usa a data de hoje.
         if (id.isEmpty()) {
             return daoParcerias.inserir(new Parceria(0, inicio, fim, idCondominio, idCooperativa));
         }

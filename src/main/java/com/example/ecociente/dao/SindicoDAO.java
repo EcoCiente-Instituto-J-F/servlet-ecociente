@@ -15,6 +15,7 @@ import com.example.ecociente.model.Endereco;
 import com.example.ecociente.model.Sindico;
 import com.example.ecociente.model.Usuario;
 
+// Acesso à tabela sindico (mandato e condomínio que cada síndico administra)
 public class SindicoDAO {
 
     // Datas do mandato podem ser nulas no banco
@@ -22,6 +23,7 @@ public class SindicoDAO {
         return data == null ? null : data.toLocalDate();
     }
 
+    // Grava a data ou NULL quando não foi informada
     private static void setDataOuNulo(PreparedStatement ps, int indice, LocalDate data) throws SQLException {
         if (data == null) {
             ps.setNull(indice, Types.DATE);
@@ -30,9 +32,9 @@ public class SindicoDAO {
         }
     }
 
-    // ======================= MÉTODOS CREATE =======================
+    //================ METODOS CREATE ================
 
-    // Inserir novo síndico (o CPF fica na tabela usuario)
+    // Grava um síndico novo (o CPF fica na tabela usuario)
     public boolean inserir(Sindico s) {
 
         String sql = """
@@ -131,9 +133,9 @@ public class SindicoDAO {
         }
     }
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
-    // Buscar síndico pelo ID
+    // Busca o síndico pelo id (null se não existir)
     public Sindico buscarPorId(int idSindico) {
 
         String sql = """
@@ -189,7 +191,7 @@ public class SindicoDAO {
         return null;
     }
 
-    // Verificar se o usuário já está vinculado a um síndico
+    // Confere se o usuário já está vinculado a um síndico
     public boolean buscarIdUsuario(int idUsuario) {
 
         String sql = """
@@ -212,7 +214,7 @@ public class SindicoDAO {
         }
     }
 
-    // Buscar síndico pelo ID do condomínio
+    // Busca o síndico do condomínio (null se não existir)
     public Sindico buscarPorCondominio(int idCondominio) {
 
         String sql = """
@@ -268,7 +270,7 @@ public class SindicoDAO {
         return null;
     }
 
-    // Buscar síndico pelo ID do usuário (null se o usuário não for síndico)
+    // Busca o síndico pelo id do usuário (null se o usuário não for síndico)
     public Sindico buscarPorUsuario(int idUsuario) {
 
         String sql = """
@@ -324,7 +326,7 @@ public class SindicoDAO {
         return null;
     }
 
-    // Listar todos os síndicos
+    // Lista todos os síndicos, com os dados de exibição do usuário
     public ArrayList<Sindico> listarTodos() {
 
         ArrayList<Sindico> sindicos = new ArrayList<>();
@@ -379,9 +381,9 @@ public class SindicoDAO {
         return sindicos;
     }
 
-    // ======================= MÉTODOS UPDATE =======================
+    //================ METODOS UPDATE ================
 
-    // Atualizar dados do síndico (o CPF fica na tabela usuario)
+    // Atualiza os dados do síndico (o CPF fica na tabela usuario)
     public boolean atualizar(Sindico s) {
 
         String sql = """
@@ -410,9 +412,9 @@ public class SindicoDAO {
         }
     }
 
-    // ======================= MÉTODOS DELETE =======================
+    //================ METODOS DELETE ================
 
-    // Deletar síndico pelo ID
+    // Remove o síndico pelo id
     public boolean deletar(int idSindico) {
 
         String sql = """

@@ -1,9 +1,12 @@
 package com.example.ecociente.model;
 
-// Guarda os dados do cadastro em etapas enquanto a pessoa ainda nao terminou.
-// Fica na sessao ate a conta ser efetivamente criada no banco.
+// Guarda os dados do cadastro em etapas enquanto a pessoa ainda não terminou.
+// Fica na sessão até a conta ser efetivamente criada no banco.
 public class CadastroPendente {
 
+    //================ ATRIBUTOS ================
+
+    // Dados da pessoa e do endereço
     private String nome;
     private String email;
     private String senhaHash;
@@ -22,6 +25,7 @@ public class CadastroPendente {
     private String apto;
     private String avisos;
     private String termos;
+    // Dados do condomínio e da cooperativa
     private String token;
     private String tipoCondominio;
     private String cnpj;
@@ -51,6 +55,8 @@ public class CadastroPendente {
     private String plano; // código do plano (o mesmo do tipo do condomínio)
     private int quantidade; // apartamentos, empresas ou m² cobrados
     private int idAssinatura; // assinatura pendente já gravada; 0 se ainda não gravou
+
+    //================ METODOS GETTERS E SETTERS ================
 
     public String getDocumento() { return documento; }
     public void setDocumento(String documento) { this.documento = documento; }

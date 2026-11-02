@@ -15,20 +15,26 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-//Servlet usada para as ações do CRUD de Moradores.
+// Servlet usada para as ações do CRUD de Moradores
 @WebServlet(urlPatterns = {"/moradores", "/adicionarMorador", "/alterarMorador", "/deletarMorador"})
 public class MoradorServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     MoradorDAO daoMoradores = new MoradorDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
 
+    //================ METODOS GET ================
+
+    // Abre a lista de moradores (rota /moradores)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/moradores")) {
             mostrarSelects(request, response);
         }
     }
 
-    //Busca os moradores, usuários e condomínios (para os selects) e envia para a JSP.
+    // Busca os moradores, usuários e condomínios (para os selects) e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Morador> moradores = daoMoradores.listarTodos();
         List<Usuario> usuarios = daoUsuarios.selecionarTodos();
@@ -40,6 +46,9 @@ public class MoradorServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/moradores.jsp").forward(request, response);
     }
 
+    //================ METODOS POST ================
+
+    // Encaminha cada rota (adicionar, alterar ou deletar) para o método certo
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -60,9 +69,12 @@ public class MoradorServlet extends HttpServlet {
         }
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida os campos, grava o morador e passa o usuário dele para o tipo Morador
     private void adicionarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String numeroApartamento = textoOpcional(request.getParameter("numeroApartamento")); //apartamento é opcional: vazio vira null
-        String torre = textoOpcional(request.getParameter("torre")); //torre é opcional: vazia vira null
+        String numeroApartamento = textoOpcional(request.getParameter("numeroApartamento")); // Apartamento é opcional: vazio vira null
+        String torre = textoOpcional(request.getParameter("torre")); // Torre é opcional: vazia vira null
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
         Integer idCondominio = lerIdCondominio(request);
 
@@ -73,13 +85,13 @@ public class MoradorServlet extends HttpServlet {
             return;
         }
 
-        //Dados do usuário vão vazios (a tabela morador não usa). Id 0 porque o banco gera.
+        // Dados do usuário vão vazios (a tabela morador não usa). Id 0 porque o banco gera.
         boolean adicionado = daoMoradores.inserir(new Morador(
                 idUsuario, null, null, null, null, false, 0, 0,
                 0, numeroApartamento, torre, idCondominio
         ));
 
-        //Quem vira morador deixa de ser "Comum". Administrador, síndico e cooperativa mantêm o tipo.
+        // Quem vira morador deixa de ser "Comum". Administrador, síndico e cooperativa mantêm o tipo.
         if (adicionado) {
             Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
             int idTipoMorador = daoUsuarios.selecionarIdTipoPorNome("Morador");
@@ -93,10 +105,13 @@ public class MoradorServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS UPDATE ================
+
+    // Atualiza apartamento, torre, usuário e condomínio do morador
     private void alterarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idMorador"));
 
-        //Busca no banco e troca só o que veio do formulário.
+        // Busca no banco e troca só o que veio do formulário
         Morador morador = daoMoradores.buscarPorId(id);
         if (morador == null) {
             request.setAttribute("alterado", "false");
@@ -114,17 +129,20 @@ public class MoradorServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
-    //Vazio vira null; preenchido volta sem os espaços das pontas.
+    // Vazio vira null; preenchido volta sem os espaços das pontas
     private String textoOpcional(String valor) {
         return (valor == null || valor.isBlank()) ? null : valor.trim();
     }
 
-    //O condomínio é opcional: o morador pode ainda não estar ligado a nenhum.
+    // O condomínio é opcional: o morador pode ainda não estar ligado a nenhum
     private Integer lerIdCondominio(HttpServletRequest request) {
         String valor = request.getParameter("idCondominio");
         return (valor == null || valor.isBlank()) ? null : Integer.valueOf(valor.trim());
     }
 
+    //================ METODOS DELETE ================
+
+    // Remove o morador e acerta o tipo do usuário dele
     private void deletarMorador(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idMorador"));
 
@@ -136,7 +154,7 @@ public class MoradorServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
-    //Quem deixa de ser morador volta a ser Comum. Síndico, cooperativa e administrador ficam como estão.
+    // Quem deixa de ser morador volta a ser Comum. Síndico, cooperativa e administrador ficam como estão.
     private void acertarTipoAposExcluir(int idUsuario) {
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
         if (usuario == null || usuario.getIdTipoUsuario() != daoUsuarios.selecionarIdTipoPorNome("Morador")) return;

@@ -20,7 +20,7 @@ public class Assinatura {
     private Integer idCondominio;
     private int idPlano;
 
-    //================ METODO CONSTRUTOR ================
+    //================ METODOS CONSTRUTORES ================
 
     // Construtor da assinatura nova: começa pendente, sem data de início nem de cobrança
     public Assinatura(String ciclo, BigDecimal quantidade, BigDecimal valorCobrado, int idUsuario, Integer idCondominio, int idPlano) {

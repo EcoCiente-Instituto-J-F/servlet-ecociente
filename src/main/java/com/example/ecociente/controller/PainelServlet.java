@@ -18,19 +18,27 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-//Home do painel (/painel) e só o miolo com cards e gráficos (/painel/conteudo), que o painel.js recarrega sozinho.
+// Home do painel (/painel) e só o miolo com cards e gráficos (/painel/conteudo), que o painel.js recarrega sozinho
 @WebServlet(urlPatterns = {"/painel", "/painel/conteudo"})
 public class PainelServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
     CooperativaDAO daoCooperativas = new CooperativaDAO();
     ParceriaDAO daoParcerias = new ParceriaDAO();
 
-    //Limites do desenho do gráfico (coordenadas do SVG da JSP, viewBox 0 0 1163 328): x de janeiro e de dezembro, y do topo e da base.
+    //================ CONSTANTES DO GRAFICO ================
+
+    // Limites do desenho do gráfico (coordenadas do SVG da JSP, viewBox 0 0 1163 328): x de janeiro e de dezembro, y do topo e da base
     private static final double X_INICIO = 70, X_FIM = 1093;
     private static final double Y_TOPO = 110, Y_BASE = 255;
     private static final String[] NOMES_MESES = {"Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"};
 
+    //================ METODOS GET ================
+
+    // /painel abre a home completa; /painel/conteudo devolve só o miolo, que o painel.js recarrega sozinho
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarCards(request);
         mostrarGrafico(request);
@@ -41,6 +49,9 @@ public class PainelServlet extends HttpServlet {
         request.getRequestDispatcher(pagina).forward(request, response);
     }
 
+    //================ CARDS ================
+
+    // Monta os quatro cards de totais do painel
     private void mostrarCards(HttpServletRequest request) {
         List<Map<String, Object>> kpis = new ArrayList<>();
         kpis.add(criarKpi("Usuários", "kpi-usuarios", daoUsuarios.contar(),
@@ -53,7 +64,7 @@ public class PainelServlet extends HttpServlet {
         request.setAttribute("kpis", kpis);
     }
 
-    //Card do painel. Sem dados do mês atual e do anterior, a variação fica "—".
+    // Card do painel. Sem dados do mês atual e do anterior, a variação fica "—".
     private Map<String, Object> criarKpi(String titulo, String icone, int valor, Integer atual, Integer anterior) {
         Map<String, Object> kpi = new LinkedHashMap<>();
         kpi.put("titulo", titulo);
@@ -70,24 +81,26 @@ public class PainelServlet extends HttpServlet {
         return kpi;
     }
 
-    //Cadastros de cada mês do ano escolhido (?ano=) de cada tipo de conta, já em coordenadas do SVG.
+    //================ GRAFICO ================
+
+    // Cadastros de cada mês do ano escolhido (?ano=) de cada tipo de conta, já em coordenadas do SVG
     private void mostrarGrafico(HttpServletRequest request) {
         List<Integer> anos = daoUsuarios.listarAnosComCadastro();
 
-        //Ano ausente, inválido ou sem cadastro volta para o ano atual.
+        // Ano ausente, inválido ou sem cadastro volta para o ano atual
         int ano = LocalDate.now().getYear();
         try {
             int pedido = Integer.parseInt(request.getParameter("ano"));
             if (anos.contains(pedido)) ano = pedido;
         } catch (NumberFormatException nfe) {
-            //sem ano válido fica no ano atual
+            // Sem ano válido fica no ano atual
         }
 
         Integer[] usuarios = daoUsuarios.contarCadastrosPorMes("usuario", ano);
         Integer[] sindicos = daoUsuarios.contarCadastrosPorMes("sindico", ano);
         Integer[] cooperativas = daoUsuarios.contarCadastrosPorMes("cooperativa", ano);
 
-        //Meses que ainda não chegaram vêm null e ficam de fora da escala e do total.
+        // Meses que ainda não chegaram vêm null e ficam de fora da escala e do total
         int maximo = 1;
         int total = 0;
         for (Integer[] serie : new Integer[][]{usuarios, sindicos, cooperativas}) {
@@ -112,7 +125,9 @@ public class PainelServlet extends HttpServlet {
         request.setAttribute("mesesGrafico", nomesDosMeses());
     }
 
-    //Pontos "x,y x,y ..." da linha, só dos meses que já chegaram.
+    //================ CALCULOS DO GRAFICO (coordenadas do SVG) ================
+
+    // Pontos "x,y x,y ..." da linha, só dos meses que já chegaram
     private String montarPontos(Integer[] valores, int maximo) {
         StringBuilder pontos = new StringBuilder();
         for (int i = 0; i < valores.length; i++) {
@@ -123,7 +138,7 @@ public class PainelServlet extends HttpServlet {
         return pontos.toString();
     }
 
-    //Área sob a linha: desce até a base no primeiro e no último mês com dado. Vazia se não houver pontos.
+    // Área sob a linha: desce até a base no primeiro e no último mês com dado. Vazia se não houver pontos.
     private String montarArea(Integer[] valores, String pontos) {
         int primeiro = -1;
         int ultimo = -1;
@@ -137,7 +152,7 @@ public class PainelServlet extends HttpServlet {
                 + formatar(posicaoHorizontal(ultimo)) + "," + formatar(Y_BASE);
     }
 
-    //Um círculo com o número em cada mês que já chegou.
+    // Um círculo com o número em cada mês que já chegou
     private List<Map<String, Object>> montarMarcas(Integer[] valores, int maximo) {
         List<Map<String, Object>> marcas = new ArrayList<>();
         for (int i = 0; i < valores.length; i++) {
@@ -151,7 +166,7 @@ public class PainelServlet extends HttpServlet {
         return marcas;
     }
 
-    //Os 12 meses (Jan a Dez) com o x de cada rótulo.
+    // Os 12 meses (Jan a Dez) com o x de cada rótulo
     private List<Map<String, Object>> nomesDosMeses() {
         List<Map<String, Object>> meses = new ArrayList<>();
         for (int i = 0; i < NOMES_MESES.length; i++) {
@@ -163,17 +178,17 @@ public class PainelServlet extends HttpServlet {
         return meses;
     }
 
-    //O mês 0 (janeiro) fica em X_INICIO e o mês 11 (dezembro) em X_FIM.
+    // O mês 0 (janeiro) fica em X_INICIO e o mês 11 (dezembro) em X_FIM
     private double posicaoHorizontal(int mes) {
         return X_INICIO + mes * (X_FIM - X_INICIO) / 11;
     }
 
-    //No SVG o y cresce para baixo: o maior valor fica no topo e o zero na base.
+    // No SVG o y cresce para baixo: o maior valor fica no topo e o zero na base
     private String posicaoVertical(int valor, int maximo) {
         return formatar(Y_BASE - (Y_BASE - Y_TOPO) * valor / maximo);
     }
 
-    //Uma casa decimal e ponto (não vírgula), como o SVG exige.
+    // Uma casa decimal e ponto (não vírgula), como o SVG exige
     private String formatar(double numero) {
         return String.format(Locale.ROOT, "%.1f", numero);
     }

@@ -12,11 +12,12 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 
+// Acesso à tabela usuario e às telas de usuários do painel (tipo, telefone, endereço e contagens do painel)
 public class UsuarioDAO {
 
-    //=======================MÉTODOS CREATE=======================\\
+    //================ METODOS CREATE ================
 
-    // Metodo para inserir um usuário no banco
+    // Grava um usuário novo
     public boolean inserir(Usuario usuario){
         String sql = """
         INSERT INTO usuario
@@ -53,9 +54,9 @@ public class UsuarioDAO {
         }
     }
 
-    //=======================MÉTODOS READ=======================\
+    //================ METODOS READ ================
 
-    // Metodo para selecionar um usuário por ID
+    // Busca o usuário pelo id (null se não existir)
     public Usuario selecionarUsuarioPorId(int id){
         String sql = """
                 SELECT id_usuario, nome, email, senha_hash, data_cadastro, status, id_endereco, id_tipo_usuario, cpf
@@ -95,7 +96,7 @@ public class UsuarioDAO {
 
     }
 
-    // selecionar usuario por email
+    // Busca o usuário pelo e-mail (null se não existir)
 
     public Usuario selecionarPorEmail(String email){
         String sql = """
@@ -125,7 +126,7 @@ public class UsuarioDAO {
         }
     }
 
-    //seleciona todos
+    // Lista todos os usuários
 
     public ArrayList<Usuario> selecionarTodos(){
         ArrayList<Usuario> todosUsuarios = new ArrayList<>();
@@ -162,6 +163,7 @@ public class UsuarioDAO {
         }
     }
 
+    // Lista os usuários cujo nome ou e-mail contém o texto buscado
     public ArrayList<Usuario> selecionarPorNomeOuEmail(String procura){
         ArrayList<Usuario> encontrados = new ArrayList<>();
         String sql = """
@@ -190,7 +192,7 @@ public class UsuarioDAO {
         return encontrados;
     }
 
-    // Verifica se um email ja esta cadastrado
+    // Verifica se um e-mail já está cadastrado
     public boolean existeEmail(String email){
         String sql = "SELECT 1 FROM usuario WHERE email = ?";
         try (
@@ -206,7 +208,8 @@ public class UsuarioDAO {
         }
     }
 
-    //=======================MÉTODOS UPDATE=======================\
+    //================ METODOS UPDATE ================
+    // Atualiza nome, e-mail, senha e endereço do usuário (tipo e CPF só mudam pela versão com transação)
     public boolean atualizar(Usuario usuario){
         boolean retorno = false;
         String sql = """
@@ -241,7 +244,8 @@ public class UsuarioDAO {
         }
     }
 
-    //=======================MÉTODOS DELETE=======================\\
+    //================ METODOS DELETE ================
+    // Apaga o usuário com telefones, papéis (cooperativa, síndico, morador) e o endereço que ficou sem dono, na mesma transação
     public boolean deletar(Usuario usuario){
         int idUsuario = usuario.getIdUsuario();
 
@@ -273,7 +277,7 @@ public class UsuarioDAO {
                     }
                 }
 
-                //endereço que ficou sem dono também sai
+                // Endereço que ficou sem dono também sai
                 if (linhasUsuario > 0 && idEndereco != 0) {
                     String apagarEndereco = """
                             DELETE FROM endereco
@@ -301,7 +305,7 @@ public class UsuarioDAO {
         }
     }
 
-    //=======================MÉTODOS DO CRUD DE ADMIN (JOIN e transação)=======================\\
+    //================ METODOS DO CRUD DE ADMIN (JOIN e transação) ================
 
     // Lista para a tela de usuários: traz o nome do tipo, o primeiro telefone e o endereço
     public ArrayList<Usuario> selecionarTodos(String busca){
@@ -521,8 +525,9 @@ public class UsuarioDAO {
         }
     }
 
-    //=======================MÉTODOS DE CONTAGEM (home do painel)=======================\\
+    //================ METODOS DE CONTAGEM (home do painel) ================
 
+    // Total de usuários cadastrados
     public int contar(){
         return contarLinhas("SELECT COUNT(*) FROM usuario");
     }
@@ -532,7 +537,7 @@ public class UsuarioDAO {
         return contarLinhas("SELECT COUNT(*) FROM usuario WHERE date_trunc('month', data_cadastro) = date_trunc('month', CURRENT_DATE - INTERVAL '" + mesesAtras + " month')");
     }
 
-    // Metodo utilizado no grafico do painel servlet
+    // Usado no gráfico do PainelServlet
     // Cadastros de cada mês de um ano (posição 0 = janeiro). Mês que ainda não chegou fica null; mês sem cadastro fica 0.
     // papel: "sindico", "cooperativa" ou qualquer outro valor para os demais
     public Integer[] contarCadastrosPorMes(String papel, int ano){
@@ -593,6 +598,7 @@ public class UsuarioDAO {
         return anos;
     }
 
+    // Roda um SELECT COUNT(*) e devolve o número
     private int contarLinhas(String sql){
         try (
                 Connection conexao = ConexaoBD.conectar();

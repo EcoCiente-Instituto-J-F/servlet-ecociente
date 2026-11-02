@@ -2,6 +2,7 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
+// Usuário do sistema, lido da tabela usuario. Síndico, morador e cooperativa herdam desta classe
 public class Usuario {
 
     //================ ATRIBUTOS ================
@@ -16,7 +17,7 @@ public class Usuario {
     private int idTipoUsuario;
     private String cpf;
 
-    // Dados so de exibicao, preenchidos pelas listagens que fazem JOIN
+    // Dados só de exibição, preenchidos pelas listagens que fazem JOIN
     private String nomeTipo;
     private String telefone;
     private Endereco enderecoCompleto;
@@ -37,7 +38,7 @@ public class Usuario {
         this.idTipoUsuario = idTipoUsuario;
     }
 
-    // Construtor sem endereco
+    // Construtor sem endereço
 
     public Usuario(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idTipoUsuario) {
         this.idUsuario = idUsuario;
@@ -123,6 +124,7 @@ public class Usuario {
         this.cpf = cpf;
     }
 
+    // Guarda os dados que vêm dos JOINs e só servem para mostrar na tela
     public void setDadosExibicao(String nomeTipo, String telefone, Endereco enderecoCompleto) {
         this.nomeTipo = nomeTipo;
         this.telefone = telefone;
@@ -137,14 +139,17 @@ public class Usuario {
         return nomeTipo == null ? "" : nomeTipo;
     }
 
+    // Primeira palavra do tipo, usada como etiqueta da tabela
     public String getTag() {
         return getTipo().split(" ")[0];
     }
 
+    // Iniciais do nome, mostradas no avatar da linha
     public String getIniciais() {
         return iniciaisDe(nome);
     }
 
+    // Telefone já com máscara
     public String getTelefone() {
         return Telefone.formatar(telefone);
     }

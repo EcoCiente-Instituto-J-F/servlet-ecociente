@@ -18,18 +18,24 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-//Servlet usada para as ações do CRUD de Condomínios. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
+// Servlet usada para as ações do CRUD de Condomínios. Tudo pela mesma rota: GET lista, POST cadastra, altera ou exclui.
 @WebServlet(urlPatterns = {"/condominios"})
 public class CondominioServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     CondominioDAO daoCondominios = new CondominioDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     SindicoDAO daoSindicos = new SindicoDAO();
 
+    //================ METODOS GET ================
+
+    // Abre a lista de condomínios
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         mostrarSelects(request, response);
     }
 
-    //Busca os condomínios (com pesquisa por nome opcional) e os tipos (para o select) e envia para a JSP.
+    // Busca os condomínios (com pesquisa por nome opcional) e os tipos (para o select) e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String procura = request.getParameter("q");
         if (procura == null) procura = request.getParameter("search");
@@ -40,7 +46,9 @@ public class CondominioServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/condominios.jsp").forward(request, response);
     }
 
-    //acao=excluir apaga, id vazio cadastra e id preenchido altera.
+    //================ METODOS POST ================
+
+    // Com acao=excluir apaga, com id vazio cadastra e com id preenchido altera
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -67,6 +75,9 @@ public class CondominioServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida os campos e cadastra o condomínio com o endereço e, se veio, o síndico
     private boolean adicionarCondominio(HttpServletRequest request) {
         String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
@@ -75,7 +86,7 @@ public class CondominioServlet extends HttpServlet {
         Integer unidades = Formulario.inteiroPositivoOpcional(request.getParameter("numeroUnidades"), "o número de unidades");
         BigDecimal area = Formulario.decimalPositivoOpcional(request.getParameter("areaM2"), "a área");
 
-        //Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
+        // Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
         boolean industrial = daoCondominios.selecionarTipos().stream()
                 .anyMatch(t -> t.getId() == idTipoCondominio && t.getNome().equalsIgnoreCase("Industrial"));
         if (industrial ? (area == null || unidades != null) : (unidades == null || area != null)) {
@@ -88,7 +99,7 @@ public class CondominioServlet extends HttpServlet {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outro condomínio.");
         }
 
-        //O síndico é opcional. Se veio, precisa poder assumir o condomínio.
+        // O síndico é opcional. Se veio, precisa poder assumir o condomínio.
         String idSindico = Formulario.texto(request, "idUsuarioSindico");
         Integer idUsuarioSindico = null;
         int idTipoSindico = 0;
@@ -101,7 +112,7 @@ public class CondominioServlet extends HttpServlet {
             if (idTipoSindico == 0) throw new DadoInvalido("O tipo de usuário Síndico não existe no banco.");
         }
 
-        //Id 0 porque o banco gera. O endereço, o condomínio e o síndico são criados juntos, na mesma transação.
+        // Id 0 porque o banco gera. O endereço, o condomínio e o síndico são criados juntos, na mesma transação.
         Condominio condominio = new Condominio(0, nome, cnpj, true, daoCondominios.gerarTokenUnico(), 0, idTipoCondominio);
         condominio.setNumeroUnidades(unidades);
         condominio.setAreaM2(area);
@@ -110,7 +121,7 @@ public class CondominioServlet extends HttpServlet {
         return ok;
     }
 
-    //O usuário precisa existir, não ser administrador nem síndico e ter CPF cadastrado.
+    // O usuário precisa existir, não ser administrador nem síndico e ter CPF cadastrado
     private void validarSindico(int idUsuario) {
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
         if (usuario == null) throw new DadoInvalido("Usuário do síndico não encontrado.");
@@ -121,6 +132,9 @@ public class CondominioServlet extends HttpServlet {
         }
     }
 
+    //================ METODOS UPDATE ================
+
+    // Valida os campos e atualiza o condomínio e o endereço
     private boolean alterarCondominio(HttpServletRequest request, int id) {
         String nome = Formulario.exigir(Formulario.texto(request, "nome"), "o nome", 100);
         String cnpj = Formulario.cnpj(request.getParameter("cnpj"));
@@ -129,7 +143,7 @@ public class CondominioServlet extends HttpServlet {
         Integer unidades = Formulario.inteiroPositivoOpcional(request.getParameter("numeroUnidades"), "o número de unidades");
         BigDecimal area = Formulario.decimalPositivoOpcional(request.getParameter("areaM2"), "a área");
 
-        //Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
+        // Industrial exige a área em m²; os outros tipos exigem o número de unidades. Nunca os dois.
         boolean industrial = daoCondominios.selecionarTipos().stream()
                 .anyMatch(t -> t.getId() == idTipoCondominio && t.getNome().equalsIgnoreCase("Industrial"));
         if (industrial ? (area == null || unidades != null) : (unidades == null || area != null)) {
@@ -142,7 +156,7 @@ public class CondominioServlet extends HttpServlet {
             throw new DadoInvalido("Este CNPJ já está cadastrado em outro condomínio.");
         }
 
-        //Busca no banco e troca só o que veio do formulário.
+        // Busca no banco e troca só o que veio do formulário
         Condominio condominio = daoCondominios.selecionarPorId(id);
         if (condominio == null) return false;
         condominio.setNome(nome);
@@ -150,12 +164,15 @@ public class CondominioServlet extends HttpServlet {
         condominio.setIdTipoCondominio(idTipoCondominio);
         condominio.setNumeroUnidades(unidades);
         condominio.setAreaM2(area);
-        //Condomínios criados antes do token existir ganham um aqui.
+        // Condomínios criados antes do token existir ganham um aqui
         if (condominio.getToken() == null || condominio.getToken().isBlank()) condominio.setToken(daoCondominios.gerarTokenUnico());
 
         return daoCondominios.atualizarCondominio(condominio, endereco);
     }
 
+    //================ METODOS DELETE ================
+
+    // Remove o condomínio, o síndico e o endereço dele
     private boolean deletarCondominio(int id) {
         try {
             return daoCondominios.deletarComEndereco(id);

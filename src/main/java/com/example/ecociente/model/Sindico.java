@@ -2,6 +2,7 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
+// Síndico: um usuário com os dados próprios da tabela sindico (mandato e condomínio que administra)
 public class Sindico extends Usuario{
 
     //================ ATRIBUTOS ================
@@ -39,7 +40,7 @@ public class Sindico extends Usuario{
         this.idCondominio = idCondominio;
     }
 
-    // Construtor sem data de inicio e de fim do mandato
+    // Construtor sem data de início e de fim do mandato
     public Sindico(int idUsuario, String nome, String email, String senhaHash, LocalDate dataCadastro, boolean status, int idEndereco, int idTipoUsuario, int idSindico, int idCondominio) {
         super(idUsuario, nome, email, senhaHash, dataCadastro, status, idEndereco, idTipoUsuario);
         this.idSindico = idSindico;

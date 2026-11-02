@@ -15,19 +15,25 @@ import java.util.List;
 
 @WebServlet(urlPatterns = {"/selectTelefone", "/adicionarTelefone", "/alterarTelefone", "/deletarTelefone"})
 public class TelefoneServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     TelefoneDAO daoTelefones = new TelefoneDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
 
-    //Aceita celular/fixo com DDD, com ou sem traço: (11) 91234-5678 ou (11) 1234-5678.
+    // Aceita celular/fixo com DDD, com ou sem traço: (11) 91234-5678 ou (11) 1234-5678
     private static final String REGEX_CELULAR = "\\(\\d{2}\\)\\s?\\d{4,5}-?\\d{4}";
 
+    //================ METODOS GET ================
+
+    // Abre a lista de telefones (rota /selectTelefone)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/selectTelefone")) {
             mostrarSelects(request, response);
         }
     }
 
-    //Busca os telefones e os usuários (para o select) e envia para a JSP.
+    // Busca os telefones e os usuários (para o select) e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Telefone> telefones = daoTelefones.listarTodos();
         List<Usuario> usuarios = daoUsuarios.selecionarTodos();
@@ -37,6 +43,9 @@ public class TelefoneServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/telefones.jsp").forward(request, response);
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida o número e grava o telefone do usuário escolhido
     private void adicionarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String numero = request.getParameter("numero");
         int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
@@ -47,13 +56,16 @@ public class TelefoneServlet extends HttpServlet {
             return;
         }
 
-        //Id 0 porque o banco gera. Banco guarda só os dígitos (9 a 11).
+        // Id 0 porque o banco gera. Banco guarda só os dígitos (9 a 11).
         boolean adicionado = daoTelefones.inserir(new Telefone(0, numero.replaceAll("\\D", ""), idUsuario));
 
         request.setAttribute("adicionado", adicionado ? "true" : "false");
         mostrarSelects(request, response);
     }
 
+    //================ METODOS UPDATE ================
+
+    // Valida o número e atualiza o telefone
     private void alterarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idTelefone"));
         String numero = request.getParameter("numero");
@@ -74,6 +86,9 @@ public class TelefoneServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS DELETE ================
+
+    // Remove o telefone escolhido
     private void deletarTelefone(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idTelefone"));
 
@@ -83,6 +98,9 @@ public class TelefoneServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS POST ================
+
+    // Encaminha cada rota (adicionar, alterar ou deletar) para o método certo
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 

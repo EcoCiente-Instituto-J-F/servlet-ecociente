@@ -9,11 +9,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
 
+// Conexão com o PostgreSQL por um pool do HikariCP, compartilhado por todos os DAOs
 public class ConexaoBD {
+
+    //================ ATRIBUTOS ================
 
     private static final Properties env = new Properties();
     private static volatile HikariDataSource pool;
 
+    //================ CONFIGURACAO ================
+
+    // Carrega o .env (se existir) e garante que o pool seja fechado quando a aplicação parar
     static {
         try (InputStream input = ConexaoBD.class.getClassLoader().getResourceAsStream(".env")) {
             if (input != null) {
@@ -25,12 +31,15 @@ public class ConexaoBD {
         Runtime.getRuntime().addShutdownHook(new Thread(ConexaoBD::encerrar));
     }
 
-    //Variável de ambiente (usada na nuvem) tem prioridade sobre o .env (usado no computador local).
+    // Variável de ambiente (usada na nuvem) tem prioridade sobre o .env (usado no computador local)
     private static String configuracao(String nome) {
         String valor = System.getenv(nome);
         return (valor != null && !valor.isBlank()) ? valor : env.getProperty(nome);
     }
 
+    //================ CONEXOES ================
+
+    // Entrega uma conexão do pool; o pool só é criado na primeira chamada
     public static Connection conectar() throws SQLException {
         HikariDataSource atual = pool;
         if (atual == null) {
@@ -39,6 +48,7 @@ public class ConexaoBD {
         return atual.getConnection();
     }
 
+    // Cria o pool uma única vez (máximo de 3 conexões); não derruba a aplicação se o banco estiver fora do ar
     private static synchronized HikariDataSource criarPool() {
         if (pool == null) {
             HikariConfig config = new HikariConfig();
@@ -55,6 +65,7 @@ public class ConexaoBD {
         return pool;
     }
 
+    // Fecha o pool e libera as conexões abertas
     public static synchronized void encerrar() {
         if (pool != null) {
             pool.close();

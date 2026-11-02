@@ -12,10 +12,12 @@ import com.example.ecociente.model.Condominio;
 import com.example.ecociente.model.Cooperativa;
 import com.example.ecociente.model.Endereco;
 
+// Acesso à tabela cooperativa e às telas de cooperativas do painel (usuário dono, endereço, telefone e vínculos)
 public class CooperativaDAO {
 
-    // ======================= MÉTODOS CREATE =======================
+    //================ METODOS CREATE ================
 
+    // Grava a cooperativa para um usuário que já existe
     public boolean inserir(Cooperativa c) {
         String sql = """
                 INSERT INTO cooperativa
@@ -39,9 +41,9 @@ public class CooperativaDAO {
         }
     }
 
-    // ======================= MÉTODOS READ =======================
+    //================ METODOS READ ================
 
-    // Buscar cooperativa pelo ID
+    // Busca a cooperativa pelo id (null se não existir)
     public Cooperativa buscarPorId(int idCooperativa) {
 
         String sql = """
@@ -95,7 +97,7 @@ public class CooperativaDAO {
         return null;
     }
 
-    // Buscar pelo CNPJ
+    // Confere se já existe uma cooperativa com esse CNPJ
     public boolean buscarCNPJ(String cnpj) {
 
         String sql = """
@@ -118,7 +120,7 @@ public class CooperativaDAO {
         }
     }
 
-    // Buscar pelo ID do usuário
+    // Confere se o usuário já é dono de uma cooperativa
     public boolean buscarIdUsuario(int idUsuario) {
 
         String sql = """
@@ -141,7 +143,7 @@ public class CooperativaDAO {
         }
     }
 
-    // Listar todas as cooperativas
+    // Lista todas as cooperativas
     public ArrayList<Cooperativa> listarTodas() {
 
         ArrayList<Cooperativa> cooperativas = new ArrayList<>();
@@ -194,8 +196,9 @@ public class CooperativaDAO {
         return cooperativas;
     }
 
-    // ======================= MÉTODOS UPDATE =======================
+    //================ METODOS UPDATE ================
 
+    // Atualiza nome, CNPJ e usuário da cooperativa
     public boolean atualizar(Cooperativa c) {
 
         String sql = """
@@ -222,8 +225,9 @@ public class CooperativaDAO {
         }
     }
 
-    // ======================= MÉTODOS DELETE =======================
+    //================ METODOS DELETE ================
 
+    // Remove a cooperativa pelo id
     public boolean deletar(int idCooperativa) {
 
         String sql = """
@@ -244,7 +248,7 @@ public class CooperativaDAO {
         }
     }
 
-    // ======================= MÉTODOS DO CRUD DE ADMIN (JOIN e transação) =======================
+    //================ METODOS DO CRUD DE ADMIN (JOIN e transação) ================
 
     // Lista para a tela de cooperativas: traz telefone, endereço e quantos condomínios estão vinculados
     public ArrayList<Cooperativa> listarTodas(String busca) {
@@ -469,6 +473,7 @@ public class CooperativaDAO {
         }
     }
 
+    // Roda um comando SQL que recebe só o id
     private void executar(Connection conexao, String sql, int id) throws SQLException {
         try (PreparedStatement ps = conexao.prepareStatement(sql)) {
             ps.setInt(1, id);
@@ -476,6 +481,7 @@ public class CooperativaDAO {
         }
     }
 
+    // Total de cooperativas cadastradas
     public int contar() {
         return contarLinhas("SELECT COUNT(*) FROM cooperativa");
     }
@@ -486,6 +492,7 @@ public class CooperativaDAO {
                 + "WHERE date_trunc('month', u.data_cadastro) = date_trunc('month', CURRENT_DATE - INTERVAL '" + mesesAtras + " month')");
     }
 
+    // Roda um SELECT COUNT(*) e devolve o número
     private int contarLinhas(String sql) {
         try (Connection conexao = ConexaoBD.conectar();
              PreparedStatement ps = conexao.prepareStatement(sql);

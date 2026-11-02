@@ -2,6 +2,7 @@ package com.example.ecociente.model;
 
 import java.time.LocalDate;
 
+// Morador: um usuário com os dados próprios da tabela morador (apartamento, torre e condomínio)
 public class Morador extends Usuario{
 
     //================ ATRIBUTOS ================
@@ -9,7 +10,7 @@ public class Morador extends Usuario{
     private int idMorador;
     private String numeroApartamento;
     private String torre;
-    private Integer idCondominio; //null quando o morador ainda não está ligado a um condomínio
+    private Integer idCondominio; // null quando o morador ainda não está ligado a um condomínio
 
     //================ METODOS CONSTRUTORES ================
 
