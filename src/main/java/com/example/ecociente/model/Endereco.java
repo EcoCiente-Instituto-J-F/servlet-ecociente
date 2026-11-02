@@ -1,5 +1,6 @@
 package com.example.ecociente.model;
 
+// Endereço de um usuário ou de um condomínio, lido da tabela endereco
 public class Endereco {
 
     //================ ATRIBUTOS ================
@@ -66,7 +67,7 @@ public class Endereco {
     }
 
 
-    // ================ METODOS GETTERS ================
+    //================ METODOS GETTERS ================
 
     public int getIdEndereco() {
         return idEndereco;
@@ -101,7 +102,7 @@ public class Endereco {
     }
 
 
-    // ================ METODOS SETTERS ================
+    //================ METODOS SETTERS ================
 
     public void setCep(String cep) {
         this.cep = cep;
@@ -133,22 +134,25 @@ public class Endereco {
 
 
 
-    // ================ EXIBICAO (usado pelas JSPs) ================
+    //================ EXIBICAO (usado pelas JSPs) ================
 
+    // 8 dígitos viram 12345-678
     public String getCepFormatado() {
         if (cep == null || cep.length() != 8) return cep == null ? "" : cep;
         return cep.substring(0, 5) + "-" + cep.substring(5);
     }
 
+    // Cidade e estado, ex.: São Paulo, SP
     public String getLocalidade() {
         return cidade + ", " + estado;
     }
 
+    // Endereço em uma linha, ex.: Rua das Flores, 100 - São Paulo, SP
     public String getTextoCompleto() {
         return rua + ", " + numero + " - " + cidade + ", " + estado;
     }
 
-    // ================ TO STRING ================
+    //================ TO STRING ================
     @Override
 
     public String toString(){
