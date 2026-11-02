@@ -17,7 +17,7 @@ body {
     --espaco-pequeno: 16px;
     --espaco-medio: 32px;
     --espaco-grande: 64px;
-    --espaco-secao: 80px;
+    --espaco-secao: 220px;
     --margem-lateral: 200px;
 }
 
@@ -1612,7 +1612,6 @@ input[name="modo-card"] {
 @media (max-width: 1200px) {
     :root {
         --margem-lateral: 40px;
-        --espaco-secao: 64px;
     }
 
     .navbar {
@@ -1737,7 +1736,6 @@ input[name="modo-card"] {
 
     :root {
         --margem-lateral: 24px;
-        --espaco-secao: 52px;
     }
 
     .navbar {
