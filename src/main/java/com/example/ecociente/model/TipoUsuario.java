@@ -1,5 +1,6 @@
 package com.example.ecociente.model;
 
+// Tipo de usuário (administrador, síndico, morador, cooperativa ou comum), lido da tabela tipo_usuario
 public class TipoUsuario {
 
     //================ ATRIBUTOS ================
@@ -9,7 +10,7 @@ public class TipoUsuario {
     private String descricao;
 
 
-    //================ METODO CONSTRUTOR ================
+    //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
     public TipoUsuario(int idTipoUsuario, String nome, String descricao) {
