@@ -16,7 +16,7 @@ public class Plano {
     private BigDecimal precoAnual; // preço por unidade, por mês, no plano anual
     private boolean ativo;
 
-    //================ METODO CONSTRUTOR ================
+    //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
     public Plano(int idPlano, String codigo, String nome, String descricao, String unidade,
@@ -41,6 +41,7 @@ public class Plano {
     public BigDecimal getPrecoAnual() { return precoAnual; }
     public boolean isAtivo() { return ativo; }
 
+    // Usa a descrição do banco; se estiver vazia, monta um texto padrão com a unidade de cobrança
     public String getDescricao() {
         if (descricao != null && !descricao.isBlank()) return descricao;
         return "Cobrança por " + getUnidadeTexto() + ", todo mês ou com desconto no plano anual.";
@@ -53,6 +54,7 @@ public class Plano {
         return "m2".equals(unidade) ? "m²" : unidade;
     }
 
+    // Unidade no plural, para frases como "150 apartamentos"
     public String getUnidadePlural() {
         return switch (unidade) {
             case "apartamento" -> "apartamentos";
@@ -62,6 +64,7 @@ public class Plano {
         };
     }
 
+    // Texto do campo de quantidade na tela de contratação
     public String getRotuloQuantidade() {
         return switch (unidade) {
             case "apartamento" -> "Número de apartamentos";
@@ -71,6 +74,7 @@ public class Plano {
         };
     }
 
+    // Arquivo do ícone do tipo de condomínio mostrado no resumo do plano
     public String getIcone() {
         return switch (unidade) {
             case "apartamento" -> "icone-tipo-residencial.svg";
