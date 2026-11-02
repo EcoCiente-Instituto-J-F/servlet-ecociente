@@ -1,5 +1,6 @@
 package com.example.ecociente.model;
 
+// Tipo de condomínio (residencial, comercial ou industrial), lido da tabela tipo_condominio
 public class TipoCondominio {
 
     //================ ATRIBUTOS ================
@@ -8,7 +9,7 @@ public class TipoCondominio {
     private String nome;
     private String descricao;
 
-    //================ METODO CONSTRUTOR ================
+    //================ METODOS CONSTRUTORES ================
 
     // Construtor completo
     public TipoCondominio(int idTipoCondominio, String nome, String descricao) {
