@@ -17,24 +17,30 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-//Servlet usada para as ações do CRUD de Síndicos.
+// Servlet usada para as ações do CRUD de Síndicos
 @WebServlet(urlPatterns = {"/selectSindico", "/adicionarSindico", "/alterarSindico", "/deletarSindico"})
 public class SindicoServlet extends HttpServlet {
+
+    //================ ATRIBUTOS ================
+
     SindicoDAO daoSindicos = new SindicoDAO();
     CondominioDAO daoCondominios = new CondominioDAO();
     UsuarioDAO daoUsuarios = new UsuarioDAO();
     MoradorDAO daoMoradores = new MoradorDAO();
 
-    //Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000).
+    // Aceita CPF com pontuação (000.000.000-00) ou só números (00000000000)
     private static final String REGEX_CPF = "\\d{3}\\.\\d{3}\\.\\d{3}-\\d{2}|\\d{11}";
 
+    //================ METODOS GET ================
+
+    // Abre a lista de síndicos (rota /selectSindico)
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (request.getServletPath().equals("/selectSindico")) {
             mostrarSelects(request, response);
         }
     }
 
-    //Busca os síndicos, os condomínios e os usuários (para os selects) e envia para a JSP.
+    // Busca os síndicos, os condomínios e os usuários (para os selects) e envia para a JSP
     private void mostrarSelects(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         List<Sindico> sindicos = daoSindicos.listarTodos();
         List<Condominio> condominios = daoCondominios.selecionarTodos();
@@ -46,6 +52,9 @@ public class SindicoServlet extends HttpServlet {
         request.getRequestDispatcher("/WEB-INF/views/sindicos.jsp").forward(request, response);
     }
 
+    //================ METODOS POST ================
+
+    // Encaminha cada rota (adicionar, alterar ou deletar) para o método certo
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
@@ -66,6 +75,9 @@ public class SindicoServlet extends HttpServlet {
         }
     }
 
+    //================ METODOS CREATE ================
+
+    // Valida CPF e mandato, grava o síndico e passa o usuário dele para o tipo Síndico
     private void adicionarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String cpf = request.getParameter("cpf");
 
@@ -75,7 +87,7 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        cpf = cpf.replaceAll("\\D", ""); //banco guarda só os 11 dígitos
+        cpf = cpf.replaceAll("\\D", ""); // Banco guarda só os 11 dígitos
         LocalDate dataInicio = LocalDate.parse(request.getParameter("dataInicioMandato"));
         LocalDate dataFim = lerDataFim(request);
         int idCondominio = Integer.parseInt(request.getParameter("idCondominio"));
@@ -92,14 +104,14 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        //O CPF fica no cadastro do usuário, que passa a ser do tipo Síndico.
+        // O CPF fica no cadastro do usuário, que passa a ser do tipo Síndico
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
         usuario.setCpf(cpf);
         int idTipoSindico = daoUsuarios.selecionarIdTipoPorNome("Sindico");
         if (idTipoSindico != 0) usuario.setTipoUsuario(idTipoSindico);
         daoUsuarios.atualizar(usuario, null, null);
 
-        //Dados do usuário vão vazios (a tabela sindico não usa). Id 0 porque o banco gera.
+        // Dados do usuário vão vazios (a tabela sindico não usa). Id 0 porque o banco gera.
         boolean adicionado = daoSindicos.inserir(new Sindico(
                 idUsuario, null, null, null, null, false, 0, 0,
                 0, dataInicio, dataFim, idCondominio
@@ -109,6 +121,9 @@ public class SindicoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS UPDATE ================
+
+    // Atualiza mandato, condomínio e CPF do síndico
     private void alterarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idSindico"));
         String cpf = request.getParameter("cpf");
@@ -119,7 +134,7 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        //Busca no banco e troca só o que veio do formulário.
+        // Busca no banco e troca só o que veio do formulário
         Sindico sindico = daoSindicos.buscarPorId(id);
         if (sindico == null) {
             request.setAttribute("erro", "Síndico não encontrado.");
@@ -145,7 +160,7 @@ public class SindicoServlet extends HttpServlet {
             return;
         }
 
-        //O CPF fica no cadastro do usuário.
+        // O CPF fica no cadastro do usuário
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(sindico.getIdUsuario());
         usuario.setCpf(cpfDigitos);
         daoUsuarios.atualizar(usuario, null, null);
@@ -160,6 +175,9 @@ public class SindicoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
+    //================ METODOS DELETE ================
+
+    // Remove o síndico e acerta o tipo do usuário dele
     private void deletarSindico(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("idSindico"));
 
@@ -171,7 +189,7 @@ public class SindicoServlet extends HttpServlet {
         mostrarSelects(request, response);
     }
 
-    //Quem deixa de ser síndico volta a ser Morador (se ainda mora num condomínio) ou Comum. Outros tipos ficam como estão.
+    // Quem deixa de ser síndico volta a ser Morador (se ainda mora num condomínio) ou Comum. Outros tipos ficam como estão.
     private void acertarTipoAposExcluir(int idUsuario) {
         Usuario usuario = daoUsuarios.selecionarUsuarioPorId(idUsuario);
         if (usuario == null || usuario.getIdTipoUsuario() != daoUsuarios.selecionarIdTipoPorNome("Sindico")) return;
@@ -182,12 +200,15 @@ public class SindicoServlet extends HttpServlet {
         daoUsuarios.atualizar(usuario, null, null);
     }
 
+    //================ METODOS AUXILIARES ================
+
+    // Devolve a mensagem de erro se o fim do mandato vier antes do início; null se estiver tudo certo
     private String validarMandato(LocalDate inicio, LocalDate fim) {
         if (fim != null && fim.isBefore(inicio)) return "O fim do mandato não pode ser anterior ao início.";
         return null;
     }
 
-    //Data de fim do mandato é opcional: vazia vira null.
+    // Data de fim do mandato é opcional: vazia vira null
     private LocalDate lerDataFim(HttpServletRequest request) {
         String dataFim = request.getParameter("dataFimMandato");
         if (dataFim == null || dataFim.isBlank()) {
